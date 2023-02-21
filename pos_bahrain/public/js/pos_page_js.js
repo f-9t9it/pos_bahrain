@@ -247,6 +247,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
           if (r.message) {
             me.freeze = false;
             me.customers = r.message.synced_customers_list;
+            me.customer_name = r.message.customer_name;
             me.address = r.message.synced_address;
             me.contacts = r.message.synced_contacts;
             me.removed_items = r.message.invoice;
@@ -301,7 +302,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
             name: key,
             customer: data[key].customer,
             customer_name: data[key].customer_name,
-            mobile_no: data[key].contact_mobile,
+            mobile_no: data[key].mobile_no,
             email_id: data[key].email_id,
             phone: data[key].phone,
             paid_amount: format_currency(data[key].paid_amount, me.frm.doc.currency),
@@ -349,7 +350,448 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
       me.toggle_delete_button();
     });
   },
-  
+  bind_delete_event: function() {
+		var me = this;
+
+		$(this.page.wrapper).on('click', '.btn-danger', function(){
+			frappe.confirm(__("Delete permanently?"), function () {
+				me.delete_records();
+				me.list_customers.find('.list-customers-table').html("");
+				me.render_list_customers();
+			})
+		})
+	},
+
+	set_focus: function () {
+		if (this.default_customer || this.frm.doc.customer) {
+			this.set_customer_value_in_party_field();
+			this.search_item.$input.focus();
+		} else {
+			this.party_field.$input.focus();
+		}
+	},
+
+	make_customer: function () {
+		var me = this;
+
+		if(!this.party_field) {
+			if(this.page.wrapper.find('.pos-bill-toolbar').length === 0) {
+				$(frappe.render_template('customer_toolbar', {
+					allow_delete: this.pos_profile_data["allow_delete"]
+				})).insertAfter(this.page.$title_area.hide());
+			}
+
+			this.party_field = frappe.ui.form.make_control({
+				df: {
+					"fieldtype": "Data",
+					"options": this.party,
+					"label": this.party,
+					"fieldname": this.party.toLowerCase(),
+					"placeholder": __("Select or add new customer")
+				},
+				parent: this.page.wrapper.find(".party-area"),
+				only_input: true,
+			});
+
+			this.party_field.make_input();
+			setTimeout(this.set_focus.bind(this), 500);
+			me.toggle_delete_button();
+		}
+
+		this.party_field.awesomeplete =
+			new Awesomplete(this.party_field.$input.get(0), {
+				minChars: 0,
+				maxItems: 99,
+				autoFirst: true,
+				list: [],
+				filter: function (item, input) {
+					if (item.value.includes('is_action')) {
+						return true;
+					}
+
+					input = input.toLowerCase();
+					item = this.get_item(item.value);
+					result = item ? item.searchtext.includes(input) : '';
+					if(!result) {
+						me.prepare_customer_mapper(input);
+					} else {
+						return result;
+					}
+				},
+				item: function (item, input) {
+					var d = this.get_item(item.value);
+					var html = "<span>" + __(d.label || d.value) + "</span>";
+					if(d.customer_name) {
+						html += '<br><span class="text-muted ellipsis">' + __(d.customer_name) + '</span>';
+					}
+					if(d.phone) {
+						html += '<br><span class="text-muted ellipsis">' + __(d.phone) + '</span>';
+					}
+					if(d.mobile_no) {
+						html += '<br><span class="text-muted ellipsis">' + __(d.mobile_no) + '</span>';
+					}
+					if(d.cr_no) {
+						html += '<br><span class="text-muted ellipsis">' + __(d.cr_no) + '</span>';
+					}
+					if(d.email_id) {
+						html += '<br><span class="text-muted ellipsis">' + __(d.email_id) + '</span>';
+					}
+					return $('<li></li>')
+						.data('item.autocomplete', d)
+						.html('<a><p>' + html + '</p></a>')
+						.get(0);
+				}
+			});
+
+		this.prepare_customer_mapper()
+		this.autocomplete_customers();
+
+		this.party_field.$input
+			.on('input', function (e) {
+				if(me.customers_mapper.length <= 1) {
+					me.prepare_customer_mapper(e.target.value);
+				}
+				me.party_field.awesomeplete.list = me.customers_mapper;
+			})
+			.on('awesomplete-select', function (e) {
+				var customer = me.party_field.awesomeplete
+					.get_item(e.originalEvent.text.value);
+				if (!customer) return;
+				// create customer link
+				if (customer.action) {
+					customer.action.apply(me);
+					return;
+				}
+				me.toggle_list_customer(false);
+				me.toggle_edit_button(true);
+				me.update_customer_data(customer);
+				me.refresh();
+				me.set_focus();
+				me.list_customers_btn.removeClass("view_customer");
+			})
+			.on('focus', function (e) {
+				$(e.target).val('').trigger('input');
+				me.toggle_edit_button(false);
+
+				if(me.frm.doc.items.length) {
+					me.toggle_list_customer(false)
+					me.toggle_item_cart(true)
+				} else {
+					me.toggle_list_customer(true)
+					me.toggle_item_cart(false)
+				}
+			})
+			.on("awesomplete-selectcomplete", function (e) {
+				var item = me.party_field.awesomeplete
+					.get_item(e.originalEvent.text.value);
+				// clear text input if item is action
+				if (item.action) {
+					$(this).val("");
+				}
+				me.make_item_list(item.customer_name);
+				me.make_item_list(item.phone);
+			});
+	},
+
+	prepare_customer_mapper: function(key) {
+		var me = this;
+		var customer_data = '';
+
+		if (key) {
+			key = key.toLowerCase().trim();
+			var re = new RegExp('%', 'g');
+			var reg = new RegExp(key.replace(re, '\\w*\\s*[a-zA-Z0-9]*'));
+
+			customer_data =  $.grep(this.customers, function(data) {
+				contact = me.contacts[data.name];
+				if(reg.test(data.name.toLowerCase())
+					|| reg.test(data.customer_name.toLowerCase())
+					|| (contact && reg.test(contact["phone"]))
+					|| (contact && reg.test(contact["mobile_no"]))
+					|| (contact && reg.test(contact["email_id"]))
+					|| (data.cr_no && reg.test(data.cr_no))
+					|| (data.customer_group && reg.test(data.customer_group.toLowerCase()))){
+						return data;
+				}
+			})
+		} else {
+			customer_data = this.customers;
+		}
+
+		this.customers_mapper = [];
+
+		customer_data.forEach(function (c, index) {
+			if(index < 30) {
+				contact = me.contacts[c.name];
+				if(contact && !c['phone']) {
+					c["phone"] = contact["phone"];
+					c["email_id"] = contact["email_id"];
+					c["mobile_no"] = contact["mobile_no"];
+				}
+
+				me.customers_mapper.push({
+					label: c.name,
+					value: c.name,
+					customer_name: c.customer_name,
+					mobile_no: c.mobile_no,
+					customer_group: c.customer_group,
+					territory: c.territory,
+					cr_no:c.cr_no,
+					phone: contact ? contact["phone"] : '',
+					mobile_no: contact ? contact["mobile_no"] : '',
+					email_id: contact ? contact["email_id"] : '',
+					searchtext: ['customer_name', 'customer_group', 'name', 'value','cr_no',
+						'label', 'email_id', 'phone', 'mobile_no']
+						.map(key => c[key]).join(' ')
+						.toLowerCase()
+				});
+			} else {
+				return;
+			}
+		});
+
+		this.customers_mapper.push({
+			label: "<span class='text-primary link-option'>"
+			+ "<i class='fa fa-plus' style='margin-right: 5px;'></i> "
+			+ __("Create a new Customer")
+			+ "</span>",
+			value: 'is_action',
+			action: me.add_customer
+		});
+	},
+
+	autocomplete_customers: function() {
+		this.party_field.awesomeplete.list = this.customers_mapper;
+	},
+
+	toggle_edit_button: function(flag) {
+		this.page.wrapper.find('.edit-customer-btn').toggle(flag);
+	},
+
+	toggle_list_customer: function(flag) {
+		this.list_customers.toggle(flag);
+	},
+
+	toggle_item_cart: function(flag) {
+		this.wrapper.find('.pos-bill-wrapper').toggle(flag);
+	},
+
+	add_customer: function() {
+		this.frm.doc.customer = "";
+		this.update_customer(true);
+		this.numeric_keypad.show();
+	},
+
+	update_customer: function (new_customer) {
+		var me = this;
+
+		this.customer_doc = new frappe.ui.Dialog({
+			'title': 'Customer',
+			fields: [
+				{
+					"label": __("Full Name"),
+					"fieldname": "full_name",
+					"fieldtype": "Data",
+					"reqd": 1
+				},
+				{
+					"fieldtype": "Section Break"
+				},
+				{
+					"label": __("Email Id"),
+					"fieldname": "email_id",
+					"fieldtype": "Data"
+				},
+				{
+					"fieldtype": "Column Break"
+				},
+				{
+					"label": __("Contact Number"),
+					"fieldname": "phone",
+					"fieldtype": "Data"
+				},
+				{
+					"fieldtype": "Section Break"
+				},
+				{
+					"label": __("Address Name"),
+					"read_only": 1,
+					"fieldname": "name",
+					"fieldtype": "Data"
+				},
+				{
+					"label": __("Address Line 1"),
+					"fieldname": "address_line1",
+					"fieldtype": "Data"
+				},
+				{
+					"label": __("Address Line 2"),
+					"fieldname": "address_line2",
+					"fieldtype": "Data"
+				},
+				{
+					"fieldtype": "Column Break"
+				},
+				{
+					"label": __("City"),
+					"fieldname": "city",
+					"fieldtype": "Data"
+				},
+				{
+					"label": __("State"),
+					"fieldname": "state",
+					"fieldtype": "Data"
+				},
+				{
+					"label": __("ZIP Code"),
+					"fieldname": "pincode",
+					"fieldtype": "Data"
+				},
+				{
+					"label": __("Customer POS Id"),
+					"fieldname": "customer_pos_id",
+					"fieldtype": "Data",
+					"hidden": 1
+				}
+			]
+		})
+		this.customer_doc.show()
+		this.render_address_data()
+
+		this.customer_doc.set_primary_action(__("Save"), function () {
+			me.make_offline_customer(new_customer);
+			me.pos_bill.show();
+			me.list_customers.hide();
+		});
+	},
+render_address_data: function() {
+		var me = this;
+		this.address_data = this.address[this.frm.doc.customer] || {};
+		if(!this.address_data.email_id || !this.address_data.phone) {
+			this.address_data = this.contacts[this.frm.doc.customer];
+		}
+
+		this.customer_doc.set_values(this.address_data)
+		if(!this.customer_doc.fields_dict.full_name.$input.val()) {
+			this.customer_doc.set_value("full_name", this.frm.doc.customer_name)
+		}
+
+		if(!this.customer_doc.fields_dict.customer_pos_id.value) {
+			this.customer_doc.set_value("customer_pos_id", frappe.datetime.now_datetime())
+		}
+	},
+
+	get_address_from_localstorage: function() {
+		this.address_details = this.get_customers_details()
+		return this.address_details[this.frm.doc.customer]
+	},
+
+	make_offline_customer: function(new_customer) {
+		this.frm.doc.customer = this.frm.doc.customer || this.customer_doc.get_values().full_name;
+		this.frm.doc.customer_pos_id = this.customer_doc.fields_dict.customer_pos_id.value;
+		this.customer_details = this.get_customers_details();
+		this.customer_details[this.frm.doc.customer] = this.get_prompt_details();
+		this.party_field.$input.val(this.frm.doc.customer);
+		this.update_address_and_customer_list(new_customer)
+		this.autocomplete_customers();
+		this.update_customer_in_localstorage()
+		this.update_customer_in_localstorage()
+		this.customer_doc.hide()
+	},
+
+	update_address_and_customer_list: function(new_customer) {
+		var me = this;
+		if(new_customer) {
+			this.customers_mapper.push({
+				label: this.frm.doc.customer,
+				value: this.frm.doc.customer,
+				customer_group: "",
+				territory: ""
+			});
+		}
+
+		this.address[this.frm.doc.customer] = JSON.parse(this.get_prompt_details())
+	},
+
+	get_prompt_details: function() {
+		this.prompt_details = this.customer_doc.get_values();
+		this.prompt_details['country'] = this.pos_profile_data.country;
+		this.prompt_details['territory'] = this.pos_profile_data["territory"];
+		this.prompt_details['customer_group'] = this.pos_profile_data["customer_group"];
+		this.prompt_details['customer_pos_id'] = this.customer_doc.fields_dict.customer_pos_id.value;
+		return JSON.stringify(this.prompt_details)
+	},
+
+	update_customer_data: function (doc) {
+		var me = this;
+		this.frm.doc.customer = doc.label || doc.customer_name;
+		this.frm.doc.customer_name = doc.customer_name;
+		this.frm.doc.mobile_no = doc.mobile_no;
+		this.frm.doc.phone = doc.phone;
+		this.frm.doc.email_id = doc.email_id;
+		this.frm.doc.customer_group = doc.customer_group;
+		this.frm.doc.territory = doc.territory;
+		this.pos_bill.show();
+		this.numeric_keypad.show();
+	},
+
+	make_item_list: function (customer) {
+		var me = this;
+		if (!this.price_list) {
+			frappe.msgprint(__("Price List not found or disabled"));
+			return;
+		}
+
+		me.item_timeout = null;
+
+		var $wrap = me.wrapper.find(".item-list");
+		me.wrapper.find(".item-list").empty();
+
+		if (this.items.length > 0) {
+			$.each(this.items, function(index, obj) {
+				let customer_price_list = me.customer_wise_price_list[customer];
+				let item_price
+				if (customer && customer_price_list && customer_price_list[obj.name]) {
+					item_price = format_currency(customer_price_list[obj.name], me.frm.doc.currency);
+				} else {
+					item_price = format_currency(me.price_list_data[obj.name], me.frm.doc.currency);
+				}
+				if(index < me.page_len) {
+					$(frappe.render_template("pos_item", {
+						item_code: escape(obj.name),
+						item_price: item_price,
+						title: obj.name === obj.item_name ? obj.name : obj.item_name,
+						item_name: obj.name === obj.item_name ? "" : obj.item_name,
+						item_image: obj.image,
+						item_stock: __('Stock Qty') + ": " + me.get_actual_qty(obj),
+						item_uom: obj.stock_uom,
+						color: frappe.get_palette(obj.item_name),
+						abbr: frappe.get_abbr(obj.item_name)
+					})).tooltip().appendTo($wrap);
+				}
+			});
+
+			$wrap.append(`
+				<div class="image-view-item btn-more text-muted text-center">
+					<div class="image-view-body">
+						<i class="mega-octicon octicon-package"></i>
+						<div>Load more items</div>
+					</div>
+				</div>
+			`);
+
+			me.toggle_more_btn();
+		} else {
+			$("<p class='text-muted small' style='padding-left: 10px'>"
+				+__("Not items found")+"</p>").appendTo($wrap)
+		}
+
+		if (this.items.length == 1
+			&& this.search_item.$input.val()) {
+			this.search_item.$input.val("");
+			this.add_to_cart();
+		}
+	},
 });
 
 

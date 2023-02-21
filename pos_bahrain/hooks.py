@@ -261,6 +261,9 @@ fixtures = [
                     "Item-authorized_representative_email_field",
                     "authorized_representative_contact_person_number",
                     "Quotation-sales_order",
+                    "Sales Invoice-mobile_no",
+                    "Sales Invoice-phone",
+                    "Sales Invoice-email_id",
                 ],
             ],
         ],
@@ -282,6 +285,7 @@ fixtures = [
                     "Sales Order Item-discount_percentage-precision",
                     "Sales Order Item-discount_percentage-depends_on",
                     "Payment Entry Reference-total_amount-in_list_view",
+                    "Sales Invoice-customer_name-default",
                 ],
             ]
         ],

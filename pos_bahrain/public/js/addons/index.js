@@ -29,6 +29,7 @@ import withPaymentReference from './withPaymentReference';
 // all other hocs
 export const extend_pos = flowRight([
   // withReturn,
+  withCustomerContacts,
   withPaymentReference,
   withModifiedPaymentDialogFields,
   withMultiCurrency,
