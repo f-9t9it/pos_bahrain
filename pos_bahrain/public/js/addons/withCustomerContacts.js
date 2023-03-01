@@ -11,7 +11,7 @@ export default function withCustomerContacts(Pos) {
         const me = this;
         me.party_field.$input.on('awesomplete-select', function (e) {
           const customer = e.originalEvent.text.value;
-          me.frm.doc.__phone = me.customer_contacts[customer] || '';
+          me.frm.doc.phone = me.customer_contacts[customer] || '';
         });
       }
     };
