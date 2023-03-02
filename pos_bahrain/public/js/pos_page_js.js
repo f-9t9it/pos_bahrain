@@ -215,13 +215,13 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
       this.frm.doc.posting_date = frappe.datetime.get_today();
       this.frm.doc.posting_time = frappe.datetime.now_time();
       this.frm.doc.pos_total_qty = this.frm.doc.qty_total;
-	  this.frm.doc.phone = this.customer_doc.get_values().phone;
-	  this.frm.doc.customer_name = this.customer_doc.get_values().full_name;
-	  this.frm.doc.email_id = this.customer_doc.get_values().email_id;
-	  this.frm.doc.city = this.customer_doc.get_values().city;
-	  this.frm.doc.state = this.customer_doc.get_values().state;
-	  this.frm.doc.address_line1 = this.customer_doc.get_values().address_line1;
-	  this.frm.doc.address_line2 = this.customer_doc.get_values().address_line2;
+	  this.frm.doc.phone = this.customer_doc.get_values().phone || " ";
+	  this.frm.doc.customer_name = this.customer_doc.get_values().full_name || " ";
+	  this.frm.doc.email_id = this.customer_doc.get_values().email_id || " ";
+	  this.frm.doc.city = this.customer_doc.get_values().city || " ";
+	  this.frm.doc.state = this.customer_doc.get_values().state || " ";
+	  this.frm.doc.address_line1 = this.customer_doc.get_values().address_line1 || " ";
+	  this.frm.doc.address_line2 = this.customer_doc.get_values().address_line2 || " ";
       this.frm.doc.pos_profile = this.pos_profile_data['name'];
       this.frm.doc.pb_set_cost_center = this.pos_profile_data['write_off_cost_center'];
       invoice_data[this.frm.doc.offline_pos_name] = this.frm.doc;
@@ -607,7 +607,8 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 				{
 					"label": __("Email Id"),
 					"fieldname": "email_id",
-					"fieldtype": "Data"
+					"fieldtype": "Data",
+					"default" : "0"
 				},
 				{
 					"fieldtype": "Column Break"
@@ -615,7 +616,8 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 				{
 					"label": __("Contact Number"),
 					"fieldname": "phone",
-					"fieldtype": "Data"
+					"fieldtype": "Data",
+					"default" : "0"
 				},
 				{
 					"fieldtype": "Section Break"
@@ -624,17 +626,20 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 					"label": __("Address Name"),
 					"read_only": 1,
 					"fieldname": "name",
-					"fieldtype": "Data"
+					"fieldtype": "Data",
+					"default" : "0"
 				},
 				{
 					"label": __("Address Line 1"),
 					"fieldname": "address_line1",
-					"fieldtype": "Data"
+					"fieldtype": "Data",
+					"default" : "0"
 				},
 				{
 					"label": __("Address Line 2"),
 					"fieldname": "address_line2",
-					"fieldtype": "Data"
+					"fieldtype": "Data",
+					"default" : "0"
 				},
 				{
 					"fieldtype": "Column Break"
@@ -642,12 +647,14 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 				{
 					"label": __("City"),
 					"fieldname": "city",
-					"fieldtype": "Data"
+					"fieldtype": "Data",
+					"default" : "0"
 				},
 				{
 					"label": __("State"),
 					"fieldname": "state",
-					"fieldtype": "Data"
+					"fieldtype": "Data",
+					"default" : "0"
 				},
 				{
 					"label": __("ZIP Code"),
