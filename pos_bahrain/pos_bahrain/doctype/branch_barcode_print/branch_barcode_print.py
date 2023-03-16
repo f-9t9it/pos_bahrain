@@ -29,7 +29,7 @@ class BranchBarcodePrint(Document):
 					)
 				)
 			)
-
+	@frappe.whitelist()
 	def set_items_from_reference(self):
 		ref_doc = frappe.get_doc(self.print_dt, self.print_dn)
 		self.price_list = "Standard Selling"

@@ -13,6 +13,7 @@
   "parenttype": null,
   "property": "depends_on",
   "property_type": "Data",
+  "row_name": null,
   "value": "eval:doc.price_list_rate&&parent.discount_on_retail_price==0"
  },
  {
@@ -29,6 +30,7 @@
   "parenttype": null,
   "property": "precision",
   "property_type": "Select",
+  "row_name": null,
   "value": "3"
  },
  {
@@ -45,6 +47,7 @@
   "parenttype": null,
   "property": "precision",
   "property_type": "Select",
+  "row_name": null,
   "value": "3"
  },
  {
@@ -61,6 +64,7 @@
   "parenttype": null,
   "property": "depends_on",
   "property_type": "Data",
+  "row_name": null,
   "value": "eval:doc.price_list_rate&&parent.discount_on_retail_price==0"
  },
  {
@@ -77,6 +81,7 @@
   "parenttype": null,
   "property": "reqd",
   "property_type": "Check",
+  "row_name": null,
   "value": "0"
  },
  {
@@ -93,6 +98,7 @@
   "parenttype": null,
   "property": "in_list_view",
   "property_type": "Check",
+  "row_name": null,
   "value": "1"
  },
  {
@@ -109,6 +115,7 @@
   "parenttype": null,
   "property": "bold",
   "property_type": "Check",
+  "row_name": null,
   "value": "1"
  },
  {
@@ -125,6 +132,7 @@
   "parenttype": null,
   "property": "bold",
   "property_type": "Check",
+  "row_name": null,
   "value": "1"
  },
  {
@@ -141,6 +149,7 @@
   "parenttype": null,
   "property": "search_fields",
   "property_type": "Data",
+  "row_name": null,
   "value": "item, expiry_date"
  },
  {
@@ -157,6 +166,7 @@
   "parenttype": null,
   "property": "in_list_view",
   "property_type": "Check",
+  "row_name": null,
   "value": "0"
  },
  {
@@ -173,6 +183,7 @@
   "parenttype": null,
   "property": "default",
   "property_type": "Text",
+  "row_name": null,
   "value": "0"
  }
 ]
