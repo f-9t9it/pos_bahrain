@@ -24,7 +24,7 @@ app_include_js = [
     "/assets/js/pos_bahrain.min.js",
     "/assets/pos_bahrain/js/batch_quick_entry.js",
     "/assets/pos_bahrain/js/meta.js",
-    "pos_bahain/public/js/taxes_and_totals.js",
+    # "pos_bahain/public/js/taxes_and_totals.js",
 ]
 
 # include js, css files in header of web template
@@ -286,6 +286,22 @@ fixtures = [
                     "Sales Order Item-discount_percentage-depends_on",
                     "Payment Entry Reference-total_amount-in_list_view",
                     "Sales Invoice-customer_name-default",
+                ],
+            ]
+        ],
+    },
+    {
+        "doctype": "Print Format",
+        "filters": [
+            [
+                "name",
+                "in",
+                [
+                    "Well City Bracode",
+                    "Well Care Barcode",
+                    "Budaiya",
+                    "Well City",
+                   
                 ],
             ]
         ],
