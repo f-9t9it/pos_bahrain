@@ -362,7 +362,7 @@ def get_conversion_factor(item_code, uom):
 
 
 @frappe.whitelist()
-def get_item_rate(item_code, uom, price_list="Standard Selling"):
+def get_item_rate(item_code,uom,batch_no=None, price_list="Standard Selling"):
     get_price = compose(
         lambda x: x[1] if x else None,
         excepts(StopIteration, first, lambda __: None),
@@ -370,8 +370,8 @@ def get_item_rate(item_code, uom, price_list="Standard Selling"):
     )
 
     return get_price(
-        {"price_list": price_list, "uom": uom, "transaction_date": today()},
-        item_code,
+        {"price_list": price_list, "uom": uom,"batch_no":batch_no, "transaction_date": today()},
+        item_code
     )
 
 

@@ -290,22 +290,22 @@ fixtures = [
             ]
         ],
     },
-    {
-        "doctype": "Print Format",
-        "filters": [
-            [
-                "name",
-                "in",
-                [
-                    "Well City Bracode",
-                    "Well Care Barcode",
-                    "Budaiya",
-                    "Well City",
+    # {
+    #     "doctype": "Print Format",
+    #     "filters": [
+    #         [
+    #             "name",
+    #             "in",
+    #             [
+    #                 "Well City Bracode",
+    #                 "Well Care Barcode",
+    #                 "Budaiya",
+    #                 "Well City",
                    
-                ],
-            ]
-        ],
-    },
+    #             ],
+    #         ]
+    #     ],
+    # },
 ]
 
 # Home Pages
