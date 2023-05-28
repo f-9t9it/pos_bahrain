@@ -18,9 +18,10 @@ def validate(doc, method):
         doc.is_pos
         and not doc.is_return
         and not doc.amended_from
+   
         and frappe.db.exists(
             "Sales Invoice",
-            { "name": ("!=", doc.name)},
+            {"name": ("!=", doc.name)},
         )
     ):
         frappe.throw("Cannot create duplicate offline POS invoice")
