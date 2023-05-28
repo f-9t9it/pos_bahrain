@@ -437,9 +437,7 @@ scheduler_events = {
 
 # before_tests = "pos_bahrain.install.before_tests"
 # Overrding Class
-# override_doctype_class = {
-#     "Sales Invoice": "pos_bahrain.api.sales_invoice.CustomAccountsController"
-# }
+
 # Overriding Whitelisted Methods
 # ------------------------------
 #
