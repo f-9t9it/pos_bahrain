@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "creation": "2019-01-02 21:55:28.125034",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -36,6 +37,8 @@
   "sync_limit",
   "pos_col",
   "enforce_full_payment",
+  "enforce_full_payment_in_sales_invoice",
+  "select_role_for_this_restriction",
   "pos_cart_sec",
   "use_custom_item_cart",
   "cart_fields",
@@ -453,10 +456,25 @@
    "fieldname": "disable_serial_no_and_batch_selector",
    "fieldtype": "Check",
    "label": "Disable Serial No And Batch Selector"
+  },
+  {
+   "default": "0",
+   "fieldname": "enforce_full_payment_in_sales_invoice",
+   "fieldtype": "Check",
+   "label": "Enforce Full Payment In Sales Invoice"
+  },
+  {
+   "depends_on": "eval:doc.enforce_full_payment_in_sales_invoice == 1",
+   "fieldname": "select_role_for_this_restriction",
+   "fieldtype": "Link",
+   "label": "Select Role For This Restriction",
+   "mandatory_depends_on": "eval:doc.enforce_full_payment_in_sales_invoice == 1",
+   "options": "Role"
   }
  ],
  "issingle": 1,
- "modified": "2023-03-12 14:24:23.977348",
+ "links": [],
+ "modified": "2023-05-27 08:22:48.714941",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
  "name": "POS Bahrain Settings",
