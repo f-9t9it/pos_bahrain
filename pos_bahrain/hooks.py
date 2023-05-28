@@ -437,9 +437,7 @@ scheduler_events = {
 
 # before_tests = "pos_bahrain.install.before_tests"
 # Overrding Class
-override_doctype_class = {
-    "POS Closing Shift": "pos_bahrain.core_overrides.pos_closing_shift.POSClosingShift"
-}
+
 # Overriding Whitelisted Methods
 # ------------------------------
 #
