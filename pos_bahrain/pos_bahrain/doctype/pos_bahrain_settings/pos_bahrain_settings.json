@@ -1,480 +1,497 @@
 {
- "creation": "2019-01-02 21:55:28.125034",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "general_sec",
-  "use_batch_price",
-  "use_barcode_uom",
-  "manage_batch",
-  "use_item_storage_location",
-  "hide_sales_return_except",
-  "hide_sales_return_role",
-  "gen_col",
-  "show_sales_employee",
-  "disable_standard_pf",
-  "default_supplier_items_limit",
-  "price_list_section",
-  "apply_offer_pricelist",
-  "column_break_3",
-  "discount_on_retail",
-  "retail_price_list",
-  "wholesale_price_list",
-  "valuation_price_list",
-  "valuation_warehouse",
-  "minimum_price_list_section",
-  "use_minimum_price_list",
-  "minimum_doc",
-  "column_break_18",
-  "minimum_price_list",
-  "pos_sec",
-  "do_not_allow_zero_payment",
-  "use_stock_validator",
-  "allow_returns",
-  "override_sync_limit",
-  "sync_limit",
-  "pos_col",
-  "enforce_full_payment",
-  "pos_cart_sec",
-  "use_custom_item_cart",
-  "cart_fields",
-  "reports_sec",
-  "use_daily_email",
-  "manager_email",
-  "include_report_generation_time",
-  "reports_col",
-  "vat_tax_categories",
-  "section_break_17",
-  "partners",
-  "column_break_42",
-  "payments",
-  "item_section",
-  "transit_warehouse",
-  "section_break_46",
-  "enable_jv_concept",
-  "credit_note_provision_account",
-  "prepend_return_pos_name",
-  "column_break_49",
-  "return_series",
-  "jv_credit_note_series",
-  "misc_settings_section",
-  "enable_custom_item_description_fields",
-  "add_pos_profile_and_branch_to_payment_entry",
-  "column_break_53",
-  "enable_custom_customer_contact_details",
-  "do_not_delete_batch_with_purchase_receipt",
-  "section_break_60",
-  "journa_entry_cancel_with_payment_reco",
-  "cancel_credit_note_jv",
-  "column_break_62",
-  "customer",
-  "disable_serial_no_and_batch_selector"
- ],
- "fields": [
-  {
-   "fieldname": "general_sec",
-   "fieldtype": "Section Break",
-   "label": "General"
-  },
-  {
-   "default": "0",
-   "description": "Batch form contains a Rate or Discount which will be used to override existing Rate (but not the Price List Rate) in Sales Invoice, Sales Order and offline POS",
-   "fieldname": "use_batch_price",
-   "fieldtype": "Check",
-   "label": "Use Batch-wise Item Price"
-  },
-  {
-   "default": "0",
-   "description": "The Barcode table in Item form contains a UOM which will be used to set UOM in Sales Order, Sales Invoice and offline POS",
-   "fieldname": "use_barcode_uom",
-   "fieldtype": "Check",
-   "label": "Use Barcode to fetch UOM"
-  },
-  {
-   "default": "0",
-   "description": "Item table in Purchase Receipt and Purchase Invoice contains an Expiry Date field which will be used to create a new Batch or use an existing one",
-   "fieldname": "manage_batch",
-   "fieldtype": "Check",
-   "label": "Auto-manage Batch during Purchase"
-  },
-  {
-   "fieldname": "gen_col",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "description": "This will render a Sales Employee field in Sales Invoice and POS",
-   "fieldname": "show_sales_employee",
-   "fieldtype": "Check",
-   "label": "Show Sales Employee Field"
-  },
-  {
-   "description": "Number of <strong>Items</strong> to fetch from the Supplier Items button in <strong>Purchase Order</strong>. Default is <code>100</code>",
-   "fieldname": "default_supplier_items_limit",
-   "fieldtype": "Int",
-   "label": "Default Supplier Items Limit"
-  },
-  {
-   "fieldname": "price_list_section",
-   "fieldtype": "Section Break",
-   "label": "Price Lists"
-  },
-  {
-   "default": "0",
-   "description": "Enabling this will calculate make discount calculations in Sales Invoice and Sales Order based off of the Retail Price",
-   "fieldname": "discount_on_retail",
-   "fieldtype": "Check",
-   "label": "Calculate Discount on Retail"
-  },
-  {
-   "fieldname": "column_break_3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "retail_price_list",
-   "fieldtype": "Link",
-   "label": "Retail Price List",
-   "options": "Price List"
-  },
-  {
-   "fieldname": "wholesale_price_list",
-   "fieldtype": "Link",
-   "label": "Wholesale Price List",
-   "options": "Price List"
-  },
-  {
-   "description": "This <strong>Item Price</strong> of this <strong>Price List</strong> will follow the <code>valuation_rate</code>",
-   "fieldname": "valuation_price_list",
-   "fieldtype": "Link",
-   "label": "Valuation Price List",
-   "options": "Price List"
-  },
-  {
-   "depends_on": "valuation_price_list",
-   "description": "<strong>Item Price</strong> will update based on <code>valuation_rate</code> of this",
-   "fieldname": "valuation_warehouse",
-   "fieldtype": "Link",
-   "label": "Valuation Warehouse",
-   "options": "Warehouse"
-  },
-  {
-   "fieldname": "pos_sec",
-   "fieldtype": "Section Break",
-   "label": "POS"
-  },
-  {
-   "default": "0",
-   "description": "Enable this will to invalidate POS sales transactions when its Paid Amount is zero",
-   "fieldname": "do_not_allow_zero_payment",
-   "fieldtype": "Check",
-   "label": "Do Not Allow Zero Payment"
-  },
-  {
-   "default": "0",
-   "description": "Toggle quantity validation under POS",
-   "fieldname": "use_stock_validator",
-   "fieldtype": "Check",
-   "label": "Use Stock Validator"
-  },
-  {
-   "default": "0",
-   "description": "Enable this to make return invoices from POS",
-   "fieldname": "allow_returns",
-   "fieldtype": "Check",
-   "label": "Allow Returns"
-  },
-  {
-   "default": "0",
-   "fieldname": "override_sync_limit",
-   "fieldtype": "Check",
-   "label": "Override Sync Limit"
-  },
-  {
-   "description": "Core implements syncing up to 49 invoices.",
-   "fieldname": "sync_limit",
-   "fieldtype": "Int",
-   "label": "Sync Limit"
-  },
-  {
-   "fieldname": "pos_col",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "description": "Enable this to prevent partially paid invoices to be created.",
-   "fieldname": "enforce_full_payment",
-   "fieldtype": "Check",
-   "label": "Enforce Full Payment"
-  },
-  {
-   "fieldname": "pos_cart_sec",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "0",
-   "description": "Using the table below, the given fields will be displayed on POS",
-   "fieldname": "use_custom_item_cart",
-   "fieldtype": "Check",
-   "label": "Use Custom Item Cart"
-  },
-  {
-   "fieldname": "cart_fields",
-   "fieldtype": "Table",
-   "options": "POS Bahrain Settings Cart Fields"
-  },
-  {
-   "fieldname": "reports_sec",
-   "fieldtype": "Section Break",
-   "label": "Reports"
-  },
-  {
-   "default": "0",
-   "description": "Use Daily Email feature that sends Gross Profit report to specified manager's email",
-   "fieldname": "use_daily_email",
-   "fieldtype": "Check",
-   "label": "Use Daily Email"
-  },
-  {
-   "fieldname": "manager_email",
-   "fieldtype": "Data",
-   "label": "Manager Email"
-  },
-  {
-   "fieldname": "reports_col",
-   "fieldtype": "Column Break"
-  },
-  {
-   "description": "VAT Tax Categories",
-   "fieldname": "vat_tax_categories",
-   "fieldtype": "Table",
-   "label": "VAT Tax Categories",
-   "options": "POS Bahrain Settings Tax Category"
-  },
-  {
-   "fieldname": "section_break_17",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "payments",
-   "fieldtype": "Table",
-   "options": "POS Bahrain Settings MOP"
-  },
-  {
-   "default": "0",
-   "description": "Know where your items are stored",
-   "fieldname": "use_item_storage_location",
-   "fieldtype": "Check",
-   "label": "Use Item Storage Location"
-  },
-  {
-   "fieldname": "item_section",
-   "fieldtype": "Section Break",
-   "label": "Item"
-  },
-  {
-   "fieldname": "transit_warehouse",
-   "fieldtype": "Link",
-   "label": "Transit Warehouse",
-   "options": "Warehouse"
-  },
-  {
-   "default": "0",
-   "description": "Enabling this will prevent save on sales document below a selected minimum price list",
-   "fieldname": "use_minimum_price_list",
-   "fieldtype": "Check",
-   "label": "Use Minimum Price List"
-  },
-  {
-   "fieldname": "minimum_price_list",
-   "fieldtype": "Link",
-   "label": "Minimum Price List",
-   "options": "Price List"
-  },
-  {
-   "fieldname": "minimum_price_list_section",
-   "fieldtype": "Section Break",
-   "label": "Minimum Price List"
-  },
-  {
-   "fieldname": "column_break_18",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "minimum_doc",
-   "fieldtype": "Table",
-   "options": "POS Bahrain Settings Minimum Doc"
-  },
-  {
-   "default": "0",
-   "fieldname": "disable_standard_pf",
-   "fieldtype": "Check",
-   "label": "Disable Standard Print Format"
-  },
-  {
-   "default": "0",
-   "description": "Hide Sales Return except the selected role",
-   "fieldname": "hide_sales_return_except",
-   "fieldtype": "Check",
-   "label": "Hide Sales Return Except"
-  },
-  {
-   "depends_on": "hide_sales_return_except",
-   "fieldname": "hide_sales_return_role",
-   "fieldtype": "Link",
-   "label": "Hide Sales Return Role",
-   "options": "Role"
-  },
-  {
-   "fieldname": "partners",
-   "fieldtype": "Table",
-   "label": "Partners",
-   "options": "POS Bahrain Settings Partner"
-  },
-  {
-   "fieldname": "column_break_42",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_46",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "0",
-   "description": "<code>RET-</code> will be prepended to <strong>Offline POS Name</strong> field in order to pass the <code>UNIQUE</code> constraint",
-   "fieldname": "prepend_return_pos_name",
-   "fieldtype": "Check",
-   "label": "Prepend Return POS Name"
-  },
-  {
-   "depends_on": "enable_jv_concept",
-   "fieldname": "credit_note_provision_account",
-   "fieldtype": "Link",
-   "label": "Provision Account for Credit Note",
-   "options": "Account"
-  },
-  {
-   "fieldname": "column_break_49",
-   "fieldtype": "Column Break"
-  },
-  {
-   "description": "This is the only allowed <code>naming_series</code> for the Sales Invoice Credit Note",
-   "fieldname": "return_series",
-   "fieldtype": "Data",
-   "label": "Return Series"
-  },
-  {
-   "default": "0",
-   "fieldname": "enable_custom_item_description_fields",
-   "fieldtype": "Check",
-   "label": "Enable Custom Item Description Fields"
-  },
-  {
-   "fieldname": "misc_settings_section",
-   "fieldtype": "Section Break",
-   "label": "Misc Settings"
-  },
-  {
-   "fieldname": "column_break_53",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "enable_custom_customer_contact_details",
-   "fieldtype": "Check",
-   "label": "Enable custom customer contact details"
-  },
-  {
-   "depends_on": "enable_jv_concept",
-   "fieldname": "jv_credit_note_series",
-   "fieldtype": "Select",
-   "label": "JV Credit Note Series",
-   "options": "\nCDN.######"
-  },
-  {
-   "default": "0",
-   "fieldname": "add_pos_profile_and_branch_to_payment_entry",
-   "fieldtype": "Check",
-   "label": "Add POS Profile and Branch to Payment Entry"
-  },
-  {
-   "default": "0",
-   "fieldname": "do_not_delete_batch_with_purchase_receipt",
-   "fieldtype": "Check",
-   "label": "Do Not Delete Batch with Purchase Receipt and Purchase Invoice"
-  },
-  {
-   "default": "0",
-   "fieldname": "enable_jv_concept",
-   "fieldtype": "Check",
-   "label": "Enable JV Concept"
-  },
-  {
-   "description": "Price list restrictions on Sales Order Item,Sales Invoice Item",
-   "fieldname": "apply_offer_pricelist",
-   "fieldtype": "Table",
-   "label": "Pricelists for Item",
-   "options": "Apply Offer Pricelist"
-  },
-  {
-   "fieldname": "section_break_60",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "journa_entry_cancel_with_payment_reco",
-   "fieldtype": "Check",
-   "label": "Journal Entry Cancel With Payment Reco"
-  },
-  {
-   "fieldname": "column_break_62",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "journa_entry_cancel_with_payment_reco",
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "label": "Customer",
-   "options": "Customer"
-  },
-  {
-   "depends_on": "journa_entry_cancel_with_payment_reco",
-   "fieldname": "cancel_credit_note_jv",
-   "fieldtype": "Button",
-   "label": "Cancel Credit Note JV"
-  },
-  {
-   "fieldname": "include_report_generation_time",
-   "fieldtype": "Data",
-   "label": "include_report_generation_time"
-  },
-  {
-   "default": "1",
-   "fieldname": "disable_serial_no_and_batch_selector",
-   "fieldtype": "Check",
-   "label": "Disable Serial No And Batch Selector"
-  }
- ],
- "issingle": 1,
- "modified": "2023-03-12 14:24:23.977348",
- "modified_by": "Administrator",
- "module": "Pos Bahrain",
- "name": "POS Bahrain Settings",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "quick_entry": 1,
- "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
-}
+    "creation": "2019-01-02 21:55:28.125034",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+     "general_sec",
+     "use_batch_price",
+     "use_barcode_uom",
+     "manage_batch",
+     "use_item_storage_location",
+     "hide_sales_return_except",
+     "hide_sales_return_role",
+     "gen_col",
+     "show_sales_employee",
+     "disable_standard_pf",
+     "default_supplier_items_limit",
+     "price_list_section",
+     "apply_offer_pricelist",
+     "column_break_3",
+     "discount_on_retail",
+     "retail_price_list",
+     "wholesale_price_list",
+     "valuation_price_list",
+     "valuation_warehouse",
+     "minimum_price_list_section",
+     "use_minimum_price_list",
+     "minimum_doc",
+     "column_break_18",
+     "minimum_price_list",
+     "pos_sec",
+     "do_not_allow_zero_payment",
+     "use_stock_validator",
+     "allow_returns",
+     "override_sync_limit",
+     "sync_limit",
+     "pos_col",
+     "enforce_full_payment",
+     "enforce_full_payment_in_sales_invoice",
+     "select_role_for_this_restriction",
+     "pos_cart_sec",
+     "use_custom_item_cart",
+     "cart_fields",
+     "reports_sec",
+     "use_daily_email",
+     "manager_email",
+     "include_report_generation_time",
+     "reports_col",
+     "vat_tax_categories",
+     "section_break_17",
+     "partners",
+     "column_break_42",
+     "payments",
+     "item_section",
+     "transit_warehouse",
+     "section_break_46",
+     "enable_jv_concept",
+     "credit_note_provision_account",
+     "prepend_return_pos_name",
+     "column_break_49",
+     "return_series",
+     "jv_credit_note_series",
+     "misc_settings_section",
+     "enable_custom_item_description_fields",
+     "add_pos_profile_and_branch_to_payment_entry",
+     "column_break_53",
+     "enable_custom_customer_contact_details",
+     "do_not_delete_batch_with_purchase_receipt",
+     "section_break_60",
+     "journa_entry_cancel_with_payment_reco",
+     "cancel_credit_note_jv",
+     "column_break_62",
+     "customer",
+     "disable_serial_no_and_batch_selector"
+    ],
+    "fields": [
+     {
+      "fieldname": "general_sec",
+      "fieldtype": "Section Break",
+      "label": "General"
+     },
+     {
+      "default": "0",
+      "description": "Batch form contains a Rate or Discount which will be used to override existing Rate (but not the Price List Rate) in Sales Invoice, Sales Order and offline POS",
+      "fieldname": "use_batch_price",
+      "fieldtype": "Check",
+      "label": "Use Batch-wise Item Price"
+     },
+     {
+      "default": "0",
+      "description": "The Barcode table in Item form contains a UOM which will be used to set UOM in Sales Order, Sales Invoice and offline POS",
+      "fieldname": "use_barcode_uom",
+      "fieldtype": "Check",
+      "label": "Use Barcode to fetch UOM"
+     },
+     {
+      "default": "0",
+      "description": "Item table in Purchase Receipt and Purchase Invoice contains an Expiry Date field which will be used to create a new Batch or use an existing one",
+      "fieldname": "manage_batch",
+      "fieldtype": "Check",
+      "label": "Auto-manage Batch during Purchase"
+     },
+     {
+      "fieldname": "gen_col",
+      "fieldtype": "Column Break"
+     },
+     {
+      "default": "0",
+      "description": "This will render a Sales Employee field in Sales Invoice and POS",
+      "fieldname": "show_sales_employee",
+      "fieldtype": "Check",
+      "label": "Show Sales Employee Field"
+     },
+     {
+      "description": "Number of <strong>Items</strong> to fetch from the Supplier Items button in <strong>Purchase Order</strong>. Default is <code>100</code>",
+      "fieldname": "default_supplier_items_limit",
+      "fieldtype": "Int",
+      "label": "Default Supplier Items Limit"
+     },
+     {
+      "fieldname": "price_list_section",
+      "fieldtype": "Section Break",
+      "label": "Price Lists"
+     },
+     {
+      "default": "0",
+      "description": "Enabling this will calculate make discount calculations in Sales Invoice and Sales Order based off of the Retail Price",
+      "fieldname": "discount_on_retail",
+      "fieldtype": "Check",
+      "label": "Calculate Discount on Retail"
+     },
+     {
+      "fieldname": "column_break_3",
+      "fieldtype": "Column Break"
+     },
+     {
+      "fieldname": "retail_price_list",
+      "fieldtype": "Link",
+      "label": "Retail Price List",
+      "options": "Price List"
+     },
+     {
+      "fieldname": "wholesale_price_list",
+      "fieldtype": "Link",
+      "label": "Wholesale Price List",
+      "options": "Price List"
+     },
+     {
+      "description": "This <strong>Item Price</strong> of this <strong>Price List</strong> will follow the <code>valuation_rate</code>",
+      "fieldname": "valuation_price_list",
+      "fieldtype": "Link",
+      "label": "Valuation Price List",
+      "options": "Price List"
+     },
+     {
+      "depends_on": "valuation_price_list",
+      "description": "<strong>Item Price</strong> will update based on <code>valuation_rate</code> of this",
+      "fieldname": "valuation_warehouse",
+      "fieldtype": "Link",
+      "label": "Valuation Warehouse",
+      "options": "Warehouse"
+     },
+     {
+      "fieldname": "pos_sec",
+      "fieldtype": "Section Break",
+      "label": "POS"
+     },
+     {
+      "default": "0",
+      "description": "Enable this will to invalidate POS sales transactions when its Paid Amount is zero",
+      "fieldname": "do_not_allow_zero_payment",
+      "fieldtype": "Check",
+      "label": "Do Not Allow Zero Payment"
+     },
+     {
+      "default": "0",
+      "description": "Toggle quantity validation under POS",
+      "fieldname": "use_stock_validator",
+      "fieldtype": "Check",
+      "label": "Use Stock Validator"
+     },
+     {
+      "default": "0",
+      "description": "Enable this to make return invoices from POS",
+      "fieldname": "allow_returns",
+      "fieldtype": "Check",
+      "label": "Allow Returns"
+     },
+     {
+      "default": "0",
+      "fieldname": "override_sync_limit",
+      "fieldtype": "Check",
+      "label": "Override Sync Limit"
+     },
+     {
+      "description": "Core implements syncing up to 49 invoices.",
+      "fieldname": "sync_limit",
+      "fieldtype": "Int",
+      "label": "Sync Limit"
+     },
+     {
+      "fieldname": "pos_col",
+      "fieldtype": "Column Break"
+     },
+     {
+      "default": "0",
+      "description": "Enable this to prevent partially paid invoices to be created.",
+      "fieldname": "enforce_full_payment",
+      "fieldtype": "Check",
+      "label": "Enforce Full Payment"
+     },
+     {
+      "fieldname": "pos_cart_sec",
+      "fieldtype": "Section Break"
+     },
+     {
+      "default": "0",
+      "description": "Using the table below, the given fields will be displayed on POS",
+      "fieldname": "use_custom_item_cart",
+      "fieldtype": "Check",
+      "label": "Use Custom Item Cart"
+     },
+     {
+      "fieldname": "cart_fields",
+      "fieldtype": "Table",
+      "options": "POS Bahrain Settings Cart Fields"
+     },
+     {
+      "fieldname": "reports_sec",
+      "fieldtype": "Section Break",
+      "label": "Reports"
+     },
+     {
+      "default": "0",
+      "description": "Use Daily Email feature that sends Gross Profit report to specified manager's email",
+      "fieldname": "use_daily_email",
+      "fieldtype": "Check",
+      "label": "Use Daily Email"
+     },
+     {
+      "fieldname": "manager_email",
+      "fieldtype": "Data",
+      "label": "Manager Email"
+     },
+     {
+      "fieldname": "reports_col",
+      "fieldtype": "Column Break"
+     },
+     {
+      "description": "VAT Tax Categories",
+      "fieldname": "vat_tax_categories",
+      "fieldtype": "Table",
+      "label": "VAT Tax Categories",
+      "options": "POS Bahrain Settings Tax Category"
+     },
+     {
+      "fieldname": "section_break_17",
+      "fieldtype": "Section Break"
+     },
+     {
+      "fieldname": "payments",
+      "fieldtype": "Table",
+      "options": "POS Bahrain Settings MOP"
+     },
+     {
+      "default": "0",
+      "description": "Know where your items are stored",
+      "fieldname": "use_item_storage_location",
+      "fieldtype": "Check",
+      "label": "Use Item Storage Location"
+     },
+     {
+      "fieldname": "item_section",
+      "fieldtype": "Section Break",
+      "label": "Item"
+     },
+     {
+      "fieldname": "transit_warehouse",
+      "fieldtype": "Link",
+      "label": "Transit Warehouse",
+      "options": "Warehouse"
+     },
+     {
+      "default": "0",
+      "description": "Enabling this will prevent save on sales document below a selected minimum price list",
+      "fieldname": "use_minimum_price_list",
+      "fieldtype": "Check",
+      "label": "Use Minimum Price List"
+     },
+     {
+      "fieldname": "minimum_price_list",
+      "fieldtype": "Link",
+      "label": "Minimum Price List",
+      "options": "Price List"
+     },
+     {
+      "fieldname": "minimum_price_list_section",
+      "fieldtype": "Section Break",
+      "label": "Minimum Price List"
+     },
+     {
+      "fieldname": "column_break_18",
+      "fieldtype": "Column Break"
+     },
+     {
+      "fieldname": "minimum_doc",
+      "fieldtype": "Table",
+      "options": "POS Bahrain Settings Minimum Doc"
+     },
+     {
+      "default": "0",
+      "fieldname": "disable_standard_pf",
+      "fieldtype": "Check",
+      "label": "Disable Standard Print Format"
+     },
+     {
+      "default": "0",
+      "description": "Hide Sales Return except the selected role",
+      "fieldname": "hide_sales_return_except",
+      "fieldtype": "Check",
+      "label": "Hide Sales Return Except"
+     },
+     {
+      "depends_on": "hide_sales_return_except",
+      "fieldname": "hide_sales_return_role",
+      "fieldtype": "Link",
+      "label": "Hide Sales Return Role",
+      "options": "Role"
+     },
+     {
+      "fieldname": "partners",
+      "fieldtype": "Table",
+      "label": "Partners",
+      "options": "POS Bahrain Settings Partner"
+     },
+     {
+      "fieldname": "column_break_42",
+      "fieldtype": "Column Break"
+     },
+     {
+      "fieldname": "section_break_46",
+      "fieldtype": "Section Break"
+     },
+     {
+      "default": "0",
+      "description": "<code>RET-</code> will be prepended to <strong>Offline POS Name</strong> field in order to pass the <code>UNIQUE</code> constraint",
+      "fieldname": "prepend_return_pos_name",
+      "fieldtype": "Check",
+      "label": "Prepend Return POS Name"
+     },
+     {
+      "depends_on": "enable_jv_concept",
+      "fieldname": "credit_note_provision_account",
+      "fieldtype": "Link",
+      "label": "Provision Account for Credit Note",
+      "options": "Account"
+     },
+     {
+      "fieldname": "column_break_49",
+      "fieldtype": "Column Break"
+     },
+     {
+      "description": "This is the only allowed <code>naming_series</code> for the Sales Invoice Credit Note",
+      "fieldname": "return_series",
+      "fieldtype": "Data",
+      "label": "Return Series"
+     },
+     {
+      "default": "0",
+      "fieldname": "enable_custom_item_description_fields",
+      "fieldtype": "Check",
+      "label": "Enable Custom Item Description Fields"
+     },
+     {
+      "fieldname": "misc_settings_section",
+      "fieldtype": "Section Break",
+      "label": "Misc Settings"
+     },
+     {
+      "fieldname": "column_break_53",
+      "fieldtype": "Column Break"
+     },
+     {
+      "default": "0",
+      "fieldname": "enable_custom_customer_contact_details",
+      "fieldtype": "Check",
+      "label": "Enable custom customer contact details"
+     },
+     {
+      "depends_on": "enable_jv_concept",
+      "fieldname": "jv_credit_note_series",
+      "fieldtype": "Select",
+      "label": "JV Credit Note Series",
+      "options": "\nCDN.######"
+     },
+     {
+      "default": "0",
+      "fieldname": "add_pos_profile_and_branch_to_payment_entry",
+      "fieldtype": "Check",
+      "label": "Add POS Profile and Branch to Payment Entry"
+     },
+     {
+      "default": "0",
+      "fieldname": "do_not_delete_batch_with_purchase_receipt",
+      "fieldtype": "Check",
+      "label": "Do Not Delete Batch with Purchase Receipt and Purchase Invoice"
+     },
+     {
+      "default": "0",
+      "fieldname": "enable_jv_concept",
+      "fieldtype": "Check",
+      "label": "Enable JV Concept"
+     },
+     {
+      "description": "Price list restrictions on Sales Order Item,Sales Invoice Item",
+      "fieldname": "apply_offer_pricelist",
+      "fieldtype": "Table",
+      "label": "Pricelists for Item",
+      "options": "Apply Offer Pricelist"
+     },
+     {
+      "fieldname": "section_break_60",
+      "fieldtype": "Section Break"
+     },
+     {
+      "default": "0",
+      "fieldname": "journa_entry_cancel_with_payment_reco",
+      "fieldtype": "Check",
+      "label": "Journal Entry Cancel With Payment Reco"
+     },
+     {
+      "fieldname": "column_break_62",
+      "fieldtype": "Column Break"
+     },
+     {
+      "depends_on": "journa_entry_cancel_with_payment_reco",
+      "fieldname": "customer",
+      "fieldtype": "Link",
+      "label": "Customer",
+      "options": "Customer"
+     },
+     {
+      "depends_on": "journa_entry_cancel_with_payment_reco",
+      "fieldname": "cancel_credit_note_jv",
+      "fieldtype": "Button",
+      "label": "Cancel Credit Note JV"
+     },
+     {
+      "fieldname": "include_report_generation_time",
+      "fieldtype": "Data",
+      "label": "include_report_generation_time"
+     },
+     {
+      "default": "1",
+      "fieldname": "disable_serial_no_and_batch_selector",
+      "fieldtype": "Check",
+      "label": "Disable Serial No And Batch Selector"
+     },
+     {
+      "default": "0",
+      "fieldname": "enforce_full_payment_in_sales_invoice",
+      "fieldtype": "Check",
+      "label": "Enforce Full Payment In Sales Invoice"
+     },
+     {
+      "depends_on": "eval:doc.enforce_full_payment_in_sales_invoice == 1",
+      "fieldname": "select_role_for_this_restriction",
+      "fieldtype": "Link",
+      "label": "Select Role For This Restriction",
+      "mandatory_depends_on": "eval:doc.enforce_full_payment_in_sales_invoice == 1",
+      "options": "Role"
+     }
+    ],
+    "issingle": 1,
+    "links": [],
+    "modified": "2023-05-27 08:22:48.714941",
+    "modified_by": "Administrator",
+    "module": "Pos Bahrain",
+    "name": "POS Bahrain Settings",
+    "owner": "Administrator",
+    "permissions": [
+     {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+     }
+    ],
+    "quick_entry": 1,
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+   }
