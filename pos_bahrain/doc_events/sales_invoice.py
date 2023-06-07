@@ -603,5 +603,5 @@ def enforce_full_payment(doc):
     user_logged_roles = frappe.get_roles(frappe.session.user)
     if enforce_payment == 1 and user_role not in user_logged_roles:
         if doc.grand_total != doc.total_advance and doc.outstanding_amount != 0 and doc.is_return != 1:
-            return frappe.throw("Your Roles Do not  Allow you to Create an Invoice With an Oustanding Amount")
+            return frappe.throw("Not allowed to make Sales Invoice without full payment")
         
