@@ -72,7 +72,14 @@ def _update_contact_phones(customers_list):
 
             phone = data.get("phone")
             phone_nos = [x.phone for x in contact_doc.phone_nos]
-            if phone not in phone_nos:
-                contact_doc.add_phone(phone)
+            is_exist = False
 
-            contact_doc.save(ignore_permissions=True)
+            # check the contact child table in Customer
+            if len(contact_doc.phone_nos) > 0:
+                for contact_number in contact_doc.phone_nos:
+                    if str(phone) == str(contact_number.phone):
+                        is_exist = True
+                # append phone if does not exist in the Table
+                if is_exist is False:
+                    contact_doc.add_phone(phone)
+                    contact_doc.save(ignore_permissions=True)
