@@ -1,0 +1,28 @@
+diff --git a/pos_bahrain/api/pos.py b/pos_bahrain/api/pos.py
+index b9acf43..172e2bf 100644
+--- a/pos_bahrain/api/pos.py
++++ b/pos_bahrain/api/pos.py
+@@ -71,8 +71,19 @@ def _update_contact_phones(customers_list):
+             contact_doc = frappe.get_doc("Contact", contact_name)
+ 
+             phone = data.get("phone")
+-            phone_nos = [x.phone for x in contact_doc.phone_nos]
+-            if phone not in phone_nos:
+-                contact_doc.add_phone(phone)
++            # phone_nos = [x.phone for x in contact_doc.phone_nos]
++            is_exist = False
++            if len(contact_doc.phone_nos) > 0:
++                for contact_number in contact_doc.phone_nos:
++                    if phone == contact_number.phone:
++                        is_exist = True
+ 
+-            contact_doc.save(ignore_permissions=True)
++                if is_exist:
++                    contact_doc.add_phone(phone)
++                    contact_doc.save(ignore_permissions=True)
++
++
++            # if phone not in phone_nos:
++            #     contact_doc.add_phone(phone)
++
++            # contact_doc.save(ignore_permissions=True)

@@ -19,8 +19,9 @@ def get_user_warehouse():
 
 @frappe.whitelist()
 def validate_contact(doc, method):
-    contact_phone_exists = frappe.db.exists("Contact Phone", {"parent": doc.name})
-    frappe.errprint(f"{contact_phone_exists}")
-    contact_phone_doc = frappe.get_doc("Contact Phone", contact_phone_exists)
-    if not contact_phone_doc.phone.isdigit():
-        frappe.throw("Use numbers only for contact phone")
+    #contact_phone_exists = frappe.db.exists("Contact Phone", {"parent": doc.name})
+    #frappe.errprint(f"{contact_phone_exists}")
+    #contact_phone_doc = frappe.get_doc("Contact Phone", contact_phone_exists)
+    #if not contact_phone_doc.phone.isdigit():
+    #    frappe.throw("Use numbers only for contact phone")
+    return None
