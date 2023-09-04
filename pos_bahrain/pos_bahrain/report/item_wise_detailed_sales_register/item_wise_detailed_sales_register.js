@@ -74,6 +74,11 @@ frappe.query_reports["Item wise detailed sales register"] = {
 			"label": __("Show only discounted sales"),
 			"fieldname": "show_only_discounted_sales",
 			"fieldtype": "Check"
+		},
+		{
+			"label": __("Show buying price"),
+			"fieldname": "show_buying_price",
+			"fieldtype": "Check"
 		}
 	],
 	"formatter": function(value, row, column, data, default_formatter) {
