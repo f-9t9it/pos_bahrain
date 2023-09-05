@@ -358,17 +358,16 @@ def get_columns(additional_table_columns, filters):
 			'hidden': 1
 		}
 	]
-	current_user = frappe.session.user
-
-	if "Accounts Manager" in frappe.get_roles(current_user):
-		columns += [
-			{
+	if filters.get('show_buying_price'):
+		current_user = frappe.session.user
+		if "Accounts Manager" in frappe.get_roles(current_user):
+      
+			columns.append({
 				'label': _('Buying Price'),
 				'fieldname': 'buying_price',
 				'fieldtype': 'Currency',
 				'width': 100
-			},
-		]
+			})
 
 	if filters.get('group_by'):
 		columns.append({
