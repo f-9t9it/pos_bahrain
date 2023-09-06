@@ -451,14 +451,15 @@ def get_standard_prices(item_code):
             for i in item_tax_template.taxes:
                 tax_rate += i.tax_rate
 
-            # Calculate Selling Price after VAT
-            selling_price = get_price(selling_price_list)
-            if selling_price is None:
-                selling_price = 0  # Set to zero if selling price is None
-            selling_price_with_vat = selling_price * (1 + tax_rate / 100)
+            # Initialize selling_price before the if statement
+            if selling_price_list:
+                selling_price = get_price(selling_price_list)
+                if selling_price is None:
+                    selling_price = 0  # Set to zero if selling price is None
+                selling_price_with_vat = selling_price * (1 + tax_rate / 100)
 
     return {
-        "selling_price": selling_price,
+        "selling_price": get_price(selling_price_list),
         "buying_price": get_price(buying_price_list),
         "selling_price_with_vat": selling_price_with_vat,
     }
