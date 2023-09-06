@@ -434,6 +434,11 @@ scheduler_events = {
 
 # Testing
 # -------
+override_doctype_class = {
+	"Purchase Receipt": "pos_bahrain.core_overrides.purchase_receipt_override.CustomStockController",
+	"Purchase Invoice": "pos_bahrain.core_overrides.purchase_receipt_override.CustomStockController",
+}
+
 
 # before_tests = "pos_bahrain.install.before_tests"
 # Overrding Class

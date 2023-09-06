@@ -16,14 +16,12 @@ function _apply_pb_discount_percentage(doctype) {
 function _apply_pb_discount_percentage_on_item_code(doctype) {
   frappe.ui.form.on(doctype, {
     item_code: function (frm, cdt, cdn) {
-      setTimeout(function () {
-        frappe.model.set_value(
-          cdt,
-          cdn,
-          'discount_percentage',
-          frm.doc.pb_discount_percentage
-        );
-      }, 300);
+      frappe.model.set_value(
+        cdt,
+        cdn,
+        'discount_percentage',
+        frm.doc.pb_discount_percentage
+      );
     },
   });
 }
@@ -36,6 +34,7 @@ function _apply_pb_discount_percentage_on_item_code(doctype) {
   'Sales Order Item',
   'Sales Invoice Item',
 ].forEach((doctype) => _apply_pb_discount_percentage_on_item_code(doctype));
+
 
 function _apply_pricelist(doctype) {
   frappe.ui.form.on(doctype, {
