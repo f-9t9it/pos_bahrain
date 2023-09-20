@@ -13,10 +13,40 @@ frappe.ui.form.on('Sales Invoice', {
     _set_customer_account_balance(frm);
   },
   validate: function(frm){
+    set_discount(frm)
     check_duplicate(frm);
   }
  
 });
+
+function set_discount(frm){
+  if(frm.doc.is_return == 1){
+    frappe.call({
+      method: "pos_bahrain.doc_events.sales_invoice.set_discount_on_return",
+      args: {
+        doc: frm.doc.return_against
+      },
+      callback: function (r) {
+        console.log(r.message)
+        if (r.message != 0) {
+          match_set_discount(frm, r.message)
+        }
+      }
+    })
+  }
+}
+
+function match_set_discount(frm, data){
+  frm.doc.items.forEach((row)=>{
+      data.items.forEach((i)=>{
+        console.log(row,i)
+          if (i.item_code == row.item_code){
+              frappe.model.set_value("Sales Invoice Item", row.name, "discount_percentage", i.discount_percentage);
+          }
+      })
+      frm.refresh_field("items");
+  })
+}
 
 frappe.ui.form.on('Sales Invoice Item', {
   item_code: function (frm, cdt, cdn) {
