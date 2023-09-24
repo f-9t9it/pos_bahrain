@@ -93,6 +93,7 @@ def _execute(filters=None, additional_table_columns=None, additional_query_colum
 			'brand': brand,
 			'supplier': d.supplier,
 			'total_discount': d.total_discount,
+			'warehouse':d.warehouse,
 		})
 
 		if d.stock_uom != d.uom and d.stock_qty:
@@ -175,6 +176,12 @@ def get_columns(additional_table_columns, filters):
 		])
 
 	columns.extend([
+     	{
+            "fieldname": "warehouse",
+            "label": _("Warehouse"),
+            "fieldtype": "Link",
+            "options": "Warehouse"
+        },
 		{
 			'label': _('Supplier'),
 			'fieldname': 'supplier',
@@ -259,14 +266,7 @@ def get_columns(additional_table_columns, filters):
 			'fieldtype': 'Link',
 			'options': 'Brand',
 			'width': 80
-		},
-		{
-			'label': _('Supplier'),
-			'fieldname': 'default_supplier',
-			'fieldtype': 'Link',
-			'options': 'Supplier',
-			'width': 80
-		},
+		}
 	]
 
 	""" if filters.get('group_by') != 'Terriotory':
@@ -415,8 +415,12 @@ def get_conditions(filters):
 	if filters.get("pb_discount_percentage"):
 		conditions +=  """and ifnull(`tabSales Invoice Item`.discount_percentage, '') = %(pb_discount_percentage)s"""
 
-	#if filters.get("supplier"):
-	#	conditions +=  """and ifnull(`tabSales Invoice Item`.name, '') = %(supplier)s"""
+	if filters.get("supplier"):
+		conditions += """ AND EXISTS (
+			SELECT name FROM `tabItem Default`
+			WHERE parent = `tabSales Invoice Item`.item_code
+				AND IFNULL(default_supplier, '') = %(supplier)s
+		)"""
 
 	if not filters.get("group_by"):
 		conditions += "ORDER BY `tabSales Invoice`.posting_date desc, `tabSales Invoice Item`.item_group desc"
@@ -435,45 +439,48 @@ def get_group_by_conditions(filters, doctype):
 	elif filters.get("group_by") in ('Customer', 'Customer Group', 'Territory', 'Supplier'):
 		return "ORDER BY `tab{0}`.{1}".format(doctype, frappe.scrub(filters.get('group_by')))
 
+# Inside your get_items function
+
 def get_items(filters, additional_query_columns):
-	conditions = get_conditions(filters)
+    conditions = get_conditions(filters)
 
-	if additional_query_columns:
-		additional_query_columns = ', ' + ', '.join(additional_query_columns)
-	else:
-		additional_query_columns = ''
+    if additional_query_columns:
+        additional_query_columns = ', ' + ', '.join(additional_query_columns)
+    else:
+        additional_query_columns = ''
 
-	query = frappe.db.sql("""
-		select
-			`tabSales Invoice Item`.name, `tabSales Invoice Item`.parent,
-			`tabSales Invoice`.posting_date, `tabSales Invoice`.debit_to,
-			`tabSales Invoice Item`.discount_percentage, `tabSales Invoice Item`.discount_amount,
-			`tabSales Invoice`.pb_sales_employee, `tabSales Invoice`.pb_sales_employee_name,
-			`tabSales Invoice`.pb_discount_percentage, 
-			`tabSales Invoice`.project, `tabSales Invoice`.customer, `tabSales Invoice`.remarks,
-			`tabSales Invoice`.territory, `tabSales Invoice`.company, `tabSales Invoice`.base_net_total,
-			`tabSales Invoice Item`.item_code, `tabSales Invoice Item`.description,
-			`tabSales Invoice Item`.`item_name`, `tabSales Invoice Item`.`item_group`,
-			`tabSales Invoice Item`.sales_order, `tabSales Invoice Item`.delivery_note,
-			`tabSales Invoice Item`.income_account, `tabSales Invoice Item`.cost_center,
-			`tabSales Invoice Item`.stock_qty, `tabSales Invoice Item`.stock_uom,
-			`tabSales Invoice Item`.stock_qty * `tabSales Invoice Item`.discount_amount AS total_discount,
-			`tabSales Invoice Item`.base_net_rate, `tabSales Invoice Item`.base_net_amount,
-			`tabSales Invoice`.customer_name, `tabSales Invoice`.customer_group, `tabSales Invoice Item`.so_detail,
-			`tabItem Default`.default_supplier as supplier,
-			`tabSales Invoice`.update_stock, `tabSales Invoice Item`.uom, `tabSales Invoice Item`.qty {0},
-			(SELECT ip.price_list_rate FROM `tabItem Price` ip
+    query = frappe.db.sql("""
+        SELECT
+            `tabSales Invoice Item`.name, `tabSales Invoice Item`.parent,
+            `tabSales Invoice`.posting_date, `tabSales Invoice`.debit_to,
+            `tabSales Invoice Item`.discount_percentage, `tabSales Invoice Item`.discount_amount,
+            `tabSales Invoice`.pb_sales_employee, `tabSales Invoice`.pb_sales_employee_name,
+            `tabSales Invoice`.pb_discount_percentage, 
+            `tabSales Invoice`.project, `tabSales Invoice`.customer, `tabSales Invoice`.remarks,
+            `tabSales Invoice`.territory, `tabSales Invoice`.company, `tabSales Invoice`.base_net_total,
+            `tabSales Invoice Item`.item_code, `tabSales Invoice Item`.description,
+            `tabSales Invoice Item`.`item_name`, `tabSales Invoice Item`.`item_group`,
+            `tabSales Invoice Item`.sales_order, `tabSales Invoice Item`.delivery_note,
+            `tabSales Invoice Item`.income_account, `tabSales Invoice Item`.cost_center,
+            `tabSales Invoice Item`.stock_qty, `tabSales Invoice Item`.stock_uom,
+            `tabSales Invoice Item`.stock_qty * `tabSales Invoice Item`.discount_amount AS total_discount,
+            `tabSales Invoice Item`.base_net_rate, `tabSales Invoice Item`.base_net_amount,
+            `tabSales Invoice`.customer_name, `tabSales Invoice`.customer_group, `tabSales Invoice Item`.so_detail,
+            `tabItem Default`.default_supplier as supplier,
+            `tabSales Invoice`.update_stock, `tabSales Invoice Item`.uom, `tabSales Invoice Item`.qty {0},
+            (SELECT ip.price_list_rate FROM `tabItem Price` ip
              WHERE ip.item_code = `tabSales Invoice Item`.item_code
-             AND ip.price_list = 'Standard Buying') AS buying_price
-		from `tabSales Invoice`, `tabSales Invoice Item`
-		LEFT JOIN `tabItem Default`
-				ON (`tabItem Default`.parent = `tabSales Invoice Item`.item_code)
-		where `tabSales Invoice`.name = `tabSales Invoice Item`.parent and `tabItem Default`.company = `tabSales Invoice`.company
-			and `tabSales Invoice`.docstatus = 1 {1}
-		""".format(additional_query_columns or '', conditions), filters, as_dict=1) #nosec4
-	#frappe.msgprint(f"str{query}")
-	# frappe.errprint(query)
-	return query
+             AND ip.price_list = 'Standard Buying') AS buying_price,
+            `tabSales Invoice Item`.warehouse AS warehouse  
+        FROM `tabSales Invoice`, `tabSales Invoice Item`
+        LEFT JOIN `tabItem Default`
+                ON (`tabItem Default`.parent = `tabSales Invoice Item`.item_code)
+        WHERE `tabSales Invoice`.name = `tabSales Invoice Item`.parent and `tabItem Default`.company = `tabSales Invoice`.company
+            and `tabSales Invoice`.docstatus = 1 {1}
+    """.format(additional_query_columns or '', conditions), filters, as_dict=1)  # nosec
+
+    return query
+
 
 def get_delivery_notes_against_sales_order(item_list):
 	so_dn_map = frappe._dict()
