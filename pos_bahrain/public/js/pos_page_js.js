@@ -31,79 +31,6 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 			});
 		}
 	},
-	make_control: function() {
-		this.frm = {}
-		this.frm.doc = this.doc
-		this.set_transaction_defaults("Customer");
-		this.frm.doc["allow_user_to_edit_rate"] = this.pos_profile_data["allow_user_to_edit_rate"] ? true : false;
-		this.frm.doc["allow_user_to_edit_discount"] = this.pos_profile_data["allow_user_to_edit_discount"] ? true : false;
-		this.wrapper.html(frappe.render_template("pos", this.frm.doc));
-		this.make_search();
-		this.make_customer();
-		this.make_list_customers();
-		this.bind_numeric_keypad();
-	},
-	make_search: function () {
-		var me = this;
-		this.search_item = frappe.ui.form.make_control({
-			df: {
-				"fieldtype": "Data",
-				"label": __("Item"),
-				"fieldname": "pos_item",
-				"placeholder": __("Search by item code, serial number, batch no or barcode")
-			},
-			parent: this.wrapper.find(".search-item"),
-			only_input: true,
-		});
-
-		frappe.ui.keys.on('ctrl+i', () => {
-			this.search_item.set_focus();
-		});
-
-		this.search_item.make_input();
-
-		this.search_item.$input.on("keypress", function (event) {
-
-			clearTimeout(me.last_search_timeout);
-			me.last_search_timeout = setTimeout(() => {
-				if((me.search_item.$input.val() != "") || (event.which == 13)) {
-					me.items = me.get_items();
-					me.make_item_list();
-				}
-			}, 400);
-		});
-
-		this.search_item_group = this.wrapper.find('.search-item-group');
-		sorted_item_groups = this.get_sorted_item_groups()
-		var dropdown_html = sorted_item_groups.map(function(item_group) {
-			return "<li><a class='option' data-value='"+item_group+"'>"+item_group+"</a></li>";
-		}).join("");
-
-		this.search_item_group.find('.dropdown-menu').html(dropdown_html);
-
-		this.search_item_group.on('click', '.dropdown-menu a', function() {
-			me.selected_item_group = $(this).attr('data-value');
-			me.search_item_group.find('.dropdown-text').text(me.selected_item_group);
-
-			me.page_len = 20;
-			me.items = me.get_items();
-			me.make_item_list();
-		})
-
-		me.toggle_more_btn();
-
-		this.wrapper.on("click", ".btn-more", function() {
-			me.page_len += 20;
-			me.items = me.get_items();
-			me.make_item_list();
-			me.toggle_more_btn();
-		});
-
-		this.page.wrapper.on("click", ".edit-customer-btn", function() {
-			me.update_customer()
-		})
-	},
-	
 	setinterval_to_sync_master_data: function (delay) {
 		setInterval(async () => {
 			const { message } = await frappe.call({ method: 'frappe.handler.ping' });
@@ -177,18 +104,6 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 			});
 		}
 	},
-	init: function (wrapper) {
-		this.page_len = 20;
-		this.freeze = false;
-		this.page = wrapper.page;
-		this.wrapper = $(wrapper).find('.page-content');
-		this.set_indicator();
-		this.onload();
-		this.make_menu_list();
-		this.bind_events();
-		this.bind_items_event();
-		this.si_docs = this.get_doc_from_localstorage();
-	},
 	show_items_in_item_cart: function () {
 		this._super();
 		this.wrapper
@@ -200,24 +115,6 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 					el.innerText = flt(value, this.precision);
 				}
 			});
-	},
-	bind_events: function() {
-		var me = this;
-		// if form is local then allow this function
-		// $(me.wrapper).find(".pos-item-wrapper").on("click", function () {
-		$(this.wrapper).on("click", ".pos-item-wrapper", function () {
-			me.item_code = '';
-			me.customer_validate();
-			if($(me.pos_bill).is(":hidden")) return;
-
-			if (me.frm.doc.docstatus == 0) {
-				me.items = me.get_items($(this).attr("data-item-code"))
-				me.add_to_cart();
-				me.clear_selected_row();
-			}
-		});
-
-		me.bind_delete_event()
 	},
 	make_menu_list: function () {
 		this._super();
@@ -938,12 +835,12 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		var me = this;
 		var caught = false;
 		var no_of_items = me.wrapper.find(".pos-bill-item").length;
-
-		this.customer_validate();
-		this.mandatory_batch_no();
-		this.validate_serial_no();
-		this.validate_warehouse();
-
+		frappe.run_serially([
+		() => this.customer_validate(),
+		() => this.mandatory_batch_no(),
+		() => this.validate_serial_no(),
+		() => this.validate_warehouse(),
+		])
 		if (no_of_items != 0) {
 			$.each(this.frm.doc["items"] || [], function (i, d) {
 				if (d.item_code == me.items[0].item_code) {
@@ -996,10 +893,11 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 	update_qty: function (item_code, qty, remove_zero_qty_items) {
 		var me = this;
 		this.items = this.get_items(item_code);
-		this.validate_serial_no()
+		// this.validate_serial_no()
 		this.set_item_details(item_code, "qty", qty, remove_zero_qty_items);
 	},
 	set_item_details: function (item_code, field, value, remove_zero_qty_items) {
+		alert("ok")
 		var me = this;
 		if (value < 0) {
 			frappe.throw(__("Enter value must be positive"));
@@ -1008,9 +906,9 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		this.remove_item = []
 		$.each(this.frm.doc["items"] || [], function (i, d) {
 			if (d.item_code == item_code) {
-				if (d.serial_no && field == 'qty') {
-					me.validate_serial_no_qty(d, item_code, field, value)
-				}
+				// if (d.serial_no && field == 'qty') {
+				// 	me.validate_serial_no_qty(d, item_code, field, value)
+				// }
 
 				d[field] = flt(value);
 				d.amount = flt(d.rate) * flt(d.qty);
@@ -1031,11 +929,15 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		this.update_paid_amount_status(false)
 	},
 
-	
-
-	add_new_item_to_grid: function () {
+	add_new_item_to_grid: function (serialNosLength) {
+		// alert()
+		if (serialNosLength > 0){
+			serialNosLength = serialNosLength
+		}else{
+			serialNosLength = 1
+		}
+		
 		var me = this;
-
 		this.child = frappe.model.add_child(this.frm.doc, this.frm.doc.doctype + " Item", "items");
 		this.child.item_code = this.items[0].item_code;
 		this.child.item_name = this.items[0].item_name;
@@ -1045,7 +947,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		this.child.brand = this.items[0].brand;
 		this.child.description = this.items[0].description || this.items[0].item_name;
 		this.child.discount_percentage = 0.0;
-		this.child.qty = 1;
+		this.child.qty = serialNosLength;
 		this.child.item_group = this.items[0].item_group;
 		this.child.cost_center = this.pos_profile_data['cost_center'] || this.items[0].cost_center;
 		this.child.income_account = this.pos_profile_data['income_account'] || this.items[0].income_account;
@@ -1084,6 +986,120 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 			this.add_taxes_from_item_tax_template(this.child.item_tax_rate);
 		}
 	},
+	
+
+	
+	// for fetch multiple serial no !
+	validate_serial_no: function (frm) {
+		var me = this;
+		var cur_batch =  this.item_batch_no[this.items[0].item_code]
+		if (this.items[0].has_serial_no && !this.item_serial_no[this.items[0].item_code]) {
+			frappe.call({
+				method: 'pos_bahrain.api.item.get_serial_numbers',
+				args: {
+					item_code: this.items[0].item_code,
+					batch_no: this.item_batch_no[this.items[0].item_code] // Add batch_no filter
+				},
+				callback: function (r) {
+					
+					if (r.message && r.message.length > 0) {
+						const serialNumbers = r.message;
+	
+						const dialog = new frappe.ui.Dialog({
+							title: __('Select Serial No'),
+							fields: [
+								{
+									fieldtype: 'MultiSelectList',
+									fieldname: 'selected_serial_nos',
+									label: __('Serial Numbers'),
+									options: serialNumbers
+								}
+							],
+							primary_action: function (frm) {
+								const selectedSerialNos = dialog.get_value('selected_serial_nos');
+								const serialNosLength = selectedSerialNos.length; // Get the length
+								frappe.run_serially([
+									() => {
+										$.each(me.frm.doc["items"] || [], function (i, d) {
+											if (d.item_code == me.items[0].item_code && d.batch_no == cur_batch) {
+												
+												d.qty = flt(serialNosLength);
+												d.amount = flt(d.rate) * flt(d.qty);
+									
+											}
+										});
+									},
+									() => {
+										if (selectedSerialNos && serialNosLength > 0) {
+											me.item_serial_no[me.items[0].item_code] = selectedSerialNos;
+								
+											const item = me.frm.doc.items.find(
+												({ item_code }) => item_code === me.items[0].item_code
+											);
+								
+											if (item) {
+												item.serial_no = selectedSerialNos.join('\n');
+											}
+											dialog.hide();
+										}
+									},
+									() => me.refresh()
+								])			
+							}
+						});
+	
+						dialog.show();
+					} else {
+						frappe.msgprint(__('No serial numbers found for this item.'));
+					}
+				}
+			});
+		}
+	},
+	
+
+
+	get_serial_no_lenght: function(){
+		const selectedSerialNos = dialog.get_value('selected_serial_nos');
+		const serialNosLength = selectedSerialNos.length; // Get the length
+		
+
+		if (selectedSerialNos && serialNosLength > 0) {
+			me.item_serial_no[me.items[0].item_code] = selectedSerialNos;
+
+			const item = me.frm.doc.items.find(
+				({ item_code }) => item_code === me.items[0].item_code
+			);
+
+			if (item) {
+				item.serial_no = selectedSerialNos.join('\n');
+			}
+			
+			dialog.hide();
+		}  
+	},
+	
+		
+		// if (this.items && this.items[0].has_serial_no && serial_no == "") {
+		// 	this.refresh();
+		// 	frappe.throw(__(repl("Error: Serial no is mandatory for item %(item)s", {
+		// 		'item': this.items[0].item_code
+		// 	})))
+		// }
+
+		// if (item_code && serial_no) {
+		// 	$.each(this.frm.doc.items, function (index, data) {
+		// 		if (data.item_code == item_code) {
+		// 			if (in_list(data.serial_no.split('\n'), serial_no)) {
+		// 				frappe.throw(__(repl("Serial no %(serial_no)s is already taken", {
+		// 					'serial_no': serial_no
+		// 				})))
+		// 			}
+		// 		}
+		// 	})
+		// }
+	// },
+	
 
 																																																																																																																																																																																																																																																																	
 

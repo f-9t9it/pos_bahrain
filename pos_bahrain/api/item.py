@@ -574,3 +574,17 @@ def get_serial_no_data(pos_profile, company):
             itemwise_serial_no.setdefault(sn.item_code, {})
         itemwise_serial_no[sn.item_code][sn.name] = sn.warehouse
     return itemwise_serial_no
+
+@frappe.whitelist()
+def get_serial_numbers(item_code,batch_no):
+    serial_numbers = frappe.get_all('Serial No',
+									filters={'item_code': item_code,'status':"Active",'batch_no':batch_no},
+        							fields=['name']
+    )
+
+    if serial_numbers:
+        serial_numbers_list = [sn['name'] for sn in serial_numbers]
+        return serial_numbers_list
+    else:
+        frappe.msgprint(_('No serial numbers found for this item.'))
+        return []
