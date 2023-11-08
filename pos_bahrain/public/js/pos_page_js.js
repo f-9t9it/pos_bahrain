@@ -617,6 +617,13 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 
 				},
 				{
+					"label": __("CPR Number"),
+					"fieldname": "cpr_number",
+					"fieldtype": "Data",
+					"reqd": 0
+
+				},
+				{
 					"fieldtype": "Section Break"
 				},
 				{
@@ -757,6 +764,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		this.prompt_details['territory'] = this.pos_profile_data["territory"];
 		this.prompt_details['customer_group'] = this.pos_profile_data["customer_group"];
 		this.prompt_details['customer_pos_id'] = this.customer_doc.fields_dict.customer_pos_id.value;
+		this.prompt_details['cpr_number'] = this.customer_doc.fields_dict.cpr_number.value;
 		return JSON.stringify(this.prompt_details)
 	},
 
@@ -814,7 +822,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 					<div class="image-view-body">
 						<i class="mega-octicon octicon-package"></i>
 						<div>Load more items</div>
-					</div>
+					</div>9
 				</div>
 			`);
 
@@ -1022,27 +1030,33 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 									() => {
 										$.each(me.frm.doc["items"] || [], function (i, d) {
 											if (d.item_code == me.items[0].item_code && d.batch_no == cur_batch) {
-												
 												d.qty = flt(serialNosLength);
 												d.amount = flt(d.rate) * flt(d.qty);
-									
+												if (selectedSerialNos && serialNosLength > 0) {
+													d.serial_no = selectedSerialNos.join('\n');
+												}
 											}
 										});
+										dialog.hide();
 									},
-									() => {
-										if (selectedSerialNos && serialNosLength > 0) {
-											me.item_serial_no[me.items[0].item_code] = selectedSerialNos;
+									// () => {
+									// 	if (selectedSerialNos && serialNosLength > 0) {
+									// 		me.item_serial_no[me.items[0].item_code] = selectedSerialNos;
 								
-											const item = me.frm.doc.items.find(
-												({ item_code }) => item_code === me.items[0].item_code
-											);
+									// 		const item = me.frm.doc.items.find(
+									// 			({ item_code }) => item_code === me.items[0].item_code
+									// 		);
+
+									// 		const batch = me.frm.doc.items.find(
+									// 			({ batch_no }) => batch_no === cur_batch
+									// 		);
 								
-											if (item) {
-												item.serial_no = selectedSerialNos.join('\n');
-											}
-											dialog.hide();
-										}
-									},
+									// 		if (item && batch) {
+									// 			item.serial_no = selectedSerialNos.join('\n');
+									// 		}
+									// 		dialog.hide();
+									// 	}
+									// },
 									() => me.refresh()
 								])			
 							}

@@ -65,7 +65,6 @@ def make_invoice(pos_profile, doc_list={}, email_queue_list={}, customers_list={
 
 
 def _update_contact_phones(customers_list):
-    print(customers_list)
     from erpnext.accounts.doctype.sales_invoice.pos import get_customer_id
 
     if isinstance(customers_list, string_types):
@@ -101,20 +100,26 @@ def _update_contact_phones(customers_list):
                     contact_doc.add_phone(phone)
                     contact_doc.save(ignore_permissions=True)
             else:
-                
-                is_primary_phone = 1
-                is_primary_mobile = 1
+                if phone:
+                    is_primary_phone = 1
+                    is_primary_mobile = 1
 
-                for check_nos in contact_doc.phone_nos:
-                    if check_nos.is_primary_phone == 1:
-                        is_primary_phone = 0
-                    if check_nos.is_primary_mobile == 1:
-                        is_primary_mobile = 0
+                    for check_nos in contact_doc.phone_nos:
+                        if check_nos.is_primary_phone == 1:
+                            is_primary_phone = 0
+                        if check_nos.is_primary_mobile == 1:
+                            is_primary_mobile = 0
 
-                contact_doc.append("phone_nos",{
-                    "phone": phone,
-                    "is_primary_phone": is_primary_phone,
-                    "is_primary_mobile_no": is_primary_mobile
-                })
+                    contact_doc.append("phone_nos",{
+                        "phone": phone,
+                        "is_primary_phone": is_primary_phone,
+                        "is_primary_mobile_no": is_primary_mobile
+                    })
 
-                contact_doc.save(ignore_permissions=True)
+                    contact_doc.save(ignore_permissions=True)
+        
+        customer_lst = frappe.get_list("Customer", filters={"customer_name":data.get("full_name")})
+        for j in customer_lst:
+            customer_doc = frappe.get_doc("Customer", j.name)
+            customer_doc.cpr_number = data.get("cpr_number")
+            customer_doc.save(ignore_permissions=True)

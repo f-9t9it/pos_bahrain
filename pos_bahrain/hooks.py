@@ -268,6 +268,7 @@ fixtures = [
                     "Sales Invoice-address_line1",
                     "Sales Invoice-address_line2",
                     "Sales Invoice-state",
+					"Customer-cpr_number"
                 ],
             ],
         ],
