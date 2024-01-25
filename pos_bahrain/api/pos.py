@@ -119,7 +119,9 @@ def _update_contact_phones(customers_list):
                     contact_doc.save(ignore_permissions=True)
         
         customer_lst = frappe.get_list("Customer", filters={"customer_name":data.get("full_name")})
-        for j in customer_lst:
-            customer_doc = frappe.get_doc("Customer", j.name)
-            customer_doc.cpr_number = data.get("cpr_number")
-            customer_doc.save(ignore_permissions=True)
+        if data.get("cpr_number"):
+            for j in customer_lst:
+                customer_doc = frappe.get_doc("Customer", j.name)
+                if customer_doc.cpr_number != data.get("cpr_number"):
+                    customer_doc.cpr_number = data.get("cpr_number")
+                    customer_doc.save(ignore_permissions=True)

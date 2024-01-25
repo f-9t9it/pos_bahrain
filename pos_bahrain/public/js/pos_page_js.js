@@ -4,9 +4,12 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		this.reset_customer_local_storage();
 		this.add_new_doc_event();
 		//this.add_phone_validator();
-		this.setinterval_to_sync_master_data(600000);
+		var items_data = this.wrapper.find(".items").length
+		// console.log(items_data)
+		this.setinterval_to_sync_master_data(3600000);
 	},
 	init_master_data: async function (r, freeze = true) {
+		
 		this._super(r);
 		try {
 			const { message: pos_data = {} } = await frappe.call({
@@ -18,7 +21,6 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 				freeze,
 				freeze_message: __('Syncing Item details'),
 			});
-
 			await this.set_opening_entry();
 			return pos_data;
 		} catch (e) {
@@ -33,18 +35,22 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 	},
 	setinterval_to_sync_master_data: function (delay) {
 		setInterval(async () => {
-			const { message } = await frappe.call({ method: 'frappe.handler.ping' });
-			if (message) {
-				const r = await frappe.call({
-					method: 'erpnext.accounts.doctype.sales_invoice.pos.get_pos_data',
-				});
-				localStorage.setItem('doc', JSON.stringify(r.message.doc));
-				this.init_master_data(r, false);
-				this.load_data(false);
-				this.make_item_list();
-				this.set_missing_values();
+			var items_data = this.wrapper.find(".pos-bill-item").length
+			if(items_data == 0){			
+				const { message } =  frappe.call({ method: 'frappe.handler.ping' });
+				if (message) {
+					const r =  frappe.call({
+						method: 'erpnext.accounts.doctype.sales_invoice.pos.get_pos_data',
+					});
+					localStorage.setItem('doc', JSON.stringify(r.message.doc));
+					this.init_master_data(r, false);
+					this.load_data(false);
+					this.make_item_list();
+					this.set_missing_values();
+				}
 			}
 		}, delay);
+	
 	},
 	set_opening_entry: async function () {
 		const { message: pos_voucher } = await frappe.call({
@@ -106,6 +112,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 	},
 	show_items_in_item_cart: function () {
 		this._super();
+		
 		this.wrapper
 			.find('.items')
 			.find('.pos-bill-item > .cell:nth-child(3)')
@@ -1182,3 +1189,4 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 erpnext.pos.PointOfSale = pos_bahrain.addons.extend_pos(
 	erpnext.pos.PointOfSale
 );
+
