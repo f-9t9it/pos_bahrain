@@ -21,17 +21,17 @@ def set_discount_on_return(doc):
         return doc  
             
 def validate(doc, method):
-    if (
-        doc.is_pos
-        and not doc.is_return
-        and not doc.amended_from
+    # if (
+    #     doc.is_pos
+    #     and not doc.is_return
+    #     and not doc.amended_from
    
-        and frappe.db.exists(
-            "Sales Invoice",
-            {"name": ("!=", doc.name)},
-        )
-    ):
-        frappe.throw("Cannot create duplicate offline POS invoice")
+    #     and frappe.db.exists(
+    #         "Sales Invoice",
+    #         {"name": ("!=", doc.name)},
+    #     )
+    # ):
+    #     frappe.throw("Cannot create duplicate offline POS invoice")
     for payment in doc.payments:
         if payment.amount:
             bank_method = frappe.get_cached_value(
