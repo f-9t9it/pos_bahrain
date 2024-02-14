@@ -6,7 +6,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		//this.add_phone_validator();
 		var items_data = this.wrapper.find(".items").length
 		// console.log(items_data)
-		this.setinterval_to_sync_master_data(120);
+		this.setinterval_to_sync_master_data(3600000);
 	},
 	init_master_data: async function (r, freeze = true) {
 		
