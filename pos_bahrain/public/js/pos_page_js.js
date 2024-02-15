@@ -14,6 +14,8 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		try {
 			const { message: pos_data = {} } = await frappe.call({
 				method: 'pos_bahrain.api.item.get_more_pos_data',
+
+				
 				args: {
 					profile: this.pos_profile_data.name,
 					company: this.doc.company,
@@ -614,13 +616,13 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		var me = this;
 
 		this.customer_doc = new frappe.ui.Dialog({
-			'title': 'Customer',
+			'title': 'New Customer',
 			fields: [
 				{
 					"label": __("Full Name"),
 					"fieldname": "full_name",
 					"fieldtype": "Data",
-					"reqd": 0
+					"reqd": 1
 
 				},
 				{
@@ -637,8 +639,6 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 					"label": __("Email Id"),
 					"fieldname": "email_id",
 					"fieldtype": "Data",
-					"default": "."
-
 				},
 				{
 					"fieldtype": "Column Break"
@@ -647,8 +647,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 					"label": __("Contact Number"),
 					"fieldname": "phone",
 					"fieldtype": "Int",
-					"placeholder": "Only numbers without space"
-
+					"placeholder": "Only numbers without space",
 				},
 				{
 					"fieldtype": "Section Break"
@@ -677,7 +676,8 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 				{
 					"label": __("City"),
 					"fieldname": "city",
-					"fieldtype": "Data"
+					"fieldtype": "Data",
+					"reqd": 1
 
 				},
 				{
@@ -723,7 +723,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 
 		this.customer_doc.set_values(this.address_data)
 		if (!this.customer_doc.fields_dict.full_name.$input.val()) {
-			this.customer_doc.set_value("full_name", this.frm.doc.customer_name) || this.frm.doc.customer
+			this.customer_doc.set_value("full_name", this.frm.doc.customer) 
 		}
 
 		if (!this.customer_doc.fields_dict.customer_pos_id.value) {
