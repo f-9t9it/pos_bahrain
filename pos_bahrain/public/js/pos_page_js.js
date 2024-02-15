@@ -648,8 +648,6 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 					"fieldname": "phone",
 					"fieldtype": "Int",
 					"placeholder": "Only numbers without space",
-					"reqd": 1
-
 				},
 				{
 					"fieldtype": "Section Break"
