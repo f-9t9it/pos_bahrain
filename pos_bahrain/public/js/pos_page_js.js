@@ -5,7 +5,6 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		this.add_new_doc_event();
 		//this.add_phone_validator();
 		var items_data = this.wrapper.find(".items").length
-		// console.log(items_data)
 		this.setinterval_to_sync_master_data(3600000);
 	},
 	init_master_data: async function (r, freeze = true) {
@@ -255,6 +254,37 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		}
 		return invoice_data;
 	},
+	send_action: function() {
+		this.email_queue = this.get_email_queue()
+		this.email_queue[this.frm.doc.offline_pos_name] = JSON.stringify(this.email_dialog.get_values())
+		this.update_email_queue()
+		this.email_dialog.hide()
+	},
+
+	update_email_queue: function () {
+		try {
+			localStorage.setItem('email_queue', JSON.stringify(this.email_queue));
+		} catch (e) {
+			frappe.throw(__("LocalStorage is full, did not save"))
+		}
+	},
+
+	get_email_queue: function () {
+		try {
+			return JSON.parse(localStorage.getItem('email_queue')) || {};
+		} catch (e) {
+			return {}
+		}
+	},
+
+	get_customers_details: function () {
+		try {
+			return JSON.parse(localStorage.getItem('customer_details')) || {};
+		} catch (e) {
+			return {}
+		}
+	},
+
 	sync_sales_invoice: function () {
 		const me = this;
 
@@ -294,6 +324,78 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 			});
 		}
 	},
+	get_submitted_invoice: function () {
+		var invoices = [];
+		var index = 1;
+		var docs = this.get_doc_from_localstorage();
+		if (docs) {
+			invoices = $.map(docs, function (data) {
+				for (var key in data) {
+					if (data[key].docstatus == 1 && index < 50) {
+						index++
+						data[key].docstatus = 0;
+						return data
+					}
+				}
+			});
+		}
+
+		return invoices
+	},
+
+	remove_doc_from_localstorage: function () {
+		var me = this;
+		this.si_docs = this.get_doc_from_localstorage();
+		this.new_si_docs = [];
+		if (this.removed_items) {
+			$.each(this.si_docs, function (index, data) {
+				for (var key in data) {
+					if (!in_list(me.removed_items, key)) {
+						me.new_si_docs.push(data);
+					}
+				}
+			})
+			this.removed_items = [];
+			this.si_docs = this.new_si_docs;
+			this.update_localstorage();
+		}
+	},
+
+	remove_email_queue_from_localstorage: function() {
+		var me = this;
+		this.email_queue = this.get_email_queue()
+		if (this.removed_email) {
+			$.each(this.email_queue_list, function (index, data) {
+				if (in_list(me.removed_email, index)) {
+					delete me.email_queue[index]
+				}
+			})
+			this.update_email_queue();
+		}
+	},
+
+	remove_customer_from_localstorage: function() {
+		var me = this;
+		this.customer_details = this.get_customers_details()
+		if (this.removed_customers) {
+			$.each(this.customer_details, function (index, data) {
+				if (in_list(me.removed_customers, index)) {
+					delete me.customer_details[index]
+				}
+			})
+			this.update_customer_in_localstorage();
+		}
+	},
+
+	update_customer_in_localstorage: function() {
+		var me = this;
+		try {
+			localStorage.setItem('customer_details', JSON.stringify(this.customer_details));
+		} catch (e) {
+			frappe.throw(__("LocalStorage is full , did not save"))
+		}
+	},
+
 	refresh: function () {
 		this._super();
 		if (!this.pos_voucher) {
@@ -391,6 +493,14 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 			})
 		})
 	},
+	delete_records: function () {
+		var me = this;
+		this.validate_list()
+		this.remove_doc_from_localstorage()
+		this.update_localstorage();
+		this.toggle_delete_button();
+	},
+
 
 	set_focus: function () {
 		if (this.default_customer || this.frm.doc.customer) {
@@ -737,8 +847,6 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 	},
 
 	make_offline_customer: function (new_customer) {
-		console.log("Making offline customer")
-		console.log(new_customer)
 		this.frm.doc.customer = this.frm.doc.customer || this.customer_doc.get_values().full_name;
 		this.frm.doc.customer_pos_id = this.customer_doc.fields_dict.customer_pos_id.value;
 		this.customer_details = this.get_customers_details();
@@ -912,7 +1020,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		this.set_item_details(item_code, "qty", qty, remove_zero_qty_items);
 	},
 	set_item_details: function (item_code, field, value, remove_zero_qty_items) {
-		alert("ok")
+		// alert("ok")
 		var me = this;
 		if (value < 0) {
 			frappe.throw(__("Enter value must be positive"));
