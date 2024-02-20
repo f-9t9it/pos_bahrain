@@ -1,5 +1,5 @@
 async function show_prices(frm) {
-    if (frm.doc.__islocal || !frappe.user_roles.includes('Accounts Manager')) {
+    if (frm.doc.__islocal || !frappe.user_roles.includes('Accounts User')) {
       return;
     }
     const { item_code } = frm.doc;
