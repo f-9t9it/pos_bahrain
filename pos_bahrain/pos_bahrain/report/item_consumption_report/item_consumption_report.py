@@ -187,24 +187,29 @@ def _get_data(clauses, values, columns,filters):
             for x in so.items:
                 if x.item_code == item.item_code:
                     item_qty[item.item_code] += x.qty
+        total_sales = item_qty[item.item_code]
+        number_of_days = 0
+        week_average = 0
+        number_of_days = get_number_of_days(filters["start_date"], filters["end_date"])
+        average_sales_quantity =0
+        if filters.get("interval") == None:
+            average_sales_quantity = total_sales / number_of_days if number_of_days > 0 else 0
+
+        elif filters.get("interval") == "Weekly":
+            week_average = number_of_days / 7
+            if week_average < 1:
+                week_average = 1
             
+            average_sales_quantity = total_sales / week_average
 
-    total_sales = item_qty[item.item_code]
-    number_of_days = get_number_of_days(filters["start_date"], filters["end_date"])
-
-    if filters.get("interval") == None:
-        average_sales_quantity = total_sales / number_of_days if number_of_days > 0 else 0
-
-    elif filters.get("interval") == "Weekly":
-        week_average = number_of_days / 7
-        average_sales_quantity = total_sales / week_average
-
-    elif filters.get("interval") == "Monthly":
-        month_average = number_of_days / 30
-        average_sales_quantity = total_sales / month_average
-    else:
-        average_sales_quantity = 0
-    item["average_sales_quantity"] = average_sales_quantity
+        elif filters.get("interval") == "Monthly":
+            month_average = number_of_days / 30
+            if month_average < 1:
+                month_average = 1
+            average_sales_quantity = total_sales / month_average
+        else:
+            average_sales_quantity = 0
+        item["average_sales_quantity"] = average_sales_quantity
 
     sles = frappe.db.sql(
         """
@@ -228,14 +233,13 @@ def _get_data(clauses, values, columns,filters):
     )
 
     set_warehouse_qty = _set_warehouse_qtys(sles, get_warehouses(columns))
-    set_consumption = _set_consumption(sles, get_periods(columns))
+    set_consumption = _set_consumption(sles, get_periods(columns),filters)
 
     make_row = compose(partial(pick, keys), set_warehouse_qty, set_consumption)
-
     return [make_row(x) for x in items]
 
 
-def _set_consumption(sles, periods):
+def _set_consumption(sles, periods,filters):
     def groupby_filter(sl):
         def fn(p):
             return p.get("start_date") <= sl.get("posting_date") <= p.get("end_date")
@@ -253,11 +257,75 @@ def _set_consumption(sles, periods):
 
     def fn(item):
         item_code = item.get("item_code")
+        ##########    AVERAGE SALES CALCULATION - BY USMAN KHALID     ##########################
+        ########################################################################################
+        number_of_days = 0
+        week_average = 0
+        def get_number_of_days(start_date, end_date):
+            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
+            end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
+            return (end_date_obj - start_date_obj).days
+    
+        number_of_days = get_number_of_days(filters["start_date"], filters["end_date"])
+        average_sales_quantity =0
+        divide = 0
+        if filters.get("interval") == None:
+            average_sales_quantity = total_fn(item_code) / number_of_days if number_of_days > 0 else 0
+
+        elif filters.get("interval") == "Weekly":
+            divide = _difference_weeks(filters["start_date"], filters["end_date"])
+            week_average = number_of_days / 7
+            if week_average < 1:
+                week_average = 1
+            average_sales_quantity = total_fn(item_code) / divide
+        elif filters.get("interval") == "Monthly":
+            divide = _difference_months(filters["start_date"], filters["end_date"])
+            month_average = number_of_days / 30
+            if month_average < 1:
+                month_average = 1
+            average_sales_quantity = total_fn(item_code) / divide
+        elif filters.get("interval") == "Yearly":
+            divide = _difference_years(filters["start_date"], filters["end_date"])
+            year_average = number_of_days / 365
+            if year_average < 1:
+                year_average = 1
+            average_sales_quantity = total_fn(item_code) / divide
+        else:
+            average_sales_quantity = 0
+        item["average_sales_quantity"] = average_sales_quantity
+        ########################################################################################
         return merge(
             item, segregate(item_code), {"total_consumption": total_fn(item_code)},
         )
 
     return fn
+
+def _difference_weeks(start_date,end_date):
+    d1 = datetime.strptime(start_date, "%Y-%m-%d")
+    d2 = datetime.strptime(end_date, "%Y-%m-%d")
+    days = (d2 - d1)
+    weeks = (days.days) // 7
+    if weeks < 1:
+        weeks = 1
+    return weeks
+
+def _difference_months(start_date,end_date):
+    d1 = datetime.strptime(start_date, "%Y-%m-%d")
+    d2 = datetime.strptime(end_date, "%Y-%m-%d")
+    days = (d2 - d1)
+    months = (days.days) // 30
+    if months < 1:
+        months = 1
+    return months   
+
+def _difference_years(start_date,end_date):
+    d1 = datetime.strptime(start_date, "%Y-%m-%d")
+    d2 = datetime.strptime(end_date, "%Y-%m-%d")
+    days = (d2 - d1)
+    years = (days.days) // 365
+    if years < 1:
+        years = 1
+    return years
 
 
 def _set_warehouse_qtys(sles, warehouses):
