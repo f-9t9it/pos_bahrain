@@ -724,7 +724,6 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 
 	update_customer: function (new_customer) {
 		var me = this;
-
 		this.customer_doc = new frappe.ui.Dialog({
 			'title': 'New Customer',
 			fields: [
@@ -732,15 +731,14 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 					"label": __("Full Name"),
 					"fieldname": "full_name",
 					"fieldtype": "Data",
-					"reqd": 1
-
+					"reqd": 1,
+					"default": this.party_field.get_value().toLowerCase() || "" 
 				},
 				{
 					"label": __("CPR Number"),
 					"fieldname": "cpr_number",
 					"fieldtype": "Data",
 					"reqd": 0
-
 				},
 				{
 					"fieldtype": "Section Break"
@@ -749,6 +747,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 					"label": __("Email Id"),
 					"fieldname": "email_id",
 					"fieldtype": "Data",
+					"default":"."
 				},
 				{
 					"fieldtype": "Column Break"
@@ -771,14 +770,21 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 				{
 					"label": __("Address Line 1"),
 					"fieldname": "address_line1",
-					"fieldtype": "Data"
-
+					"fieldtype": "Data",
+					"change": function() {
+						var address_line1 = me.customer_doc.get_value('address_line1');
+						var city_field = me.customer_doc.fields_dict['city'];
+						if (address_line1) {
+							city_field.df.reqd = 1; // Make City field mandatory
+						} else {
+							city_field.df.reqd = 0; // Make City field Non Mandatory
+						}
+					}
 				},
 				{
 					"label": __("Address Line 2"),
 					"fieldname": "address_line2",
 					"fieldtype": "Data"
-
 				},
 				{
 					"fieldtype": "Column Break"
@@ -787,20 +793,17 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 					"label": __("City"),
 					"fieldname": "city",
 					"fieldtype": "Data",
-					"reqd": 1
-
+					"reqd": 0 
 				},
 				{
 					"label": __("State"),
 					"fieldname": "state",
 					"fieldtype": "Data"
-
 				},
 				{
 					"label": __("ZIP Code"),
 					"fieldname": "pincode",
 					"fieldtype": "Data"
-
 				},
 				{
 					"label": __("Customer POS Id"),
@@ -809,21 +812,23 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 					"hidden": 1
 				}
 			]
-		})
-		this.customer_doc.show()
-		this.render_address_data()
-
+		});
+	
+		this.customer_doc.show();
+		this.render_address_data();
+	
 		this.customer_doc.set_primary_action(__("Save"), function (values) {
 			me.make_offline_customer(values.full_name);
 			localStorage.setItem("address_line1", values.address_line1);
 			localStorage.setItem("address_line2", values.address_line2);
 			localStorage.setItem("contact", values.phone);
 			localStorage.setItem("customer_name", values.full_name);
-
+	
 			me.pos_bill.show();
 			me.list_customers.hide();
 		});
 	},
+	
 	render_address_data: function () {
 		var me = this;
 		this.address_data = this.address[this.frm.doc.customer] || {};
