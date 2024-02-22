@@ -14,7 +14,12 @@ def make_purchase_invoice(source_name, target_doc=None):
     def set_missing_values(source, target):
         target.due_date = source.posting_date
         target.bill_date = source.posting_date
-    # target_doc.bill_no = source_name.name,
+        
+        # Copy batch_no from Sales Invoice Item to Purchase Invoice Item
+        for i, item in enumerate(source.items):
+            target_item = target.items[i]
+            target_item.batch_no = item.batch_no
+
         target.run_method("set_missing_values")
         target.run_method("calculate_taxes_and_totals")
 
@@ -37,6 +42,7 @@ def make_purchase_invoice(source_name, target_doc=None):
     doc.shipping_address = ""
 
     return doc
+
 
 
 @frappe.whitelist()
