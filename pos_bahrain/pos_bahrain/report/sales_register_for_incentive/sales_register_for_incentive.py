@@ -45,6 +45,7 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 	
 	data = []
 	for inv in invoice_list:
+				
 		if inv.is_return == False:
 			# invoice details
 
@@ -69,8 +70,14 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 						col: inv.get(col)
 					})
 
+			# Accumulate all associated invoices for return
+			returned_invoices = []
+			for invobj in invoice_list:
+				if invobj.return_against == inv.name:
+					returned_invoices.append(invobj.name)
+
 			row.update({
-				'return_against': inv.get("return_against"),
+				'return_against': ", ".join(returned_invoices),  # Join all associated invoices
 				'tax_id': inv.get("tax_id"),
 				'mode_of_payment':  ", ".join(mode_of_payments.get(inv.name, [])),
 				'owner': inv.owner,
@@ -114,31 +121,23 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 				'amount_before_discount': inv.amount_before_discount,
 				'discount_value': inv.amount_before_discount - base_net_total or inv.base_net_total
 			})
-   
-			returned_obj = None
-			return_against = None
-			for invobj in invoice_list:
-				if invobj.return_against == inv.name:
-					returned_obj = invobj
-					break
-	
+
 			returned_amount_value = 0
-			if returned_obj is not None:
-				return_against = returned_obj.name
-				returned_amount_value = returned_obj.base_grand_total
-			else:
-				returned_amount_value = 0
-	
-			# for return value
-			remaining_amount = (base_net_total or inv.base_net_total) - (returned_amount_value*-1)
+			remaining_amount = 0
+			# Calculate returned amount and remaining amount based on all associated invoices
+			for returned_inv_name in returned_invoices:
+				returned_inv = next((invobj for invobj in invoice_list if invobj.name == returned_inv_name), None)
+				if returned_inv:
+					returned_amount_value += returned_inv.base_grand_total
+			remaining_amount = (base_net_total or inv.base_net_total) - returned_amount_value
 			row.update({
 				'returned_amount': returned_amount_value,
-				'remaining_amount' : remaining_amount,
-				'return_against': return_against
+				'remaining_amount': remaining_amount,
 			})
 			data.append(row)
 
 	return columns, data
+
 
 def get_columns(invoice_list, additional_table_columns):
 	"""return columns based on filters"""
@@ -191,8 +190,8 @@ def get_columns(invoice_list, additional_table_columns):
   		{
 			'label': _("Return Against Sales Invoice"),
 			'fieldname': 'return_against',
-			'fieldtype': 'Link',
-			'options': 'Sales Invoice',
+			'fieldtype': 'Data',
+			# 'options': 'Sales Invoice',
 			'width': 120
 		},
 		{
@@ -424,19 +423,6 @@ def get_conditions(filters):
 					conditions += common_condition + "and ifnull(`tabSales Invoice Item`.{0}, '') in (%({0})s))".format(dimension.fieldname)
 
 	return conditions
-
-# def get_invoices(filters, additional_query_columns):
-# 	if additional_query_columns:
-# 		additional_query_columns = ', ' + ', '.join(additional_query_columns)
-
-# 	conditions = get_conditions(filters)
-# 	return frappe.db.sql("""
-# 		select name, posting_date, customer,pb_sales_employee_name,is_return,return_against,
-# 		customer_name, owner,tax_id,
-# 		base_net_total, base_grand_total, base_rounded_total, outstanding_amount {0}
-# 		from `tabSales Invoice`
-# 		where docstatus = 1 %s order by posting_date desc, name desc""".format(additional_query_columns or '') %
-# 		conditions, filters, as_dict=1)
 
 
 def get_invoices(filters, additional_query_columns):
