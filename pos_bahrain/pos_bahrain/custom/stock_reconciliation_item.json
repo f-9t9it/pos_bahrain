@@ -1,0 +1,31 @@
+{
+    "custom_fields": [],
+    "custom_perms": [],
+    "doctype": "Stock Reconciliation Item",
+    "property_setters": [
+     {
+      "_assign": null,
+      "_comments": null,
+      "_liked_by": null,
+      "_user_tags": null,
+      "creation": "2024-02-21 18:30:44.699009",
+      "default_value": null,
+      "doc_type": "Stock Reconciliation Item",
+      "docstatus": 0,
+      "doctype_or_field": "DocField",
+      "field_name": "barcode",
+      "idx": 0,
+      "modified": "2024-02-21 18:30:44.699009",
+      "modified_by": "Administrator",
+      "name": "Stock Reconciliation Item-barcode-hidden",
+      "owner": "Administrator",
+      "parent": null,
+      "parentfield": null,
+      "parenttype": null,
+      "property": "hidden",
+      "property_type": "Check",
+      "value": "0"
+     }
+    ],
+    "sync_on_migrate": 1
+   }
