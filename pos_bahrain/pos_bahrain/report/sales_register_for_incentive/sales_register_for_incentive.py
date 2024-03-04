@@ -47,6 +47,7 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 	for inv in invoice_list:
 		if inv.is_return == False:
 			# invoice details
+
 			sales_order = list(set(invoice_so_dn_map.get(inv.name, {}).get("sales_order", [])))
 			delivery_note = list(set(invoice_so_dn_map.get(inv.name, {}).get("delivery_note", [])))
 			cost_center = list(set(invoice_cc_wh_map.get(inv.name, {}).get("cost_center", [])))
@@ -110,7 +111,10 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 				'grand_total': inv.base_grand_total,
 				'rounded_total': inv.base_rounded_total,
 				'outstanding_amount': inv.outstanding_amount,
+				'amount_before_discount': inv.amount_before_discount,
+				'discount_value': inv.amount_before_discount - base_net_total or inv.base_net_total
 			})
+   
 			returned_obj = None
 			return_against = None
 			for invobj in invoice_list:
@@ -190,6 +194,20 @@ def get_columns(invoice_list, additional_table_columns):
 			'fieldtype': 'Link',
 			'options': 'Sales Invoice',
 			'width': 120
+		},
+		{
+			"label": _("Value without Discount"),
+			"fieldname": "amount_before_discount",
+			"fieldtype": "Currency",
+			"options": 'currency',
+			"width": 120
+		},
+		{
+			"label": _("Discount Value"),
+			"fieldname": "discount_value",
+			"fieldtype": "Currency",
+			"options": 'currency',
+			"width": 120
 		},
 		{
 			"label": _("Net Total"),
@@ -429,6 +447,13 @@ def get_invoices(filters, additional_query_columns):
 	return frappe.db.sql("""
 		select st.sales_person,i.name, i.posting_date, i.customer,i.pb_sales_employee_name,i.is_return,i.return_against,
 		i.customer_name, i.owner,i.tax_id,
+
+		(SELECT sum(inv_item.price_list_rate * inv_item.qty) AS amount_before_discount
+             FROM `tabSales Invoice Item` inv_item WHERE parent = i.name) AS amount_before_discount,
+            (SELECT sum(inv_item.discount_amount * inv_item.qty)
+             FROM `tabSales Invoice Item` inv_item WHERE parent = i.name) + i.discount_amount AS discount,
+            (SELECT sum(inv_item.amount) FROM `tabSales Invoice Item` inv_item WHERE parent = i.name) AS amount_after_discount,
+  
 		i.base_net_total, i.base_grand_total, i.base_rounded_total, i.outstanding_amount {0}
 		from `tabSales Invoice` i
 		left join `tabSales Team` st on st.parent = i.name
