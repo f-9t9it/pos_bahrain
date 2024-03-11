@@ -77,6 +77,7 @@ class POSClosingVoucher(Document):
         )
         self.closing_amount = self.opening_amount + get_default_collected(self.payments)
 
+    @frappe.whitelist()
     def set_report_details(self):
         args = merge(
             pick(["user", "pos_profile", "company"], self.as_dict()),
