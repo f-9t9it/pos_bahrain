@@ -75,7 +75,9 @@
   "cancel_credit_note_jv",
   "column_break_62",
   "customer",
-  "disable_serial_no_and_batch_selector"
+  "disable_serial_no_and_batch_selector",
+  "incemtive_slab_section",
+  "incentive_slab"
  ],
  "fields": [
   {
@@ -497,10 +499,20 @@
    "fieldtype": "Table",
    "label": "Multi Warehouse",
    "options": "Multi Warehouse"
+  },
+  {
+   "fieldname": "incemtive_slab_section",
+   "fieldtype": "Section Break",
+   "label": "Incentive Slabs"
+  },
+  {
+   "fieldname": "incentive_slab",
+   "fieldtype": "Table",
+   "options": "Pos Bahrain Incentive Slab"
   }
  ],
  "issingle": 1,
- "modified": "2023-10-31 17:26:04.592351",
+ "modified": "2024-03-11 11:09:58.297235",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
  "name": "POS Bahrain Settings",

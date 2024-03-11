@@ -1,0 +1,50 @@
+{
+ "allow_rename": 1,
+ "creation": "2024-03-10 11:37:25.632197",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "minimum_vaue",
+  "maximum_value",
+  "incentive_without_discount",
+  "incentive_with_discount"
+ ],
+ "fields": [
+  {
+   "fieldname": "minimum_vaue",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Minimum Value"
+  },
+  {
+   "fieldname": "maximum_value",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Maximum Value"
+  },
+  {
+   "fieldname": "incentive_without_discount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Incentive Without Discount"
+  },
+  {
+   "fieldname": "incentive_with_discount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Incentive With Discount"
+  }
+ ],
+ "istable": 1,
+ "modified": "2024-03-11 11:09:17.003877",
+ "modified_by": "manjeet@9t9it.com",
+ "module": "Pos Bahrain",
+ "name": "Pos Bahrain Incentive Slab",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
