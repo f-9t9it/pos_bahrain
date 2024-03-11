@@ -42,7 +42,7 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 	invoice_so_dn_map = get_invoice_so_dn_map(invoice_list)
 	company_currency = frappe.get_cached_value('Company',  filters.get("company"),  "default_currency")
 	mode_of_payments = get_mode_of_payments([inv.name for inv in invoice_list])
-	
+	incentive_slab_list = get_incentive_slab_list()
 	data = []
 	for inv in invoice_list:
 				
@@ -134,6 +134,13 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 				'returned_amount': returned_amount_value,
 				'remaining_amount': remaining_amount,
 			})
+
+			# Calculate the value for incentive
+			discount_value = inv.amount_before_discount - base_net_total or inv.base_net_total
+			incentive_value = get_incentive_value(remaining_amount,discount_value,incentive_slab_list)
+			row.update({
+				'incentive_value': incentive_value,
+			})
 			data.append(row)
 
 	return columns, data
@@ -185,6 +192,13 @@ def get_columns(invoice_list, additional_table_columns):
 			"label": _("Sales Team"),
 			"fieldname": "sales_team_name",
 			"fieldtype": "Data",
+			"width": 120
+		},
+  		{
+			"label": _("Incentive Value"),
+			"fieldname": "incentive_value",
+			"fieldtype": "Currency",
+			"options": 'currency',
 			"width": 120
 		},
   		{
@@ -533,5 +547,20 @@ def get_mode_of_payments(invoice_list):
 	return mode_of_payments
 
 
+def get_incentive_slab_list():
+         
+    incentive_slab_list = frappe.db.sql(""" select * from `tabPos Bahrain Incentive Slab`  """, {}, as_dict=1)
+    return incentive_slab_list
 
 
+def get_incentive_value(remaining_amount,discount_value, incentive_slab_list):
+    incentive_value = 0.0
+    for slab in incentive_slab_list:
+        if remaining_amount >= slab.minimum_vaue and remaining_amount <= slab.maximum_value:
+            if discount_value > 0:
+                incentive_value = (remaining_amount * slab.incentive_with_discount) /100
+            else:
+                incentive_value = (remaining_amount * slab.incentive_without_discount) /100
+    
+
+    return incentive_value
