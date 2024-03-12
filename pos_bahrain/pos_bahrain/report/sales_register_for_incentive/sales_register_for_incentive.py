@@ -129,7 +129,7 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 				returned_inv = next((invobj for invobj in invoice_list if invobj.name == returned_inv_name), None)
 				if returned_inv:
 					returned_amount_value += returned_inv.base_grand_total
-			remaining_amount = (base_net_total or inv.base_net_total) - returned_amount_value
+			remaining_amount = (base_net_total or inv.base_net_total) - (returned_amount_value*-1)
 			row.update({
 				'returned_amount': returned_amount_value,
 				'remaining_amount': remaining_amount,
