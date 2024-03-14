@@ -14,6 +14,7 @@ def make_purchase_invoice(source_name, target_doc=None):
     def set_missing_values(source, target):
         target.due_date = source.posting_date
         target.bill_date = source.posting_date
+        target.taxes_and_charges = ""
         
         # Copy batch_no from Sales Invoice Item to Purchase Invoice Item
         for i, item in enumerate(source.items):
