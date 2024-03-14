@@ -645,7 +645,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 			customer_data = $.grep(this.customers, function (data) {
 				contact = me.contacts[data.name];
 				if (reg.test(data.name.toLowerCase())
-					|| reg.test(data.customer_name.toLowerCase())
+					// || reg.test(data.customer_name.toLowerCase())
 					|| (contact && reg.test(contact["phone"]))
 					|| (contact && reg.test(contact["mobile_no"]))
 					|| (contact && reg.test(contact["email_id"]))
