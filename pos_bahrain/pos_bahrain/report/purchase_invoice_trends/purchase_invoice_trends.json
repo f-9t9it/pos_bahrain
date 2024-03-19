@@ -7,14 +7,14 @@
  "doctype": "Report",
  "idx": 3,
  "is_standard": "Yes",
- "modified": "2024-03-14 18:27:43.414546",
+ "modified": "2024-03-19 18:52:10.298356",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
  "name": "Purchase Invoice Trends",
  "owner": "Administrator",
  "prepared_report": 0,
  "ref_doctype": "Purchase Invoice",
- "report_name": "Purchase Invoice Trends",
+ "report_name": "Purchase Invoice Trends with VAT Amount",
  "report_type": "Script Report",
  "roles": [
   {

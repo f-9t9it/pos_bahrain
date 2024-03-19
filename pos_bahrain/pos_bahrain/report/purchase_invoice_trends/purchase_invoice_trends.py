@@ -166,7 +166,9 @@ def period_wise_columns_query(filters, trans):
 		# query_details += " SUM(t2.stock_qty), SUM(t2.base_net_amount) + SUM(t2.base_net_amount * (SELECT COALESCE(SUM(taxes.tax_rate), 0) / 100 FROM `tabItem Tax Template` as item_tax INNER JOIN `tabItem Tax Template Detail` as taxes ON item_tax.name = taxes.parent WHERE item_tax.name = t2.item_tax_template)) AS total_vat" 
 
 	# query_details += 'SUM(t2.stock_qty), SUM(t2.base_net_amount)'
-	query_details += " SUM(t2.stock_qty), SUM(t2.base_net_amount) + SUM(t2.base_net_amount * (SELECT COALESCE(SUM(taxes.tax_rate), 0) / 100 FROM `tabItem Tax Template` as item_tax INNER JOIN `tabItem Tax Template Detail` as taxes ON item_tax.name = taxes.parent WHERE item_tax.name = t2.item_tax_template)) AS total_vat" 
+	query_details += " SUM(t2.stock_qty), SUM(t2.base_net_amount) + SUM(t2.base_net_amount * (SELECT COALESCE(SUM(CASE WHEN item_tax.name = taxes.tax_type THEN taxes.tax_rate ELSE 0 END), 0) / 100 FROM `tabItem Tax Template` as item_tax INNER JOIN `tabItem Tax Template Detail` as taxes ON item_tax.name = taxes.parent WHERE item_tax.name = t2.item_tax_template)) AS total_vat"
+
+	# query_details += " SUM(t2.stock_qty), SUM(t2.base_net_amount) + SUM(t2.base_net_amount * (SELECT COALESCE(SUM(taxes.tax_rate), 0) / 100 FROM `tabItem Tax Template` as item_tax INNER JOIN `tabItem Tax Template Detail` as taxes ON item_tax.name = taxes.parent WHERE item_tax.name = t2.item_tax_template)) AS total_vat" 
 	return pwc, query_details
 
 def get_period_wise_columns(bet_dates, period, pwc):
