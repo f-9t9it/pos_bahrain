@@ -63,7 +63,6 @@ def make_invoice(pos_profile, doc_list={}, email_queue_list={}, customers_list={
 
     return merge(result, {"invoice": prev_synced_invoices})
 
-
 def _update_contact_phones(customers_list):
     from erpnext.accounts.doctype.sales_invoice.pos import get_customer_id
 
@@ -96,7 +95,7 @@ def _update_contact_phones(customers_list):
                     if str(phone) == str(contact_number.phone):
                         is_exist = True
                 # append phone if does not exist in the Table
-                if is_exist is False:
+                if is_exist is False and phone:
                     contact_doc.add_phone(phone)
                     contact_doc.save(ignore_permissions=True)
             else:
