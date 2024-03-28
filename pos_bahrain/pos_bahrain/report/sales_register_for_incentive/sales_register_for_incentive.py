@@ -135,7 +135,7 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 				if returned_inv:
 					# returned_amount_value += returned_inv.base_grand_total
 					returned_amount_value += base_net_total or inv.base_net_total
-			remaining_amount = (base_net_total or inv.base_net_total) - (returned_amount_value*-1)
+			remaining_amount = (base_net_total or inv.base_net_total) - (returned_amount_value)
 			returned_amount_value = abs(returned_amount_value)
 			row.update({
 				'returned_amount': returned_amount_value,
