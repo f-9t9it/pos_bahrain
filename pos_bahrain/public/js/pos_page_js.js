@@ -5,8 +5,53 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 		this.add_new_doc_event();
 		//this.add_phone_validator();
 		var items_data = this.wrapper.find(".items").length
-		this.setinterval_to_sync_master_data(3600000);
+		// this.setinterval_to_sync_master_data(3600000);
+		// this.setinterval_to_sync_master_data(9000);
+        this.set_interval_for_si_sync();
 	},
+
+    set_interval_for_si_sync: async function () {
+		var me = this;
+		sales_invoices_sync_time = 0
+		master_sync_time = 0
+
+		// get the time of sales invoices and master data
+		await frappe.db.get_single_value("POS Bahrain Settings", "offline_invoice_sync_timer")
+		.then((value) => {
+			if (value) {
+				sales_invoices_sync_time = value
+			}
+		});
+
+		await frappe.db.get_single_value("POS Bahrain Settings", "master_data_sync_timer")
+		.then((value) => {
+			if (value) {
+				master_sync_time = value
+			}
+		});
+
+		if(sales_invoices_sync_time > 0 &&  sales_invoices_sync_time != null)
+		{
+			//for sales invoices
+			setInterval( function () {
+				me.freeze_screen = false;
+				me.sync_sales_invoice();
+			}, sales_invoices_sync_time > 0 &&  sales_invoices_sync_time != null ? sales_invoices_sync_time*1000 : 30000);
+		}
+		// for master data, interval is already set in that function
+		master_sync_time = master_sync_time > 0 && master_sync_time != null ? master_sync_time*1000 :  3600000
+		setInterval( function () {
+			me.get_data_from_server(function () {
+				me.load_data(false);
+				me.make_item_list();
+				me.set_missing_values();
+			})
+		}, master_sync_time);
+
+	},
+	
+
+
 	init_master_data: async function (r, freeze = true) {
 		
 		this._super(r);
@@ -36,6 +81,7 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 	},
 	setinterval_to_sync_master_data: function (delay) {
 		setInterval(async () => {
+			console.log('in sync of master data')
 			var items_data = this.wrapper.find(".pos-bill-item").length
 			if(items_data == 0){			
 				const { message } =  frappe.call({ method: 'frappe.handler.ping' });
@@ -51,7 +97,6 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 				}
 			}
 		}, delay);
-	
 	},
 	set_opening_entry: async function () {
 		const { message: pos_voucher } = await frappe.call({
