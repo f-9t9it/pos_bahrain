@@ -77,7 +77,9 @@
   "customer",
   "disable_serial_no_and_batch_selector",
   "incemtive_slab_section",
-  "incentive_slab"
+  "incentive_slab",
+  "offline_invoice_sync_timer",
+  "master_data_sync_timer"
  ],
  "fields": [
   {
@@ -509,10 +511,22 @@
    "fieldname": "incentive_slab",
    "fieldtype": "Table",
    "options": "Pos Bahrain Incentive Slab"
+  },
+  {
+   "description": "In seconds",
+   "fieldname": "offline_invoice_sync_timer",
+   "fieldtype": "Float",
+   "label": "Offline Invoice sync timer"
+  },
+  {
+   "description": "In Seconds",
+   "fieldname": "master_data_sync_timer",
+   "fieldtype": "Float",
+   "label": "Master Data Sync timer"
   }
  ],
  "issingle": 1,
- "modified": "2024-03-11 11:09:58.297235",
+ "modified": "2024-04-15 09:56:39.822305",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
  "name": "POS Bahrain Settings",

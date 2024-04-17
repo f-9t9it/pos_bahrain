@@ -38,13 +38,13 @@ frappe.ui.form.on('Purchase Invoice', {
         frm.set_query("batch_no", "items", function(doc, cdt, cdn) {
           let d = locals[cdt][cdn];
           return {
-            query:"erpnext.controllers.queries.get_batch_no",
+            query:"pos_bahrain.doc_events.purchase_invoice.get_batch_no",
           "filters": {
             'item_code': d.item_code,
             'warehouse':d.warehouse,
-            'posting_date':frm.doc.posting_date
-          }
-          
+            'posting_date':frm.doc.posting_date,
+            'is_return_invoice': frm.doc.is_return          
+          },
         }
         
         })
@@ -63,12 +63,13 @@ frappe.ui.form.on('Purchase Invoice', {
         frm.set_query("batch_no", "items", function(doc, cdt, cdn) {
           let d = locals[cdt][cdn];
           return {
-            query:"erpnext.controllers.queries.get_batch_no",
+            query:"pos_bahrain.doc_events.purchase_invoice.get_batch_no",
           "filters": {
             'item_code': d.item_code,
             'warehouse':d.warehouse,
-            'posting_date':frm.doc.posting_date
-          }
+            'posting_date':frm.doc.posting_date,
+            'is_return_invoice': frm.doc.is_return          
+          },
           
         }
         
