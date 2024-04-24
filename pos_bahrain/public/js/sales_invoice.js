@@ -1,3 +1,36 @@
+frappe.ui.form.on('Sales Invoice Item', {
+  item_code: function(frm, cdt, cdn) {
+      calculateRate(frm, cdt, cdn);
+  },
+  qty: function(frm, cdt, cdn) {
+      calculateRate(frm, cdt, cdn);
+  }
+});
+
+function calculateRate(frm, cdt, cdn) {
+  var child = locals[cdt][cdn];
+  if (!child.item_code) {
+    frappe.msgprint("Please select an item.");
+    return;
+  }
+  var quantity = child.qty || 1;
+  frappe.call({
+      method: "pos_bahrain.doc_events.sales_invoice.fetch_item_tax_template",
+      args: {
+          item: child.item_code
+      },
+      callback: function (r) {  
+          var data = r.message;
+          var tax_rate = data.tax_rate; 
+          var standard_rate = data.standard_rate;
+          var total_amount = standard_rate * quantity
+          var total_tax = (total_amount * tax_rate) / 100; 
+          var total_gross_amount = standard_rate + total_tax; 
+          frappe.model.set_value(cdt, cdn, 'total_gross_amount', total_gross_amount); 
+      }
+  });
+}
+
 frappe.ui.form.on('Sales Invoice', {
   refresh: function (frm) {
     get_employee(frm);
@@ -57,6 +90,37 @@ frappe.ui.form.on('Sales Invoice Item', {
     get_total_stock_qty(frm, cdt, cdn)
   },
 });
+
+// frappe.ui.form.on('Sales Invoice Item', {
+//   rate: function(frm, cdt, cdn) {
+//       calculateRate(frm, cdt, cdn);
+//   },
+//   validate: function(frm, cdt, cdn) {
+//       calculateRate(frm, cdt, cdn);
+//   }
+// });
+
+// function calculateRate(frm, cdt, cdn) {
+//   var child = locals[cdt][cdn];
+  
+//   // Make frappe.call to calculate item tax
+//   frappe.call({
+//       method: "pos_bahrain.api.sales_invoice.calculate_item_tax",
+//       args: {
+//           amount: child.amount,
+//           item_tax_template: child.item_tax_template
+//       },
+//       callback: function(response) {
+//           if (response.message) {
+//               var total_gross_amount = response.message;
+//               alert("2")
+//               frappe.model.set_value(cdt, cdn, 'total_gross_amount', total_gross_amount);
+//           }
+//       }
+//   });
+// }
+
+
 
 function check_duplicate(frm) {
   if (frm.doc.is_pos && frm.doc.offline_pos_name && frm.doc.is_return) {
