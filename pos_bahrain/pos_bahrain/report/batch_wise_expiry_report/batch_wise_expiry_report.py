@@ -1,5 +1,5 @@
-# Copyright (c) 2013, 	9t9it and contributors
-# For license information, please see license.txt
+# # Copyright (c) 2013, 	9t9it and contributors
+# # For license information, please see license.txt
 
 from __future__ import unicode_literals
 import frappe
@@ -34,6 +34,7 @@ def _get_args(filters={}):
         filters,
         {
             "query_date": filters.get("query_date") or today(),
+            "item_code": filters.get("item_code"),
             "price_list1": frappe.db.get_value(
                 "Buying Settings", None, "buying_price_list"
             )
@@ -80,7 +81,11 @@ def _get_keys(args):
 def _item_price_clauses(alias):
     return """
         {alias}.item_code = sle.item_code AND
-        IFNULL({alias}.uom, '') = i.stock_uom AND
+        # IFNULL({alias}.uom, '') = i.stock_uom AND
+          (
+            (i.stock_uom IS NULL AND {alias}.uom IS NULL) OR
+            (IFNULL({alias}.uom, i.stock_uom) = IFNULL(i.stock_uom, {alias}.uom))
+        ) AND
         IFNULL({alias}.customer, '') = '' AND
         IFNULL({alias}.supplier, '') = '' AND
         %(query_date)s BETWEEN
@@ -102,6 +107,7 @@ def _sle_clauses(args):
             "id.company = %(company)s",
         ],
         ["sle.warehouse = %(warehouse)s"] if args.get("warehouse") else [],
+        ["sle.item_code = %(item_code)s"] if args.get("item_code") else [],
          ["i.item_group = %(item_group)s"] if args.get("item_group") else [],
          ["id.default_supplier = %(supplier)s"] if args.get("supplier") else [],
     )
@@ -175,3 +181,4 @@ def _get_data(args, keys):
     )
 
     return filter_rows(sles)
+
