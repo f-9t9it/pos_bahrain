@@ -45,7 +45,10 @@ def execute(filters=None):
 
 	_func = lambda x: x[1]
 
-	for (company, item, warehouse,batch_no) in sorted(iwb_map):
+	sorted_keys = sorted(iwb_map, key=lambda x: (x[0] or '', x[1] or '', x[2] or '', x[3] or ''))
+	# changed by usman, it was crashing maybe some values was null like batch number
+	# for (company, item, warehouse,batch_no) in sorted_keys:
+	for (company, item, warehouse,batch_no) in sorted_keys:
 		if item_map.get(item):
 			qty_dict = iwb_map[(company, item, warehouse,batch_no)]
 			item_reorder_level = 0
@@ -269,21 +272,42 @@ def get_item_warehouse_map(filters, sle):
 
 	return iwb_map
 
+# changed by usman, it was crashing maybe some values was null like batch number
+# def filter_items_with_no_transactions(iwb_map, float_precision):
+# 	for (company, item, warehouse,batch_no) in sorted(iwb_map):
+# 		qty_dict = iwb_map[(company, item, warehouse,batch_no)]
+
+# 		no_transactions = True
+# 		for key, val in iteritems(qty_dict):
+# 			val = flt(val, float_precision)
+# 			qty_dict[key] = val
+# 			if key != "val_rate" and val:
+# 				no_transactions = False
+
+# 		if no_transactions:
+# 			iwb_map.pop((company, item, warehouse,batch_no))
+
+# 	return iwb_map
+
 def filter_items_with_no_transactions(iwb_map, float_precision):
-	for (company, item, warehouse,batch_no) in sorted(iwb_map):
-		qty_dict = iwb_map[(company, item, warehouse,batch_no)]
+    sorted_keys = sorted(iwb_map, key=lambda x: (x[0] or '', x[1] or '', x[2] or '', x[3] or ''))
+    filtered_iwb_map = {}
 
-		no_transactions = True
-		for key, val in iteritems(qty_dict):
-			val = flt(val, float_precision)
-			qty_dict[key] = val
-			if key != "val_rate" and val:
-				no_transactions = False
+    for (company, item, warehouse, batch_no) in sorted_keys:
+        qty_dict = iwb_map[(company, item, warehouse, batch_no)]
 
-		if no_transactions:
-			iwb_map.pop((company, item, warehouse,batch_no))
+        no_transactions = True
+        for key, val in qty_dict.items():
+            val = flt(val, float_precision)
+            qty_dict[key] = val
+            if key != "val_rate" and val:
+                no_transactions = False
 
-	return iwb_map
+        if not no_transactions:
+            filtered_iwb_map[(company, item, warehouse, batch_no)] = qty_dict
+
+    return filtered_iwb_map
+
 
 def get_items(filters):
 	conditions = []
