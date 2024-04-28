@@ -65,6 +65,11 @@ frappe.query_reports["Sales Register for Incentive"] = {
 			"label": __("Item Group"),
 			"fieldtype": "Link",
 			"options": "Item Group"
-		}
+		},
+		{
+			fieldname: 'summary_view',
+			label: __('Summary View'),
+			fieldtype: 'Check'
+		},
 	]
 };
