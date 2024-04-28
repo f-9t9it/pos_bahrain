@@ -19,6 +19,12 @@ frappe.query_reports['Batch-wise Expiry Report'] = {
       options: 'Supplier',
       },
       {
+        "fieldname": "item_code",
+        "label": __("Item"),
+        "fieldtype": "Link",
+        "options": "Item",
+      },
+      {
       fieldname: 'item_group',
       label: __('Item Group'),
       fieldtype: 'Link',
