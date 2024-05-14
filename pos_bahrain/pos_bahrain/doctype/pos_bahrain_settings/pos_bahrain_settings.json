@@ -18,6 +18,7 @@
   "enable_pos_log",
   "default_supplier_items_limit",
   "price_list_section",
+  "custom_price_list",
   "apply_offer_pricelist",
   "column_break_3",
   "discount_on_retail",
@@ -523,10 +524,17 @@
    "fieldname": "master_data_sync_timer",
    "fieldtype": "Float",
    "label": "Master Data Sync timer"
+  },
+  {
+   "description": "Price List For Zero Stock Report",
+   "fieldname": "custom_price_list",
+   "fieldtype": "Table",
+   "label": "Custom Price List",
+   "options": "Custom Price List"
   }
  ],
  "issingle": 1,
- "modified": "2024-04-15 09:56:39.822305",
+ "modified": "2024-05-13 12:30:28.524389",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
  "name": "POS Bahrain Settings",
