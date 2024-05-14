@@ -1,0 +1,29 @@
+{
+ "creation": "2024-05-13 12:12:34.908374",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "price_list"
+ ],
+ "fields": [
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Price List",
+   "options": "Price List"
+  }
+ ],
+ "istable": 1,
+ "modified": "2024-05-13 12:13:45.425950",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Custom Price List",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
