@@ -119,13 +119,13 @@ def get_where_clause(filters):
         where_clause += "AND item.name = '{}' ".format(filters.get('item'))
     if filters.get('item_group'):
         where_clause += "AND item.item_group = '{}' ".format(filters.get('item_group'))
-    # if filters.get('warehouse'):
-    #     where_clause += "AND bin.warehouse = '{}' ".format(filters.get('warehouse'))
+    if filters.get('warehouse'):
+        where_clause += "AND bin.warehouse = '{}' ".format(filters.get('warehouse'))
     if filters.get('date'):
         creation_date = filters.get('date').split(' ')[0]
         where_clause += "AND DATE(item.creation) = '{}' ".format(creation_date)
     if not filters.get('show_item_in_stock'):
-        where_clause += "AND (IFNULL((SELECT SUM(actual_qty) FROM `tabBin` WHERE item_code = item.name), 0) = 0 OR item.name NOT IN (SELECT DISTINCT item_code FROM `tabBin`))"
+        where_clause += "AND (IFNULL((SELECT SUM(actual_qty) FROM `tabBin` bin WHERE bin.item_code = item.name), 0) = 0 OR item.name NOT IN (SELECT DISTINCT bin.item_code FROM `tabBin` bin))"
     return where_clause
 
 
