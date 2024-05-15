@@ -10,6 +10,7 @@ from erpnext.setup.utils import get_exchange_rate
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import make_delivery_note
 from pos_bahrain.api.sales_invoice import get_customer_account_balance
 from functools import partial
+from frappe.utils import get_link_to_form
 from toolz import first, compose, pluck, unique
 
 @frappe.whitelist()
@@ -105,6 +106,12 @@ def before_cancel(doc, method):
 
 
 def on_cancel(doc, method):
+    error_message = validation_pos_closing_voucher(doc)
+    if error_message:
+        frappe.throw(error_message)
+    else:
+        pass
+
     gl_entries_cancel(doc)
     cancel_jv(doc)
     if not doc.pb_returned_to_warehouse:
@@ -149,6 +156,19 @@ def on_cancel(doc, method):
                 )
             )
     dn_doc.cancel()
+
+def validation_pos_closing_voucher(doc):
+    pos_closing_voucher_list = frappe.get_all("POS Closing Voucher")
+    for x in pos_closing_voucher_list:
+        pos_closing_voucher_doc = frappe.get_doc("POS Closing Voucher", x.name)
+        for a in pos_closing_voucher_doc.invoices:
+            if doc.name == a.invoice:
+                if pos_closing_voucher_doc.docstatus != 2:
+                    sales_invoice_link = get_link_to_form('Sales Invoice', doc.name)
+                    pos_closing_voucher_link = get_link_to_form('POS Closing Voucher', pos_closing_voucher_doc.name)
+                    return f"Cannot cancel Sales Invoice {sales_invoice_link} because it's linked with POS Closing Voucher {pos_closing_voucher_link}"
+    return None
+
 
 def cancel_jv(doc):
     if(doc.pb_credit_note_no):
