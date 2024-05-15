@@ -1,3 +1,71 @@
+# import frappe
+# from frappe import _
+
+# def execute(filters=None):
+#     columns = [
+#         {"label": _("Item Code"), "fieldname": "item_code", "fieldtype": "Link", "options": "Item", "width": 100},
+#         {"label": _("Item Name"), "fieldname": "item_name", "fieldtype": "Data", "width": 100},
+#         {"label": _("Item Group"), "fieldname": "item_group", "fieldtype": "Link", "options": "Item Group", "width": 100},
+#         {"label": _("Default Supplier"), "fieldname": "default_supplier", "fieldtype": "Link", "options": "Supplier", "width": 100},
+#         {"label": _("Qty"), "fieldname": "qty", "fieldtype": "Float", "width": 100},
+#         {"label": _("Standard Selling Price"), "fieldname": "selling_price", "fieldtype": "Currency", "width": 100},
+#         {"label": _("Standard Buying Price"), "fieldname": "buying_price", "fieldtype": "Currency", "width": 100},
+#         {"label": _("Valuation Rate"), "fieldname": "valuation_rate", "fieldtype": "Currency", "width": 100}
+#     ]
+
+#     where_clause = ""
+#     if filters.get('item'):
+#         where_clause += "AND ti.name = '{}' ".format(filters.get('item'))
+#     if filters.get('item_group'):
+#         where_clause += "AND ti.item_group = '{}' ".format(filters.get('item_group'))
+#     if filters.get('warehouse'):
+#         where_clause += "AND tsle.warehouse = '{}' ".format(filters.get('warehouse'))
+
+#     if filters.get('show_item_in_stock'):
+#         where_clause += "AND (stock_qty.actual_qty > 0 OR stock_qty.actual_qty IS NULL) "
+#     if not filters.get('show_item_in_stock'):
+#         where_clause += "AND (stock_qty.actual_qty = 0 OR stock_qty.actual_qty IS NULL) "
+        
+#     sql_query = """
+#         SELECT 
+#             ti.name AS item_code,
+#             ti.item_name AS item_name,
+#             ti.item_group AS item_group,
+#             IFNULL(id.default_supplier, '') AS default_supplier,
+#             IFNULL(stock_qty.actual_qty, 0) AS qty,
+#             IF(selling_price.price_list = 'Standard Selling', selling_price.price_list_rate, NULL) AS selling_price,
+#             IF(buying_price.price_list = 'Standard Buying', buying_price.price_list_rate, NULL) AS buying_price,
+#             IFNULL(ti.valuation_rate, 0) AS valuation_rate
+#         FROM tabItem ti 
+#         INNER JOIN
+#             `tabItem Default` id ON ti.name = id.parent
+#         LEFT JOIN
+#             (SELECT item_code, SUM(actual_qty) as actual_qty, warehouse 
+#              FROM `tabStock Ledger Entry` 
+#              WHERE posting_date = %s 
+#              GROUP BY item_code, warehouse) AS stock_qty
+#             ON stock_qty.item_code = ti.name
+#         LEFT JOIN
+#             `tabStock Ledger Entry` tsle ON ti.name = tsle.item_code
+#         LEFT JOIN
+#             (SELECT item_code, price_list_rate, price_list FROM `tabItem Price` WHERE price_list = 'Standard Selling') AS selling_price
+#             ON selling_price.item_code = ti.name
+#         LEFT JOIN
+#             (SELECT item_code, price_list_rate, price_list FROM `tabItem Price` WHERE price_list = 'Standard Buying') AS buying_price
+#             ON buying_price.item_code = ti.name
+#         WHERE 
+#             ti.disabled = 0 AND 
+#             ti.is_stock_item = 1
+#             {where_clause}
+#     """.format(where_clause=where_clause)
+
+#     data = frappe.db.sql(sql_query, (filters.get('date')), as_dict=True)
+
+#     return columns, data
+
+
+
+
 import frappe
 from frappe import _
 
@@ -121,9 +189,9 @@ def get_where_clause(filters):
         where_clause += "AND item.item_group = '{}' ".format(filters.get('item_group'))
     if filters.get('warehouse'):
         where_clause += "AND bin.warehouse = '{}' ".format(filters.get('warehouse'))
-    # if filters.get('date'):
-    #     creation_date = filters.get('date').split(' ')[0]
-    #     where_clause += "AND DATE(item.creation) = '{}' ".format(creation_date)
+    if filters.get('date'):
+        creation_date = filters.get('date').split(' ')[0]
+        where_clause += "AND DATE(item.creation) = '{}' ".format(creation_date)
     if not filters.get('show_item_in_stock'):
         where_clause += "AND (IFNULL((SELECT SUM(actual_qty) FROM `tabBin` bin WHERE bin.item_code = item.name), 0) = 0 OR item.name NOT IN (SELECT DISTINCT bin.item_code FROM `tabBin` bin))"
     return where_clause
