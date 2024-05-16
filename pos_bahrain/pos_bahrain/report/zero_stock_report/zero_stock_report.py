@@ -73,6 +73,7 @@ def get_where_clause(filters):
                                        LIMIT 1), 0) > 0 """.format(filters.get('from_date'), filters.get('date'))
     return where_clause
 
+
 def get_static_data(filters):
     where_clause = get_where_clause(filters)
 
