@@ -8,7 +8,7 @@ frappe.query_reports["Zero Stock Report"] = {
             "fieldname": "from_date",
             "label": __("From Date"),
             "fieldtype": "Date",
-            "default": frappe.datetime.add_months(frappe.datetime.get_today(), -1),
+            "default": frappe.datetime.add_months(frappe.datetime.get_today(), -120),
             "reqd": 1
         },
 		{
