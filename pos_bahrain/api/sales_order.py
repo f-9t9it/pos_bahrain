@@ -84,7 +84,8 @@ def make_sales_invoice(source_name, target_doc=None, ignore_permissions=False):
 
 			if cost_center:
 				target.cost_center = cost_center
-		target.pb_quotation = source.prevdoc_docname
+		if source.prevdoc_docname:
+			target.pb_quotation = source.prevdoc_docname
 
 	doclist = get_mapped_doc("Sales Order", source_name, {
 		"Sales Order": {
