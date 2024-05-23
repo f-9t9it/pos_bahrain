@@ -118,6 +118,7 @@ def on_cancel(doc, method):
     gl_entries_cancel(doc)
     cancel_jv(doc)
     
+    
     linked_dn_names = frappe.db.sql_list("""
         SELECT DISTINCT parent
         FROM `tabDelivery Note Item`
