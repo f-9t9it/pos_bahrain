@@ -12,6 +12,8 @@ from pos_bahrain.api.sales_invoice import get_customer_account_balance
 from functools import partial
 from frappe.utils import get_link_to_form
 from toolz import first, compose, pluck, unique
+from frappe.utils import get_url_to_form
+
 
 @frappe.whitelist()
 def set_discount_on_return(doc):
@@ -106,6 +108,7 @@ def before_cancel(doc, method):
 
 
 def on_cancel(doc, method):
+    frappe.log_error("sales invoice cancel")
     error_message = validation_pos_closing_voucher(doc)
     if error_message:
         frappe.throw(error_message)
@@ -114,9 +117,29 @@ def on_cancel(doc, method):
 
     gl_entries_cancel(doc)
     cancel_jv(doc)
+    
+    
+    linked_dn_names = frappe.db.sql_list("""
+        SELECT DISTINCT parent
+        FROM `tabDelivery Note Item`
+        WHERE against_sales_invoice = %s
+        AND parent IN (
+            SELECT name
+            FROM `tabDelivery Note`
+            WHERE docstatus = 1
+        )
+    """, doc.name)
+
+    if linked_dn_names:
+        linked_dn_links = ', '.join([f'<a href="/desk#Form/Delivery%20Note/{dn}" target="_blank">{dn}</a>' for dn in linked_dn_names])
+        plural_s = 's' if len(linked_dn_names) > 1 else ''
+        frappe.throw(
+            _("Please cancel the linked Delivery Note{s} {0} before cancelling this Sales Invoice.").format(linked_dn_links, s=plural_s),
+            title=_("Linked Delivery Notes Found")
+        )
+        
     if not doc.pb_returned_to_warehouse:
         return
-
     get_dns = compose(
         list,
         unique,
