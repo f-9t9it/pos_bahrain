@@ -147,30 +147,49 @@ def create_stock_adjust(batch_no,item_code,warehouse,qty,stock_uom):
 def search_batch_details(batch):
     item_data = search_serial_or_batch_or_barcode_number(batch)
     batch_no_data = frappe.db.get_value('Batch', batch, ['name as batch_no', 'item as item_code'], as_dict=True)
-    batch_exists = frappe.db.sql("""SELECT * from `tabItem` WHERE name = '%(item_code)s' and has_batch_no=1 """%{"item_code": batch}, as_dict = 1)
-    # print('/////////',batch_exists)
+    batch_exists = frappe.db.sql("""SELECT * from `tabItem` WHERE name = '%(item_code)s' and has_batch_no=1 """ % {"item_code": batch}, as_dict=1)
+    
     if item_data != 0 and batch_exists:
         if batch_no_data:
-#             stock = frappe.db.sql("""SELECT batch_no,item_code,warehouse, sum(actual_qty) as qty,stock_uom 
-# from `tabStock Ledger Entry` sl LEFT JOIN `tabBatch` batch ON(sl.item_code=batch.item and sl.batch_no=batch.name)
-# WHERE sl.is_cancelled = 0 and batch.expiry_date>=CURDATE() and sl.batch_no = '%(item_code)s' group by sl.warehouse,sl.batch_no """%{"item_code": item_data['batch_no']}, as_dict = 1)
-#             return stock
-            stock = frappe.db.sql("""SELECT batch_no,item_code,warehouse, sum(actual_qty) as qty,stock_uom 
-from `tabStock Ledger Entry` sl LEFT JOIN `tabBatch` batch ON(sl.item_code=batch.item and sl.batch_no=batch.name)
-WHERE sl.is_cancelled = 0 and batch.expiry_date>=CURDATE() and sl.batch_no = '%(item_code)s' group by sl.warehouse,sl.batch_no """%{"item_code": item_data['batch_no']}, as_dict = 1)
+            stock = frappe.db.sql("""
+                SELECT sl.batch_no, sl.item_code, item.item_name, sl.warehouse, sum(sl.actual_qty) as qty, sl.stock_uom 
+                FROM `tabStock Ledger Entry` sl 
+                LEFT JOIN `tabBatch` batch ON sl.item_code = batch.item AND sl.batch_no = batch.name
+                LEFT JOIN `tabItem` item ON sl.item_code = item.name
+                WHERE sl.is_cancelled = 0 AND batch.expiry_date >= CURDATE() AND sl.batch_no = '%(item_code)s'
+                GROUP BY sl.warehouse, sl.batch_no
+            """ % {"item_code": item_data['batch_no']}, as_dict=1)
             return stock
-        else :
-            stock = frappe.db.sql("""SELECT batch_no,item_code,warehouse, sum(actual_qty) as qty,stock_uom 
-from `tabStock Ledger Entry` sl LEFT JOIN `tabBatch` batch ON(sl.item_code=batch.item and sl.batch_no=batch.name)
-WHERE sl.is_cancelled = 0 and batch.expiry_date>=CURDATE() and item_code = '%(item_code)s' group by warehouse,batch_no """%{"item_code": item_data['item_code']}, as_dict = 1)
+        else:
+            stock = frappe.db.sql("""
+                SELECT sl.batch_no, sl.item_code, item.item_name, sl.warehouse, sum(sl.actual_qty) as qty, sl.stock_uom 
+                FROM `tabStock Ledger Entry` sl 
+                LEFT JOIN `tabBatch` batch ON sl.item_code = batch.item AND sl.batch_no = batch.name
+                LEFT JOIN `tabItem` item ON sl.item_code = item.name
+                WHERE sl.is_cancelled = 0 AND batch.expiry_date >= CURDATE() AND sl.item_code = '%(item_code)s'
+                GROUP BY sl.warehouse, sl.batch_no
+            """ % {"item_code": item_data['item_code']}, as_dict=1)
             return stock
+            
     if item_data != 0 and not batch_exists:
         if batch_no_data:
-            stock = frappe.db.sql("""SELECT batch_no,item_code,warehouse, sum(actual_qty) as qty,stock_uom from `tabStock Ledger Entry` WHERE is_cancelled = 0 and batch_no = '%(item_code)s' group by warehouse,batch_no """%{"item_code": item_data['batch_no']}, as_dict = 1)
+            stock = frappe.db.sql("""
+                SELECT sl.batch_no, sl.item_code, item.item_name, sl.warehouse, sum(sl.actual_qty) as qty, sl.stock_uom 
+                FROM `tabStock Ledger Entry` sl 
+                LEFT JOIN `tabItem` item ON sl.item_code = item.name
+                WHERE sl.is_cancelled = 0 AND sl.batch_no = '%(item_code)s'
+                GROUP BY sl.warehouse, sl.batch_no
+            """ % {"item_code": item_data['batch_no']}, as_dict=1)
             return stock
-    
-        else :
-            stock = frappe.db.sql("""SELECT batch_no,item_code,warehouse, sum(actual_qty) as qty,stock_uom from `tabStock Ledger Entry` WHERE is_cancelled = 0 and item_code = '%(item_code)s' group by warehouse,batch_no """%{"item_code": item_data['item_code']}, as_dict = 1)
+        else:
+            stock = frappe.db.sql("""
+                SELECT sl.batch_no, sl.item_code, item.item_name, sl.warehouse, sum(sl.actual_qty) as qty, sl.stock_uom 
+                FROM `tabStock Ledger Entry` sl 
+                LEFT JOIN `tabItem` item ON sl.item_code = item.name
+                WHERE sl.is_cancelled = 0 AND sl.item_code = '%(item_code)s'
+                GROUP BY sl.warehouse, sl.batch_no
+            """ % {"item_code": item_data['item_code']}, as_dict=1)
             return stock
+            
     return "Item/Price not found"
 
