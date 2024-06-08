@@ -90,6 +90,7 @@ doctype_js = {
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
 fixtures = [
+    {"dt": "Print Format", "filters": {"module": "Pos Bahrain"}},
     {
         "doctype": "Custom Field",
         "filters": [
