@@ -439,7 +439,7 @@ scheduler_events = {
 #
 override_whitelisted_methods = {
     "erpnext.stock.get_item_details.get_item_details": "pos_bahrain.api.get_item_details.get_item_details",  # noqa
-    "erpnext.accounts.doctype.sales_invoice.pos.get_pos_data": "pos_bahrain.api.item.get_pos_data",  # noqa
+    # "erpnext.accounts.doctype.sales_invoice.pos.get_pos_data": "pos_bahrain.api.item.get_pos_data",  # noqa
     "erpnext.accounts.doctype.sales_invoice.pos.make_invoice": "pos_bahrain.api.pos.make_invoice",  # noqa
     "erpnext.selling.page.point_of_sale.point_of_sale.search_serial_or_batch_or_barcode_number": "pos_bahrain.api.item.search_serial_or_batch_or_barcode_number" # noqa
 }

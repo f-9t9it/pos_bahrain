@@ -47,9 +47,89 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 				me.set_missing_values();
 			})
 		}, master_sync_time);
+		
 
 	},
-	
+	get_data_from_server: function (callback) {
+		alert("custom js code")
+		var me = this;
+		frappe.call({
+			method: "pos_bahrain.api.item.get_pos_data",
+			freeze: true,
+			freeze_message: __("Master data syncing, it might take some time"),
+			callback: function (r) {
+				alert(r.message.pos_profile.name)
+				localStorage.setItem('doc', JSON.stringify(r.message.doc));
+				me.set_pos_profile_title(r.message.pos_profile.name);
+				me.init_master_data(r)
+				me.set_interval_for_si_sync();
+				me.check_internet_connection();
+				if (callback) {
+					callback();
+				}
+			},
+			error: () => {
+				setTimeout(() => frappe.set_route('List', 'POS Profile'), 2000);
+			}
+		})
+	},
+	set_pos_profile_title(pos_profile) {
+		this.page.set_title_sub(
+			`<span class="indicator blue">
+				<a class="text-muted" href="#Form/POS Profile/${pos_profile}">${pos_profile}</a>
+			</span>`
+		);
+	},
+	load_data: function (load_doc) {
+		var me = this;
+
+		this.items = this.item_data;
+		this.actual_qty_dict = {};
+
+		if (load_doc) {
+			this.frm.doc = JSON.parse(localStorage.getItem('doc'));
+		}
+
+		$.each(this.meta, function (i, data) {
+			frappe.meta.sync(data)
+			locals["DocType"][data.name] = data;
+		})
+
+		this.print_template_data = frappe.render_template("print_template", {
+			content: this.print_template,
+			title: "POS",
+			base_url: frappe.urllib.get_base_url(),
+			print_css: frappe.boot.print_css,
+			print_settings: this.print_settings,
+			header: this.letter_head.header,
+			footer: this.letter_head.footer,
+			landscape: false,
+			columns: []
+		})
+	},
+	check_internet_connection: function () {
+		var me = this;
+		//Check Internet connection after every 30 seconds
+		setInterval(function () {
+			me.set_indicator();
+		}, 5000)
+	},
+
+	set_indicator: function () {
+		var me = this;
+		// navigator.onLine
+		this.connection_status = false;
+		this.page.set_indicator(__("Offline"), "grey")
+		frappe.call({
+			method: "frappe.handler.ping",
+			callback: function (r) {
+				if (r.message) {
+					me.connection_status = true;
+					me.page.set_indicator(__("Online"), "green")
+				}
+			}
+		});
+	},
 
 
 	init_master_data: async function (r, freeze = true) {
@@ -79,25 +159,26 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 			});
 		}
 	},
-	setinterval_to_sync_master_data: function (delay) {
-		setInterval(async () => {
-			console.log('in sync of master data')
-			var items_data = this.wrapper.find(".pos-bill-item").length
-			if(items_data == 0){			
-				const { message } =  frappe.call({ method: 'frappe.handler.ping' });
-				if (message) {
-					const r =  frappe.call({
-						method: 'erpnext.accounts.doctype.sales_invoice.pos.get_pos_data',
-					});
-					localStorage.setItem('doc', JSON.stringify(r.message.doc));
-					this.init_master_data(r, false);
-					this.load_data(false);
-					this.make_item_list();
-					this.set_missing_values();
-				}
-			}
-		}, delay);
-	},
+	// setinterval_to_sync_master_data: function (delay) {
+	// 	alert("custom code for pos bahrain application")
+	// 	setInterval(async () => {
+	// 		console.log('in sync of master data')
+	// 		var items_data = this.wrapper.find(".pos-bill-item").length
+	// 		if(items_data == 0){			
+	// 			const { message } =  frappe.call({ method: 'frappe.handler.ping' });
+	// 			if (message) {
+	// 				const r =  frappe.call({
+	// 					method: 'erpnext.accounts.doctype.sales_invoice.pos.get_pos_data',
+	// 				});
+	// 				localStorage.setItem('doc', JSON.stringify(r.message.doc));
+	// 				this.init_master_data(r, false);
+	// 				this.load_data(false);
+	// 				this.make_item_list();
+	// 				this.set_missing_values();
+	// 			}
+	// 		}
+	// 	}, delay);
+	// },
 	set_opening_entry: async function () {
 		const { message: pos_voucher } = await frappe.call({
 			method: 'pos_bahrain.api.pos_voucher.get_unclosed',
