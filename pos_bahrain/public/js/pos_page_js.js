@@ -51,14 +51,12 @@ erpnext.pos.PointOfSale = erpnext.pos.PointOfSale.extend({
 
 	},
 	get_data_from_server: function (callback) {
-		alert("custom js code")
 		var me = this;
 		frappe.call({
 			method: "pos_bahrain.api.item.get_pos_data",
 			freeze: true,
 			freeze_message: __("Master data syncing, it might take some time"),
 			callback: function (r) {
-				alert(r.message.pos_profile.name)
 				localStorage.setItem('doc', JSON.stringify(r.message.doc));
 				me.set_pos_profile_title(r.message.pos_profile.name);
 				me.init_master_data(r)
