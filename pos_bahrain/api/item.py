@@ -4,6 +4,7 @@ import frappe
 from frappe import _
 from frappe.utils import today
 from frappe.desk.reportview import get_filters_cond
+from erpnext.setup.utils import get_exchange_rate
 from erpnext.stock.get_item_details import (
     get_item_price,
     get_batch_qty,
@@ -11,124 +12,131 @@ from erpnext.stock.get_item_details import (
 )
 from erpnext.stock.doctype.item.item import get_item_defaults
 from erpnext.setup.doctype.item_group.item_group import get_item_group_defaults
+from erpnext.controllers.accounts_controller import get_taxes_and_charges
 from functools import partial
 from toolz import groupby, merge, valmap, compose, get, excepts, first, pluck
-
+from frappe.utils import nowdate, cint
 from pos_bahrain.utils import key_by
 from six import string_types, iteritems
-from erpnext.stock.get_item_details import get_pos_profile
+# from erpnext.stock.get_item_details import get_pos_profile
+from erpnext.accounts.doctype.sales_invoice.pos import update_plc_conversion_rate
+from erpnext.accounts.doctype.sales_invoice.pos import get_meta
+from erpnext.accounts.doctype.sales_invoice.pos import get_company_data
+from erpnext.accounts.doctype.sales_invoice.pos import update_pos_profile_data
+from erpnext.accounts.doctype.sales_invoice.pos import update_multi_mode_option
+from erpnext.accounts.doctype.sales_invoice.pos import get_items_list
+from erpnext.accounts.doctype.sales_invoice.pos import get_item_groups
+from erpnext.accounts.doctype.sales_invoice.pos import get_customers_list
+from erpnext.accounts.doctype.sales_invoice.pos import get_contacts
+from erpnext.accounts.doctype.sales_invoice.pos import get_barcode_data
+from erpnext.accounts.doctype.sales_invoice.pos import get_batch_no_data
+from erpnext.accounts.doctype.sales_invoice.pos import get_item_tax_data
+from erpnext.accounts.doctype.sales_invoice.pos import get_customer_wise_price_list
+from erpnext.accounts.doctype.sales_invoice.pos import get_price_list_data
+from erpnext.accounts.doctype.sales_invoice.pos import get_bin_data
+from erpnext.accounts.doctype.sales_invoice.pos import get_pricing_rule_data
 
 
 @frappe.whitelist()
+def get_pos_profile(company, pos_profile=None, user=None):
+    if pos_profile:
+        return frappe.get_cached_doc('POS Profile', pos_profile)
+
+    if not user:
+        user = frappe.session['user']
+
+    # Fetch session defaults
+    session_defaults = frappe.defaults.get_defaults()
+    session_pos_profile = session_defaults.get("pos_profile")
+    session_company = session_defaults.get("company")
+    frappe.log_error(session_pos_profile,title="pos profile from custom")
+
+
+    if session_pos_profile:
+        return frappe.get_cached_doc('POS Profile', session_pos_profile)
+
+    # If company is not provided, use the one from session defaults
+    if not company:
+        company = session_company
+
+    condition = "pfu.user = %(user)s AND pfu.default=1"
+    if user and company:
+        condition = "pfu.user = %(user)s AND pf.company = %(company)s AND pfu.default=1"
+
+    pos_profile = frappe.db.sql("""
+        SELECT pf.*
+        FROM
+            `tabPOS Profile` pf
+        LEFT JOIN `tabPOS Profile User` pfu ON pf.name = pfu.parent
+        WHERE
+            {cond} AND pf.disabled = 0
+    """.format(cond=condition), {
+        'user': user,
+        'company': company
+    }, as_dict=1)
+
+    if not pos_profile and company:
+        pos_profile = frappe.db.sql("""
+            SELECT pf.*
+            FROM
+                `tabPOS Profile` pf
+            LEFT JOIN `tabPOS Profile User` pfu ON pf.name = pfu.parent
+            WHERE
+                pf.company = %(company)s AND pf.disabled = 0
+        """, {
+            'company': company
+        }, as_dict=1)
+
+    return pos_profile and pos_profile[0] or None
+
+@frappe.whitelist()
 def get_pos_data():
-    from erpnext.accounts.doctype.sales_invoice.pos import get_pos_data
-    
-    get_price = compose(
-        partial(get, "price_list_rate", default=0),
-        excepts(StopIteration, first, lambda __: {}),
-    )
+	frappe.log_error("core code",title="core")
+	doc = frappe.new_doc('Sales Invoice')
+	doc.is_pos = 1
+	pos_profile = get_pos_profile(doc.company) or {}
+	if not pos_profile:
+		frappe.throw(_("POS Profile is required to use Point-of-Sale"))
 
-    get_price_list_data = compose(partial(valmap, get_price), _get_default_item_prices)
+	if not doc.company:
+		doc.company = pos_profile.get('company')
 
-    def add_discounts(items):
-        item_codes = compose(list, partial(pluck, "name"))(items)
-        max_discounts_by_item = compose(partial(key_by, "name"), frappe.db.sql)(
-            """
-                SELECT name, max_discount FROM `tabItem`
-                WHERE item_code IN %(item_codes)s
-            """,
-            values={"item_codes": item_codes},
-            as_dict=1,
-        )
-        return [merge(x, max_discounts_by_item.get(x.get("name")), {}) for x in items]
+	doc.update_stock = pos_profile.get('update_stock')
 
-    def get_pricing_rule_item_groups(pricing_rules):
-        
-        names = compose(list, partial(pluck, "name"))(pricing_rules)
-        # item_groups_by_parent = compose(partial(key_by, "parent"), frappe.db.sql)(
-        #     """
-        #         SELECT parent, item_group, uom 
-        #         FROM `tabPricing Rule Item Group`
-        #         WHERE parent IN %(names)s
-        #     """,
-        #     values={"names": names},
-        #     as_dict=1,
-        # )
-        item_groups_by_parent = compose(partial(key_by, "parent"), frappe.db.sql)(
-            """
-                SELECT parent, item_group, uom 
-                FROM `tabPricing Rule Item Group`
-                WHERE parent IN %(names)s
-                UNION ALL
-                select `tabPricing Rule Item Code`.parent,`tabItem`.item_group,`tabPricing Rule Item Code`.uom 
-                FROM `tabPricing Rule Item Code` LEFT JOIN `tabItem` ON `tabPricing Rule Item Code`.item_code=`tabItem`.item_code
-                WHERE `tabPricing Rule Item Code`.parent IN %(names)s
-            """,
-            values={"names": names},
-            as_dict=1,
-        )
-        return [
-            merge(x, item_groups_by_parent.get(x.get("name")), {})
-            for x in pricing_rules
-        ]
+	if pos_profile.get('name'):
+		pos_profile = frappe.get_doc('POS Profile', pos_profile.get('name'))
+		pos_profile.validate()
 
-    data = get_pos_data()
-    doc = frappe.new_doc('Sales Invoice')
-    doc.is_pos = 1
-    pos_profile = get_pos_profile(doc.company) or {}
-    if not pos_profile:
-        frappe.throw(_("POS Profile is required to use Point-of-Sale"))
+	company_data = get_company_data(doc.company)
+	update_pos_profile_data(doc, pos_profile, company_data)
+	update_multi_mode_option(doc, pos_profile)
+	default_print_format = pos_profile.get('print_format') or "Point of Sale"
+	print_template = frappe.db.get_value('Print Format', default_print_format, 'html')
+	items_list = get_items_list(pos_profile, doc.company)
+	customers = get_customers_list(pos_profile)
 
-    if not doc.company:
-        doc.company = pos_profile.get('company')
+	doc.plc_conversion_rate = update_plc_conversion_rate(doc, pos_profile)
 
-    doc.update_stock = pos_profile.get('update_stock')
-
-    if pos_profile.get('name'):
-        pos_profile = frappe.get_doc('POS Profile', pos_profile.get('name'))
-        pos_profile.validate()
-        
-    serial_no = get_serial_no_data(pos_profile, doc.company)
-    pricing_rules = (
-        get_pricing_rule_item_groups(data.get("pricing_rules"))
-        if data.get("pricing_rules")
-        else []
-    )
-
-    def get_tax_data(tax_data, company):
-        tax_accounts = [
-            x.get("name")
-            for x in frappe.db.sql(
-                """
-                SELECT name FROM `tabAccount`
-                WHERE account_type = "Tax"
-                AND is_group = 0
-                AND company = %(company)s
-            """,
-                values={"company": company},
-                as_dict=1,
-            )
-        ]
-        return valmap(
-            lambda x: {k: v for k, v in x.items() if k in tax_accounts}, tax_data
-        )
-    
-   
-
-    return merge(
-        data,
-        {'serial_no_data':serial_no},
-        {"price_list_data": get_price_list_data(data.get("doc").selling_price_list)},
-         {"items": add_discounts(data.get("items"))},
-         {"pricing_rules": pricing_rules},
-        {
-            "tax_data": get_tax_data(
-                data.get("tax_data"), data.get("pos_profile").company
-            )
-        },
-       
-
-        )
+	return {
+		'doc': doc,
+		'default_customer': pos_profile.get('customer'),
+		'items': items_list,
+		'item_groups': get_item_groups(pos_profile),
+		'customers': customers,
+		'address': get_customers_address(customers),
+		'contacts': get_contacts(customers),
+		'serial_no_data': get_serial_no_data(pos_profile, doc.company),
+		'batch_no_data': get_batch_no_data(),
+		'barcode_data': get_barcode_data(items_list),
+		'tax_data': get_item_tax_data(),
+		'price_list_data': get_price_list_data(doc.selling_price_list, doc.plc_conversion_rate),
+		'customer_wise_price_list': get_customer_wise_price_list(),
+		'bin_data': get_bin_data(pos_profile),
+		'pricing_rules': get_pricing_rule_data(doc),
+		'print_template': print_template,
+		'pos_profile': pos_profile,
+		'meta': get_meta()
+	}
     
 def get_customers_address(customers):
 	customer_address = {}
