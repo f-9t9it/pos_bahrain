@@ -2,12 +2,10 @@ frappe.ui.form.on('Sales Invoice', {
   refresh: function (frm) {
     get_employee(frm);
     _create_custom_buttons(frm);
-    pos_bahrain.scripts.extensions.hide_sales_return('Return / Credit Note','Create');
-    pos_bahrain.scripts.extensions.hide_sales_return('Payment','Create');
-    pos_bahrain.scripts.extensions.hide_sales_return('Payment Request','Create');
-    pos_bahrain.scripts.extensions.hide_sales_return('Invoice Discounting','Create');
-    pos_bahrain.scripts.extensions.hide_sales_return('Maintenance Schedule','Create');
-    pos_bahrain.scripts.extensions.hide_sales_return('Subscription','Create');
+	var bt = ['Return / Credit Not', 'Payment',  'Payment Request', 'Invoice Discounting', 'Maintenance Schedule', 'Subscription']
+		bt.forEach(function(bt){
+			frm.page.remove_inner_button(bt, 'Create')
+		});
   },
   customer: function (frm) {
     _set_customer_account_balance(frm);
