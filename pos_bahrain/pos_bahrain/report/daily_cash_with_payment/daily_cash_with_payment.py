@@ -9,10 +9,10 @@ from functools import partial, reduce
 from toolz import groupby, pluck, compose, merge, keyfilter
 
 def execute(filters=None):
-	mop = _get_mop()
+	mop, cash_mop = _get_mop(filters)
 
 	columns = _get_columns(mop, filters)
-	data = _get_data(_get_clauses(filters), filters, mop)
+	data = _get_data(_get_clauses(filters), filters, mop, cash_mop)
 
 	return columns, data
 
@@ -66,8 +66,6 @@ def _get_columns(mop, filters):
 			make_column("show_creator", "Show Creator"),
 		])
 
-	print(columns)
-
 	def make_mop_column(row):
 		return make_column(
 			row.replace(" ", "_").lower(),
@@ -81,8 +79,7 @@ def _get_columns(mop, filters):
 
 	return columns
 
-
-def _get_data(clauses, filters, mop):
+def _get_data(clauses, filters, mop, cash_mop):
 	result = frappe.db.sql(
 		"""
 			SELECT
@@ -133,8 +130,8 @@ def _get_data(clauses, filters, mop):
 				pe.pb_posting_time AS posting_time,
 				0 AS change_amount,
 				pe.mode_of_payment AS mode_of_payment,
-				# pe.paid_amount AS amount,
 				case when (pe.payment_type="Pay") then -pe.paid_amount else pe.paid_amount end as amount,
+				# pe.paid_amount AS amount,
 				pe.reference_no AS ref_no,
 				pe.reference_date AS ref_date,
 				pe.party_name AS customer,
@@ -157,7 +154,8 @@ def _get_data(clauses, filters, mop):
 
 	result = _sum_invoice_payments(
 		groupby('invoice', result),
-		mop
+		mop,
+		cash_mop
 	)
 
 	if filters.get('summary_view'):
@@ -172,7 +170,6 @@ def _get_data(clauses, filters, mop):
 		return datetime.combine(item["posting_date"], datetime.min.time()) + item["posting_time"]
 
 	return sorted(result, key=get_sort_key)
-
 
 def _summarize_payments(result, mop):
 	summary = []
@@ -203,7 +200,7 @@ def _summarize_payments(result, mop):
 	return [merge(row, {'total': get_row_total(row)}) for row in summary]
 
 
-def _sum_invoice_payments(invoice_payments, mop):
+def _sum_invoice_payments(invoice_payments, mop, cash_mop):
 	data = []
 
 	mop_cols = list(
@@ -211,7 +208,7 @@ def _sum_invoice_payments(invoice_payments, mop):
 	)
 
 	def make_change_total(row):
-		row['cash'] = row.get('cash') - row.get('change')
+		row[cash_mop] = row.get(cash_mop) - row.get('change')
 		row['total'] = sum([
 			row[mop_col] for mop_col in mop_cols
 		])
@@ -236,7 +233,6 @@ def _sum_invoice_payments(invoice_payments, mop):
 
 	return data
 
-
 def _get_clauses(filters):
 	if filters.query_doctype == 'POS Profile':
 		clauses = [
@@ -254,8 +250,8 @@ def _get_clauses(filters):
 		return " AND ".join(clauses)
 	frappe.throw(_("Invalid 'Query By' filter"))
 
-
 def _make_payment_row(mop_cols, _, row):
+
 	mop = row.get('mode_of_payment')
 	amount = row.get('amount')
 
@@ -291,14 +287,29 @@ def _make_payment_row(mop_cols, _, row):
 
 	return _
 
+def _get_mop(filters):
 
-def _get_mop():
-	mop = frappe.get_all('POS Bahrain Settings MOP', fields=['mode_of_payment'])
+	mop = []
+	cash_mop = None
+
+	if filters.get('query_doctype') == 'POS Profile':
+		pos_profile = frappe.get_doc("POS Profile", filters.get('query_doc'))
+		
+		payments = pos_profile.get('payments', [])
+		
+		mop = [payment.get('mode_of_payment') for payment in payments]
+		
+		for payment in payments:
+			if payment.get('is_cash'):
+				cash_mop = payment.get('mode_of_payment').replace(" ", "_").lower()
+				break
+	else:
+		mop_records = frappe.get_all('POS Bahrain Settings MOP', fields=['mode_of_payment'])
+		mop = list(pluck('mode_of_payment', mop_records))
 
 	if not mop:
 		frappe.throw(_('Please set Report MOP under POS Bahrain Settings'))
-
-	return list(pluck('mode_of_payment', mop))
+	return mop, cash_mop
 
 
 def _new_invoice_payment(mop_cols):
