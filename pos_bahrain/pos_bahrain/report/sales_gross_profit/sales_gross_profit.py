@@ -47,15 +47,19 @@ def get_data(from_date, to_date):
             si.grand_total AS total_sales,
             ({total_field} - si.outstanding_amount) AS payment,
             si.outstanding_amount AS outstanding,
-            ip.mode_of_payment AS mode_of_payment,
+            IFNULL(ip.mode_of_payment, pe.mode_of_payment) AS mode_of_payment,
             round(((SELECT sum(inv_item.discount_amount * inv_item.qty)
                      FROM `tabSales Invoice Item` inv_item WHERE parent = si.name) + si.discount_amount) /
                   ((SELECT sum(inv_item.discount_amount * inv_item.qty)
                      FROM `tabSales Invoice Item` inv_item WHERE parent = si.name) + si.discount_amount + si.total) * 100, 3) AS disc_percent
         FROM
-            `tabPayment Entry` pe, `tabSales Invoice` si
+            `tabSales Invoice` si
         LEFT JOIN
             `tabSales Invoice Payment` ip ON ip.parent = si.name
+        LEFT JOIN
+            `tabPayment Entry Reference` per ON per.reference_name = si.name
+        LEFT JOIN
+            `tabPayment Entry` pe ON pe.name = per.parent
         WHERE
             si.docstatus = 1 AND si.posting_date BETWEEN '{from_date}' AND '{to_date}'
         GROUP BY
