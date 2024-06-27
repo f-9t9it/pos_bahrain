@@ -6,9 +6,9 @@ from frappe import _
 
 @frappe.whitelist()
 def make_sales_invoice(source_name, target_doc=None):
-    si_exist = frappe.db.sql("""select parent from `tabSales Invoice Item` where pb_quotation='%(quotation)s' LIMIT 1"""%{'quotation':source_name})
-    if (si_exist):
-        frappe.throw("""Sales Invoice exists for this quotation : <a href= '#Form/Sales Invoice/%(si)s'>%(si)s</a>"""%{'si':si_exist[0][0]} )
+    # si_exist = frappe.db.sql("""select parent from `tabSales Invoice Item` where pb_quotation='%(quotation)s' LIMIT 1"""%{'quotation':source_name})
+    # if (si_exist):
+    #     frappe.throw("""Sales Invoice exists for this quotation : <a href= '#Form/Sales Invoice/%(si)s'>%(si)s</a>"""%{'si':si_exist[0][0]} )
     return _make_sales_invoice(source_name, target_doc)
 
 
