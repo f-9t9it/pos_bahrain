@@ -21,7 +21,10 @@ from pos_bahrain.utils.report import make_period_list
 
 # from version-11 profit and loss statement customized
 def execute(filters=None):
-    period_list = make_period_list(filters.get('start_date'), filters.get('end_date'))
+    period_list = make_period_list(
+		filters.period_start_date,
+		filters.period_end_date,
+	)
 
     income = get_data(
         filters.company,
