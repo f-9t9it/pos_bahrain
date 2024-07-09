@@ -1,5 +1,6 @@
 // Copyright (c) 2018, 	9t9it and contributors
 // For license information, please see license.txt
+frappe.provide('frappe.ui.form');
 
 frappe.ui.form.BatchQuickEntryForm = frappe.ui.form.QuickEntryForm.extend({
   render_dialog: async function() {
