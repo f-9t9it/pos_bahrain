@@ -160,5 +160,5 @@ frappe.query_reports["General Ledger with Party Names"] = {
 	]
 }
 
-erpnext.utils.add_dimensions('General Ledger', 15)
+erpnext.utils.add_dimensions('General Ledger with Party Names', 15)
 
