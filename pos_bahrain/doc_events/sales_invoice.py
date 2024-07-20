@@ -47,7 +47,7 @@ def validate(doc, method):
                 )
 
     _validate_return_series(doc)
-    doc.pb_available_balance = get_customer_account_balance(doc.customer)
+    # doc.pb_available_balance = get_customer_account_balance(doc.customer)
 
 def before_save(doc, method):
     set_cost_center(doc)
