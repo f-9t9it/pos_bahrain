@@ -2,7 +2,7 @@ frappe.ui.form.on('Sales Invoice', {
   refresh: function (frm) {
     get_employee(frm);
     _create_custom_buttons(frm);
-	var bt = ['Return / Credit Not', 'Payment',  'Payment Request', 'Invoice Discounting', 'Maintenance Schedule', 'Subscription']
+	var bt = ['Payment',  'Payment Request', 'Invoice Discounting', 'Maintenance Schedule', 'Subscription']
 		bt.forEach(function(bt){
 			frm.page.remove_inner_button(bt, 'Create')
 		});

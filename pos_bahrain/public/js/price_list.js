@@ -55,8 +55,8 @@ async function _get_selling_rates(item, price_list, currency) {
 
 frappe.ui.form.on('Quotation', { onload: function(frm){ setup_queries(frm)} });
 frappe.ui.form.on('Sales Order', { onload: function(frm){ setup_queries(frm)} });
-frappe.ui.form.on('Sales Invoice', { onload: function(frm){ setup_queries(frm)} });
+// frappe.ui.form.on('Sales Invoice', { onload: function(frm){ setup_queries(frm)} });
 
 frappe.ui.form.on('Quotation Item', { pb_price_list: _set_price_list_rate });
 frappe.ui.form.on('Sales Order Item', { pb_price_list: _set_price_list_rate });
-frappe.ui.form.on('Sales Invoice Item', { pb_price_list: _set_price_list_rate });
+// frappe.ui.form.on('Sales Invoice Item', { pb_price_list: _set_price_list_rate });
