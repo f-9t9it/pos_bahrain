@@ -2,7 +2,7 @@ frappe.ui.form.on('Sales Invoice', {
   refresh: function (frm) {
     get_employee(frm);
     _create_custom_buttons(frm);
-    pos_bahrain.scripts.extensions.hide_sales_return('Return / Credit Note','Create');
+    // pos_bahrain.scripts.extensions.hide_sales_return('Return / Credit Note','Create');
     pos_bahrain.scripts.extensions.hide_sales_return('Payment','Create');
     pos_bahrain.scripts.extensions.hide_sales_return('Payment Request','Create');
     pos_bahrain.scripts.extensions.hide_sales_return('Invoice Discounting','Create');
@@ -171,17 +171,17 @@ function get_total_stock_qty(frm, cdt, cdn) {
   })
 }
 
-frappe.ui.form.on('Sales Invoice', {
-  validate: function (frm) {
-    if (cur_frm.doc.is_return) {
-      cur_frm.set_value("main_invoice", "");
-      cur_frm.set_value("return_si_no", "");
-      cur_frm.set_value("credit_note_invoice", "");
-      cur_frm.set_value("main_si", "");
-      cur_frm.set_value("credit_note_balance", cur_frm.doc.grand_total);
-     }
-  }
-})
+// frappe.ui.form.on('Sales Invoice', {
+//   validate: function (frm) {
+//     if (cur_frm.doc.is_return) {
+//       cur_frm.set_value("main_invoice", "");
+//       cur_frm.set_value("return_si_no", "");
+//       cur_frm.set_value("credit_note_invoice", "");
+//       cur_frm.set_value("main_si", "");
+//       cur_frm.set_value("credit_note_balance", cur_frm.doc.grand_total);
+//      }
+//   }
+// })
 cur_frm.fields_dict.return_si_no.get_query = function(doc) {
 	return {
 		filters: {
