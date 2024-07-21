@@ -35,7 +35,7 @@ frappe.ui.form.on('Sales Invoice', {
   refresh: function (frm) {
     get_employee(frm);
     _create_custom_buttons(frm);
-    pos_bahrain.scripts.extensions.hide_sales_return('Return / Credit Note','Create');
+    // pos_bahrain.scripts.extensions.hide_sales_return('Return / Credit Note','Create');
     pos_bahrain.scripts.extensions.hide_sales_return('Payment','Create');
     pos_bahrain.scripts.extensions.hide_sales_return('Payment Request','Create');
     pos_bahrain.scripts.extensions.hide_sales_return('Invoice Discounting','Create');
