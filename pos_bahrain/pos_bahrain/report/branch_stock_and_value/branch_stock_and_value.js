@@ -3,7 +3,15 @@
 /* eslint-disable */
 frappe.query_reports["Branch Stock And Value"] = {
 	  "filters": [
-{
+                {
+                        "fieldname": "include_uom",
+                        "label": __("Include UOM"),
+                        "fieldtype": "Link",
+                        "options":"UOM",
+                        
+                       
+                },      
+                {
                         "fieldname":"from_date",
                         "label": __("From Date"),
                         "fieldtype": "Date",
@@ -46,5 +54,6 @@ frappe.query_reports["Branch Stock And Value"] = {
                         "fieldtype": "Check",
                         "default": 1
                 },
+               
         ]
 }

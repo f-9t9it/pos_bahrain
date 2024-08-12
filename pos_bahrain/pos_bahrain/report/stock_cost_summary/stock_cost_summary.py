@@ -62,6 +62,9 @@ def _get_data(data):
         )()
 
     def item_group_by_data(rows):
+        if not rows:
+            return {}
+        
         ref_data = rows[0]
         sum_fields = [
             "reorder_level",
@@ -78,9 +81,13 @@ def _get_data(data):
             "ret_val",
             "sku_counts",
         ]
+
         for row in rows[1:]:
-            ref_data = merge(ref_data, {x: ref_data[x] + row[x] for x in sum_fields})
+            for field in sum_fields:
+                ref_data[field] = ref_data.get(field, 0) + row.get(field, 0)
+        
         return ref_data
+
 
     merge_by_item_group = compose(
         partial(valmap, item_group_by_data), partial(groupby, "item_group")

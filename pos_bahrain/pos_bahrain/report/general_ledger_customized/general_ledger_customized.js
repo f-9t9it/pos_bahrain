@@ -246,4 +246,4 @@ frappe.query_reports["General Ledger Customized"] = {
 	]
 }
 
-erpnext.utils.add_dimensions('General Ledger', 15)
+erpnext.utils.add_dimensions('General Ledger Customized', 15)
