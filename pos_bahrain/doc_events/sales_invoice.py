@@ -88,17 +88,17 @@ def on_submit(doc, method):
                 flt(payment.base_amount) / flt(conversion_rate),
             )
     enforce_full_payment(doc)
-    _make_gl_entry_for_provision_credit(doc)
-    _make_gl_entry_on_credit_issued(doc)
-    _make_return_dn(doc)
+    # _make_gl_entry_for_provision_credit(doc)
+    # _make_gl_entry_on_credit_issued(doc)
+    # _make_return_dn(doc)
     gl_entries_update(doc)
-    update_credit_note(doc)
+    # update_credit_note(doc)
     update_against_sales_invoice(doc)
 
 
 def before_cancel(doc, method):
     gl_entries_cancel(doc)
-    update_credit_note_cancel(doc)
+    # update_credit_note_cancel(doc)
     parent = _get_parent_by_account(doc.name)
     if not parent:
         return
