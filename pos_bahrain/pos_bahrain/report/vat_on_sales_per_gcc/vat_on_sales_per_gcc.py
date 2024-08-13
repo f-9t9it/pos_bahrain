@@ -61,20 +61,17 @@ def _get_columns(doctype, filters):
 
 
 def _get_filters(doctype, filters):
-    # is_include = filters.vat_type not in ["Standard Rated", "Zero Rated"]
     is_include = filters.vat_type not in ["ZeroRated"]
     vat_exempt_accounts = [
         x[0]
         for x in frappe.get_all(
             "POS Bahrain Settings Tax Category",
             # filters={"category": filters.vat_type} if is_include else {"category":('not in',(filters.vat_type))},
-            # filters={"category": filters.vat_type} if is_include else {"category":('not in',(filters.vat_type))},or_filters= {"category":('not in' ,("Standard Rated", "Zero Rated" ))},
             filters={"category": filters.vat_type} if is_include else {"category":('not in',(filters.vat_type))},or_filters= {"category":('not in' ,("ZeroRated" ))},
             fields=["account"],
             as_list=1,
         )
     ]
-    print('/////////',vat_exempt_accounts)
     if not vat_exempt_accounts:
         msg = "Please setup {}: <em>VAT Tax Categories</em>".format(
             frappe.get_desk_link("POS Bahrain Settings", "")
@@ -341,12 +338,16 @@ def get_itemised_tax(taxes, with_tax_account=False):
 
 
 def get_itemised_taxable_amount(items):
+    # for x in items:
+    #     if x.parent == "PI-24-00007":
+    #         frappe.log_error(x.net_amount,title='items')
     itemised_taxable_amount = frappe._dict()
     for item in items:
         item_code = item.item_code or item.item_name
         itemised_taxable_amount.setdefault(item_code, 0)
-        # itemised_taxable_amount[item_code] += item.base_net_amount
-        if item.net_amount is not None:
-            itemised_taxable_amount[item_code] += item.net_amount
+        if item.base_net_amount is not None:
+            itemised_taxable_amount[item_code] += item.base_net_amount
+        # if item.net_amount is not None:
+        #     itemised_taxable_amount[item_code] += item.net_amount
 
     return itemised_taxable_amount
