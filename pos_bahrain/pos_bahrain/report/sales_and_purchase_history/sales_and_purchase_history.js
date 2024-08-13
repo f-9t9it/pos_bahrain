@@ -9,7 +9,11 @@ frappe.query_reports['Sales and Purchase History'] = {
       label: __('Item Code'),
       fieldtype: 'Link',
       options: 'Item',
-      reqd: 1,
+    },
+    {
+      fieldname: 'item_barcode',
+      label: __('Item Barcode'),
+      fieldtype: 'Data',
     },
     {
       fieldname: 'from_date',

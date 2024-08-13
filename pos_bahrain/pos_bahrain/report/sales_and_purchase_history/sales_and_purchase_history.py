@@ -53,6 +53,11 @@ def _get_columns(filters):
 
 
 def _get_filters(filters, opening=False):
+    item_code = filters.item_code
+    
+    if filters.item_barcode:
+        item_code = frappe.db.get_value("Item Barcode", {"barcode": filters.item_barcode}, "parent")
+    
     clauses = concatv(
         ["sle.posting_date BETWEEN %(from_date)s AND %(to_date)s"]
         if not opening
@@ -61,13 +66,14 @@ def _get_filters(filters, opening=False):
         ["sle.warehouse = %(warehouse)s"] if filters.warehouse else [],
     )
     values = merge(
-        pick(["item_code", "price_list", "warehouse"], filters),
-        {"from_date": filters.from_date, "to_date": filters.to_date},
+        pick(["price_list", "warehouse"], filters),
+        {"item_code": item_code, "from_date": filters.from_date, "to_date": filters.to_date},
     )
     return (
         {"clauses": " AND ".join(clauses)},
         values,
     )
+
 
 
 def _get_data(clauses, values, keys):
