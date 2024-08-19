@@ -103,6 +103,9 @@ const gl_payment_item = {
     const { payment_type } = frm.doc;
     set_template_type(payment_type, cdt, cdn);
   },
+  items_remove: function (frm, cdt, cdn) {
+    set_calculated_fields(frm, cdt, cdn);
+  },
   template_type: function (frm, cdt, cdn) {
     frappe.model.set_value(cdt, cdn, 'tax_template', null);
   },
