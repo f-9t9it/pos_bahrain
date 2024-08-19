@@ -76,6 +76,7 @@ function set_tax_amount(frm, cdt, cdn) {
     'tax_amount',
     (net_amount * rate) / 100
   );
+   frm.refresh();
 }
 
 function show_general_ledger(frm) {
