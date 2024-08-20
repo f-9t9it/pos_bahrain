@@ -40,6 +40,9 @@ class GLPayment(AccountsController):
 
     def on_cancel(self):
         self._make_gl_entries(cancel=1)
+        gl_entry = frappe.db.get_list("GL Entry", filters={"voucher_no": self.name})
+        for gl in gl_entry:
+            frappe.db.delete("GL Entry", gl.name)
 
     def _set_remarks(self):
         get_remarks = compose(lambda x: "\n".join(x), partial(filter, None))
