@@ -39,7 +39,16 @@ class GLPayment(AccountsController):
         self._make_gl_entries()
 
     def on_cancel(self):
-        self._make_gl_entries(cancel=1)
+        self.ignore_linked_doctypes = (
+            "GL Entry",
+            "Stock Ledger Entry",
+            "Payment Ledger Entry",
+            "Repost Payment Ledger",
+            "Repost Payment Ledger Items",
+            "Repost Accounting Ledger",
+            "Repost Accounting Ledger Items",
+        )
+        self._make_gl_entries(1)
 
     def _set_remarks(self):
         get_remarks = compose(lambda x: "\n".join(x), partial(filter, None))
