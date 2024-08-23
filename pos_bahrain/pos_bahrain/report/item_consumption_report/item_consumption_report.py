@@ -12,6 +12,7 @@ from frappe.utils import getdate, add_days, add_months
 from frappe.utils import cint
 from frappe.utils.data import flt
 from datetime import datetime
+from erpnext.stock.utils import get_stock_balance
 
 
 from pos_bahrain.pos_bahrain.report.item_consumption_report.helpers import (
@@ -102,6 +103,17 @@ def _get_columns(filters):
         make_column("average_sales_quantity", "Average Sales Quantity", type="Float", width=120),
     ]
 
+    additional_warehouse = filters.get("additional_warehouse")
+    if additional_warehouse:
+        columns.append(
+            make_column(
+                "additional_warehouse_stock_qty", 
+                label="Add Ware Stock Qty", 
+                type="Float",
+                width=140
+            )
+        )
+
     def get_warehouse_columns():
         if not filters.get("warehouse"):
             return [
@@ -137,6 +149,7 @@ def _get_columns(filters):
 
 
 def _get_data(clauses, values, columns,filters):
+    additional_warehouse = filters.get("additional_warehouse")
     items = frappe.db.sql(
         """
             SELECT
@@ -146,7 +159,7 @@ def _get_data(clauses, values, columns,filters):
                 i.item_name AS item_name,
                 i.item_group AS item_group,
                 id.default_supplier AS supplier,
-                p.price_list_rate AS price,
+                MAX(p.price_list_rate) AS price,
                 b.actual_qty AS stock
             FROM `tabItem` AS i
             LEFT JOIN `tabItem Price` AS p
@@ -162,12 +175,20 @@ def _get_data(clauses, values, columns,filters):
             LEFT JOIN `tabItem Default` AS id
                 ON id.parent = i.name AND id.company = %(company)s
             WHERE i.disabled = 0 AND {clauses}
+            GROUP BY
+                i.item_code, i.brand, i.item_name, i.item_group, id.default_supplier, b.actual_qty
         """.format(
             **clauses
         ),
         values=values,
         as_dict=1,
     )
+
+    # if additional_warehouse:
+    #     for item in items:
+    #         stock_balance = get_stock_balance(item['item_code'], additional_warehouse)
+    #         item['additional_warehouse_stock_qty'] = stock_balance
+
     def get_number_of_days(start_date, end_date):
         start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
         end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
@@ -175,6 +196,9 @@ def _get_data(clauses, values, columns,filters):
         return (end_date_obj - start_date_obj).days
     
     for item in items:
+        if additional_warehouse:
+            stock_balance = get_stock_balance(item['item_code'], additional_warehouse)
+            item['additional_warehouse_stock_qty'] = stock_balance
         item_qty ={item.item_code:0}
         statuses_to_exclude = ["Cancelled", "Closed"]
         si = frappe.get_all("Sales Order",filters={

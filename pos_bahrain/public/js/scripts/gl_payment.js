@@ -1,6 +1,7 @@
+
 function setup_queries(frm) {
   frm.set_query('cost_center', function ({ company }) {
-    return { filters: { company, is_group: 0 } };
+    return { filters: { company, is_group: 1 } };
   });
   frm.set_query('party_type', function () {
     return {
@@ -102,6 +103,12 @@ const gl_payment_item = {
     const { payment_type } = frm.doc;
     set_template_type(payment_type, cdt, cdn);
   },
+items_remove: function (frm, cdt, cdn) {
+    const { payment_type } = frm.doc;
+    set_template_type(payment_type, cdt, cdn);
+ set_calculated_fields(frm, cdt, cdn);
+console.log("removed");
+  },
   template_type: function (frm, cdt, cdn) {
     frappe.model.set_value(cdt, cdn, 'tax_template', null);
   },
@@ -132,6 +139,7 @@ const gl_payment_item = {
   },
   rate: set_tax_amount,
   tax_amount: set_calculated_fields,
+	
 };
 
 export default function () {
@@ -139,6 +147,7 @@ export default function () {
     gl_payment_item,
     setup: setup_queries,
     refresh: show_general_ledger,
+	items: set_calculated_fields,
     payment_type: function (frm) {
       function get_party_type(payment_type) {
         if (payment_type === 'Incoming') {
