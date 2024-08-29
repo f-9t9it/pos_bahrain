@@ -17,12 +17,12 @@ function calculateRate(frm, cdt, cdn) {
   frappe.call({
       method: "pos_bahrain.doc_events.sales_invoice.fetch_item_tax_template",
       args: {
-          item: child.item_code
+          tax_type: child.item_tax_template
       },
       callback: function (r) {  
           var data = r.message;
           var tax_rate = data.tax_rate; 
-          var standard_rate = data.standard_rate;
+          var standard_rate = child.rate
           var total_amount = standard_rate * quantity
           var total_tax = (total_amount * tax_rate) / 100; 
           var total_gross_amount = standard_rate + total_tax; 
