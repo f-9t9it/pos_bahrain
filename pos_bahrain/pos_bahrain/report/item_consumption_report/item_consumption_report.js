@@ -68,5 +68,13 @@ frappe.query_reports['Item Consumption Report'] = {
       fieldtype: 'Data',
       // options: 'Brand',
     },
+    {
+      fieldname: 'additional_warehouse',
+      label: __('Additional Warehouse'),
+      fieldtype: 'Link',
+      options: 'Warehouse',
+      description:"New Column is added with stock qty",
+      get_query: { filters: { is_group: 0 } },
+    },
   ],
 };
