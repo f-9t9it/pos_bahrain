@@ -8,6 +8,7 @@ from frappe.utils import flt
 from erpnext.setup.utils import get_exchange_rate
 
 
+
 def validate(doc, method):
     if (
         doc.is_pos
@@ -89,3 +90,7 @@ def set_outstanding_pos_invoice(doc):
     if zero_out_outstanding_pos_invoice:
         frappe.db.set_value("Sales Invoice", doc.name, "outstanding_amount", 0.00)
         frappe.db.set_value("Sales Invoice", doc.name, "status", "Paid")
+
+def fetch_item_tax_template(tax_type):
+    tax_rate = frappe.db.get_all("Item Tax Template Detail", filters={"parent": tax_type, fields=["*"])
+    return {"tax_rate": tax_rate[0]["tax_rate"]}
