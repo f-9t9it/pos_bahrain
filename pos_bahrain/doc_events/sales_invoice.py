@@ -653,3 +653,7 @@ def enforce_full_payment(doc):
     if enforce_payment == 1 and user_role not in user_logged_roles:
         if doc.grand_total != doc.total_advance and doc.outstanding_amount != 0 and doc.is_return != 1:
             return frappe.throw("Your Roles Do not  Allow you to Create an Invoice With an Oustanding Amount")
+
+def fetch_item_tax_template(tax_type):
+    tax_rate = frappe.db.get_all("Item Tax Template Detail", filters={"parent": tax_type, fields=["*"])
+    return {"tax_rate": tax_rate[0]["tax_rate"]}
