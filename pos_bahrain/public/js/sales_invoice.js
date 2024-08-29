@@ -1,9 +1,15 @@
 frappe.ui.form.on('Sales Invoice Item', {
   item_code: function(frm, cdt, cdn) {
+	var child = locals[cdt][cdn];
+	  if (child.item_tax_template) { 
       calculateRate(frm, cdt, cdn);
+	  }
   },
   qty: function(frm, cdt, cdn) {
+	  var child = locals[cdt][cdn];
+	  if (child.item_tax_template) { 
       calculateRate(frm, cdt, cdn);
+	  }
   }
 });
 
