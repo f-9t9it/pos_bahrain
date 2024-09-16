@@ -655,5 +655,5 @@ def enforce_full_payment(doc):
             return frappe.throw("Your Roles Do not  Allow you to Create an Invoice With an Oustanding Amount")
 
 def fetch_item_tax_template(tax_type):
-    tax_rate = frappe.db.get_all("Item Tax Template Detail", filters={"parent": tax_type, fields=["*"])
+    tax_rate = frappe.db.get_all("Item Tax Template Detail", filters={"parent": tax_type}, fields=["*"])
     return {"tax_rate": tax_rate[0]["tax_rate"]}
