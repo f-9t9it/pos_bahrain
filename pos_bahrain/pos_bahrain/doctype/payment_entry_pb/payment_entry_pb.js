@@ -3,6 +3,8 @@
 
 {% include "erpnext/accounts/doctype/payment_entry/payment_entry.js" %}
 
+frappe.provide("pos_bahrain.scripts.payment_entry_pb")
+
 frappe.ui.form.handlers['Payment Entry PB'] =
   frappe.ui.form.handlers['Payment Entry'];
 
@@ -12,4 +14,4 @@ Object.entries(frappe.ui.form.handlers['Payment Entry PB']).forEach(
   }
 );
 
-frappe.ui.form.on('Payment Entry PB', pos_bahrain.scripts.payment_entry_pb());
+frappe.ui.form.on('Payment Entry PB', pos_bahrain.scripts.payment_entry_pb);
