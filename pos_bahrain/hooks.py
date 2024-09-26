@@ -24,6 +24,8 @@ app_include_js = [
     "/assets/js/pos_bahrain.min.js",
     "/assets/pos_bahrain/js/batch_quick_entry.js",
     "/assets/pos_bahrain/js/meta.js",
+ "/assets/pos_bahrainp/js/warehouse_tree.js"
+
     # "pos_bahain/public/js/taxes_and_totals.js",
 ]
 
