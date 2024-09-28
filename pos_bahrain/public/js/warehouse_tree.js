@@ -1,3 +1,4 @@
+
 frappe.treeview_settings['Warehouse'] = {
 	get_tree_nodes: "erpnext.stock.doctype.warehouse.warehouse.get_children",
 	add_tree_node: "erpnext.stock.doctype.warehouse.warehouse.add_node",
