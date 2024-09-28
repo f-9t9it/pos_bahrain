@@ -1,7 +1,7 @@
 
 frappe.treeview_settings['Warehouse'] = {
-	get_tree_nodes: "erpnext.stock.doctype.warehouse.warehouse.get_children",
-	add_tree_node: "erpnext.stock.doctype.warehouse.warehouse.add_node",
+	get_tree_nodes: "pos_bahrain.api.warehouse.get_children",
+	add_tree_node: "pos_bahrain.api.warehouse.add_node",
 	get_tree_root: false,
 	root_label: "Warehouses",
 	filters: [{
