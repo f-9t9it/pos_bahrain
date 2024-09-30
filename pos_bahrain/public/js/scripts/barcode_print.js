@@ -1,3 +1,4 @@
+frappe.provide('pos_bahrain.scripts')
 import { set_uom_query } from './sales_invoice';
 import scan_barcode from './extensions/scan_barcode.js';
 
@@ -72,7 +73,7 @@ function load_print_docs_from_route(frm) {
   }
 }
 
-const barcode_print_item = {
+pos_bahrain.scripts.barcode_print.barcode_print_item = {
   items_add: function(frm, cdt, cdn) {
     const row = frappe.get_doc(cdt, cdn);
     frm.script_manager.copy_from_first_row('items', row, ['warehouse']);
@@ -86,9 +87,7 @@ const barcode_print_item = {
   batch: set_actual_qty,
   warehouse: set_actual_qty,
 };
-
-export default {
-  barcode_print_item,
+pos_bahrain.scripts.barcode_print = {
   setup: function(frm) {
     set_link_query(frm);
     set_uom_query(frm);
