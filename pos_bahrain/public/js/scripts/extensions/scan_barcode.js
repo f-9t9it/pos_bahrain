@@ -1,4 +1,5 @@
-export default async function(frm) {
+frappe.provide("pos_bahrain.scripts")
+pos_bahrain.scripts.extensions.scan_barcode = async function(frm) {
   const scan_fieldname = ['Purchase Receipt'].includes(frm.doc.doctype)
     ? 'pb_scan_barcode'
     : 'scan_barcode';

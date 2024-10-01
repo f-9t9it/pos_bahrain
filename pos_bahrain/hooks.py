@@ -24,6 +24,9 @@ app_include_js = [
     "/assets/js/pos_bahrain.min.js",
     "/assets/pos_bahrain/js/batch_quick_entry.js",
     "/assets/pos_bahrain/js/meta.js",
+	"assets/pos_bahrain/js/scripts/barcode_print.js"
+  
+
     # "pos_bahain/public/js/taxes_and_totals.js",
 ]
 
@@ -86,7 +89,7 @@ doctype_js = {
 	"Stock Reconciliation": "public/js/stock_reconciliation.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
-# doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
+doctype_tree_js = {"Warehouse" : "public/js/warehouse_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
 fixtures = [

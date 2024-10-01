@@ -1,5 +1,11 @@
-import { set_uom_query } from './sales_invoice';
-import scan_barcode from './extensions/scan_barcode.js';
+frappe.provide('pos_bahrain.scripts')
+frappe.provide('pos_bahrain.scripts.extensions')
+frappe.provide('pos_bahrain.scripts.sales_invoice')
+
+let scan_barcode = pos_bahrain.scripts.extensions.scan_barcode
+let set_uom_query = pos_bahrain.scripts.sales_invoice
+// import { set_uom_query } from './sales_invoice';
+// import scan_barcode from './extensions/scan_barcode.js';
 
 function set_link_query(frm) {
   frm.set_query('print_dt', {
@@ -72,7 +78,7 @@ function load_print_docs_from_route(frm) {
   }
 }
 
-const barcode_print_item = {
+pos_bahrain.scripts.barcode_print_item = {
   items_add: function(frm, cdt, cdn) {
     const row = frappe.get_doc(cdt, cdn);
     frm.script_manager.copy_from_first_row('items', row, ['warehouse']);
@@ -86,12 +92,10 @@ const barcode_print_item = {
   batch: set_actual_qty,
   warehouse: set_actual_qty,
 };
-
-export default {
-  barcode_print_item,
+pos_bahrain.scripts.barcode_print = {
   setup: function(frm) {
     set_link_query(frm);
-    set_uom_query(frm);
+    set_uom_query.set_uom_query;
     set_batch_query(frm);
     set_warehouse_query(frm);
   },
