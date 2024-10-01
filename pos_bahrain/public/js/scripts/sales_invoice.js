@@ -1,3 +1,5 @@
+frappe.provide("pos_bahrain.scripts")
+
 export async function set_rate_from_batch(frm, cdt, cdn) {
   if (!frappe.boot.pos_bahrain.use_batch_price) {
     return;
@@ -39,15 +41,20 @@ export async function set_uom(frm, cdt, cdn) {
   frappe.model.set_value(cdt, cdn, { uom: uom || stock_uom });
 }
 
-export function set_uom_query(frm) {
-  frm.set_query('uom', 'items', function (doc, cdt, cdn) {
-    const { item_code } = frappe.get_doc(cdt, cdn) || {};
-    return {
-      query: 'pos_bahrain.api.item.query_uom',
-      filters: { item_code },
-    };
-  });
+pos_bahrain.scripts.sales_invoice = {
+  set_uom_query(frm)
+  {
+    frm.set_query('uom', 'items', function (doc, cdt, cdn) {
+      const { item_code } = frappe.get_doc(cdt, cdn) || {};
+      return {
+        query: 'pos_bahrain.api.item.query_uom',
+        filters: { item_code },
+      };
+    });
+  }
 }
+  
+
 
 export function set_cost_center_query(frm) {
   frm.set_query('pb_set_cost_center', function (doc) {
