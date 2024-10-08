@@ -1,3 +1,0 @@
-frappe
-erpnext
-toolz==0.9.0
