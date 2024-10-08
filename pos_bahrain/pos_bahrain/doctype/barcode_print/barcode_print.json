@@ -1,0 +1,111 @@
+{
+ "creation": "2019-12-13 14:14:48.391131",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "price_list",
+  "column_break_3",
+  "print_dt",
+  "use_warehouse",
+  "print_dn",
+  "section_break_3",
+  "set_warehouse",
+  "items_sec",
+  "scan_barcode",
+  "items"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "label": "Price List",
+   "options": "Price List"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "print_dt",
+   "fieldtype": "Link",
+   "label": "Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "print_dn",
+   "fieldtype": "Dynamic Link",
+   "label": "Docname",
+   "options": "print_dt"
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "set_warehouse",
+   "fieldtype": "Link",
+   "label": "Set Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "items_sec",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Barcode"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Barcode Print Item"
+  },
+  {
+   "depends_on": "eval:doc.print_dt == \"Stock Entry\"",
+   "fieldname": "use_warehouse",
+   "fieldtype": "Select",
+   "label": "Use Warehouse",
+   "options": "Source\nTarget"
+  }
+ ],
+ "hide_toolbar": 1,
+ "issingle": 1,
+ "modified": "2021-06-21 17:33:40.714993",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Barcode Print",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Stock User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

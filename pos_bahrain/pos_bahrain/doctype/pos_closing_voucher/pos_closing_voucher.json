@@ -1,0 +1,411 @@
+{
+ "autoname": "PV-.######",
+ "creation": "2018-12-21 18:04:32.841193",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "period_from",
+  "user",
+  "user_full_name",
+  "column_break_3",
+  "period_to",
+  "pos_profile",
+  "company",
+  "amended_from",
+  "section_break_7",
+  "opening_amount",
+  "column_break_10",
+  "closing_amount",
+  "employees_section",
+  "employees",
+  "section_break_15",
+  "total_invoices_top",
+  "col_break_17",
+  "sales_total",
+  "payments_section",
+  "payments",
+  "section_break_21",
+  "total_collected_top",
+  "column_break_23",
+  "total_expected",
+  "column_break_25",
+  "total_base_collected",
+  "invoices_section",
+  "invoices",
+  "pcv_pe_table",
+  "returns_section",
+  "returns",
+  "taxes_section",
+  "taxes",
+  "item_group_sections",
+  "item_groups",
+  "totals_section",
+  "net_total",
+  "tax_total",
+  "discount_total",
+  "grand_total",
+  "outstanding_total",
+  "column_break_17",
+  "total_collected",
+  "change_total",
+  "total_quantity",
+  "total_invoices",
+  "average_sales",
+  "returns_total_section",
+  "returns_net_total",
+  "returns_total",
+  "column_break_33",
+  "returns_quantity"
+ ],
+ "fields": [
+  {
+   "fieldname": "period_from",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Start Date Time",
+   "reqd": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cashier",
+   "options": "User"
+  },
+  {
+   "fieldname": "user_full_name",
+   "fieldtype": "Read Only",
+   "label": "Cashier Name",
+   "options": "user.full_name"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "period_to",
+   "fieldtype": "Datetime",
+   "label": "End Date Time"
+  },
+  {
+   "fieldname": "pos_profile",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "POS Profile",
+   "options": "POS Profile",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "POS Closing Voucher",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "opening_amount",
+   "fieldtype": "Currency",
+   "label": "Opening Cash",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "closing_amount",
+   "fieldtype": "Currency",
+   "label": "Closing Cash",
+   "read_only": 1
+  },
+  {
+   "fieldname": "employees_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "employees",
+   "fieldtype": "Table",
+   "label": "Employees",
+   "options": "POS Voucher Employee"
+  },
+  {
+   "fieldname": "payments_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "payments",
+   "fieldtype": "Table",
+   "options": "POS Voucher Payment"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "invoices_section",
+   "fieldtype": "Section Break",
+   "label": "Invoices"
+  },
+  {
+   "fieldname": "invoices",
+   "fieldtype": "Table",
+   "options": "POS Voucher Invoice"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "returns_section",
+   "fieldtype": "Section Break",
+   "label": "Returns"
+  },
+  {
+   "fieldname": "returns",
+   "fieldtype": "Table",
+   "options": "POS Voucher Invoice"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "taxes_section",
+   "fieldtype": "Section Break",
+   "label": "Taxes"
+  },
+  {
+   "fieldname": "taxes",
+   "fieldtype": "Table",
+   "options": "POS Voucher Tax"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "item_group_sections",
+   "fieldtype": "Section Break",
+   "label": "Item Groups"
+  },
+  {
+   "fieldname": "item_groups",
+   "fieldtype": "Table",
+   "options": "POS Voucher Item Group"
+  },
+  {
+   "fieldname": "totals_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tax_total",
+   "fieldtype": "Currency",
+   "label": "Tax Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "discount_total",
+   "fieldtype": "Currency",
+   "label": "Discount Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "outstanding_total",
+   "fieldtype": "Currency",
+   "label": "Outstanding Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_collected",
+   "fieldtype": "Currency",
+   "label": "Total Collected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "change_total",
+   "fieldtype": "Currency",
+   "label": "Total Change",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_quantity",
+   "fieldtype": "Float",
+   "label": "Total Quantity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_invoices",
+   "fieldtype": "Int",
+   "label": "Total Invoices",
+   "read_only": 1
+  },
+  {
+   "fieldname": "average_sales",
+   "fieldtype": "Currency",
+   "label": "Average Sales per Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "returns_total_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "returns_net_total",
+   "fieldtype": "Currency",
+   "label": "Returns Net Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "returns_total",
+   "fieldtype": "Currency",
+   "label": "Returns Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_33",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "returns_quantity",
+   "fieldtype": "Float",
+   "label": "Returns Quantity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pcv_pe_table",
+   "fieldtype": "Table",
+   "options": "PCV Payment Entry Table"
+  },
+  {
+   "fieldname": "section_break_15",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_invoices_top",
+   "fieldtype": "Int",
+   "label": "Total Invoices",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_total",
+   "fieldtype": "Currency",
+   "label": "Sales Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_21",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_collected_top",
+   "fieldtype": "Currency",
+   "label": "Total Collected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_expected",
+   "fieldtype": "Currency",
+   "label": "Total Expected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_base_collected",
+   "fieldtype": "Currency",
+   "label": "Total Base Collected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_23",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_25",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "is_submittable": 1,
+ "modified": "2022-01-09 22:53:04.767380",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "POS Closing Voucher",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "pos_profile",
+ "track_changes": 1
+}

@@ -1,0 +1,262 @@
+{
+ "autoname": "format:DC-{DD}-{MM}-{YY}-{###}",
+ "creation": "2021-11-25 12:13:08.290827",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "column_break_2",
+  "branch",
+  "amended_from",
+  "section_break_5",
+  "employees",
+  "section_break_4",
+  "payments",
+  "invoices_section",
+  "invoices",
+  "payment_entry",
+  "returns_section",
+  "returns",
+  "taxes_section",
+  "taxes",
+  "section_break_17",
+  "item_groups",
+  "totals_section",
+  "net_total",
+  "tax_total",
+  "discount_total",
+  "grand_total",
+  "outstanding_total",
+  "column_break_23",
+  "total_collected",
+  "total_change",
+  "total_quantity",
+  "total_invoices",
+  "average_sales_per_invoice",
+  "returns_total_section",
+  "returns_net_total",
+  "returns_total",
+  "section_break_32",
+  "returns_quantity"
+ ],
+ "fields": [
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "POS Profile",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Day Closing Voucher",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "invoices",
+   "fieldtype": "Table",
+   "options": "POS Voucher Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_entry",
+   "fieldtype": "Table",
+   "options": "PCV Payment Entry Table",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "employees",
+   "fieldtype": "Table",
+   "label": "Employees",
+   "options": "POS Voucher Employee",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payments",
+   "fieldtype": "Table",
+   "options": "POS Voucher Payment",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "invoices_section",
+   "fieldtype": "Section Break",
+   "label": "Invoices"
+  },
+  {
+   "fieldname": "returns_section",
+   "fieldtype": "Section Break",
+   "label": "Returns",
+   "read_only": 1
+  },
+  {
+   "fieldname": "returns",
+   "fieldtype": "Table",
+   "options": "POS Voucher Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "taxes_section",
+   "fieldtype": "Section Break",
+   "label": "Taxes"
+  },
+  {
+   "fieldname": "totals_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tax_total",
+   "fieldtype": "Currency",
+   "label": "Tax Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "discount_total",
+   "fieldtype": "Currency",
+   "label": "Discount Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "outstanding_total",
+   "fieldtype": "Currency",
+   "label": "Outstanding Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_23",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_collected",
+   "fieldtype": "Data",
+   "label": "Total Collected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_change",
+   "fieldtype": "Data",
+   "label": "Total Change",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_quantity",
+   "fieldtype": "Float",
+   "label": "Total Quantity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_invoices",
+   "fieldtype": "Int",
+   "label": "Total Invoices",
+   "read_only": 1
+  },
+  {
+   "fieldname": "average_sales_per_invoice",
+   "fieldtype": "Currency",
+   "label": "Average Sales per Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "returns_total_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "returns_net_total",
+   "fieldtype": "Currency",
+   "label": "Returns Net Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "returns_total",
+   "fieldtype": "Currency",
+   "label": "Returns Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_32",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "returns_quantity",
+   "fieldtype": "Float",
+   "label": "Returns Quantity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "taxes",
+   "fieldtype": "Table",
+   "options": "POS Voucher Tax",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_17",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_groups",
+   "fieldtype": "Table",
+   "options": "POS Voucher Item Group",
+   "read_only": 1
+  }
+ ],
+ "is_submittable": 1,
+ "modified": "2021-12-10 19:34:26.495241",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Day Closing Voucher",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

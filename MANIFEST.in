@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include pos_bahrain *.css
+recursive-include pos_bahrain *.csv
+recursive-include pos_bahrain *.html
+recursive-include pos_bahrain *.ico
+recursive-include pos_bahrain *.js
+recursive-include pos_bahrain *.json
+recursive-include pos_bahrain *.md
+recursive-include pos_bahrain *.png
+recursive-include pos_bahrain *.py
+recursive-include pos_bahrain *.svg
+recursive-include pos_bahrain *.txt
+recursive-exclude pos_bahrain *.pyc

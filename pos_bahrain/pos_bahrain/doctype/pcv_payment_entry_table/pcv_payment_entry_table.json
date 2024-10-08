@@ -1,0 +1,54 @@
+{
+ "creation": "2021-10-30 15:50:01.694965",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "pe_number",
+  "party_name",
+  "mop",
+  "amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "pe_number",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "PE Number",
+   "options": "Payment Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mop",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "MOP",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "party_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Party Name",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2021-10-30 22:46:45.444950",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "PCV Payment Entry Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

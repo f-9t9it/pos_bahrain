@@ -1,0 +1,37 @@
+{
+ "creation": "2021-02-24 16:27:41.496079",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "warehouse",
+  "storage_location"
+ ],
+ "fields": [
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "storage_location",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Storage Location",
+   "options": "Location"
+  }
+ ],
+ "istable": 1,
+ "modified": "2021-03-01 18:13:30.543243",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Item Storage Location",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

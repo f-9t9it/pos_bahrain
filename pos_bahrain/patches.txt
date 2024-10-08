@@ -1,0 +1,4 @@
+pos_bahrain.patches.v0_0.set_salesman_in_sales_invoice_item
+pos_bahrain.patches.v0_2.set_conversion_factor_and_customer_name_in_item_price
+pos_bahrain.patches.v0_4.move_to_vat_tax_category
+pos_bahrain.patches.v0_4.equal_base_and_account_currency_in_gl_entries

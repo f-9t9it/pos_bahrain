@@ -1,0 +1,53 @@
+<style>
+</style>
+
+{% const letterhead = filters.letter_head || (
+    frappe.get_doc(":Company", filters.company) &&
+    frappe.get_doc(":Company", filters.company).default_letter_head
+  ) ||
+  frappe.defaults.get_default("letter_head"); %}
+
+{% if(letterhead) { %}
+<div>{%= frappe.boot.letter_heads[letterhead].header %}</div>
+{% } %}
+
+<h2 class="text-center">{%= __(report.report_name) %}</h2>
+<h3 class="text-center">{%= filters.customer %}</h3>
+<h4 class="text-center">
+  {%= frappe.datetime.str_to_user(filters.from_date) %}
+  -
+  {%= frappe.datetime.str_to_user(filters.to_date) %}
+</h4>
+
+<hr>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      {% for(var i = 0; i < columns.length; i++) { %}
+      <th class="{%= i > 3 ? 'text-right' : '' %}">
+        {%= i === 0 ? 'Sr No' : columns[i].label %}
+      </th>
+      {% } %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for (var j = 0; j < data.length; j++) { %}
+    <tr>
+      {% for(var i = 0; i < columns.length; i++) { %}
+      {% const value = data[j][columns[i].fieldname] %}
+      <td class="{%= i > 3 ? 'text-right' : '' %}">
+        {%= i === 0 ? j + 1 :
+          i < 4 ? value :
+          value ? format_currency(value, frappe.defaults.get_default('currency')) : ''
+        %}
+      </td>
+      {% } %}
+    </tr>
+    {% } %}
+
+  </tbody>
+</table>
+<p class="text-right text-muted">
+  Printed On {%= frappe.datetime.str_to_user(frappe.datetime.get_datetime_as_string()) %}
+</p>

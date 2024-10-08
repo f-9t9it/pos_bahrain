@@ -1,0 +1,258 @@
+{
+ "autoname": "format:ST-{YY}-{######}",
+ "creation": "2019-04-21 11:39:56.534220",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "column_break_2",
+  "amended_from",
+  "section_break_4",
+  "outgoing_datetime",
+  "column_break_6",
+  "incoming_datetime",
+  "warehouse_sec",
+  "source_branch",
+  "source_branch_code",
+  "source_warehouse",
+  "column_break_10",
+  "target_branch",
+  "target_branch_code",
+  "target_warehouse",
+  "items_sec",
+  "scan_barcode",
+  "items",
+  "section_break_14",
+  "total_value",
+  "total_qty",
+  "ref_sec",
+  "remarks",
+  "column_break_19",
+  "outgoing_stock_entry",
+  "incoming_stock_entry"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Stock Transfer",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "outgoing_datetime",
+   "fieldtype": "Datetime",
+   "label": "Outgoing Datetime"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "bold": 1,
+   "depends_on": "eval:doc.docstatus > 0",
+   "fieldname": "incoming_datetime",
+   "fieldtype": "Datetime",
+   "label": "Incoming Datetime",
+   "read_only": 1
+  },
+  {
+   "fieldname": "warehouse_sec",
+   "fieldtype": "Section Break",
+   "label": "Warehouse"
+  },
+  {
+   "fieldname": "source_branch",
+   "fieldtype": "Link",
+   "label": "Source Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "source_branch.branch_code",
+   "fieldname": "source_branch_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Source Branch Code",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "source_branch.warehouse",
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Source Warehouse",
+   "options": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "target_branch",
+   "fieldtype": "Link",
+   "label": "Target Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "target_branch.branch_code",
+   "fieldname": "target_branch_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Target Branch Code",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "target_branch.warehouse",
+   "fieldname": "target_warehouse",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "ignore_user_permissions": 1,
+   "label": "Target Warehouse",
+   "options": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "fieldname": "items_sec",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Barcode"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": " ",
+   "options": "Stock Transfer Item"
+  },
+  {
+   "fieldname": "section_break_14",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_value",
+   "fieldtype": "Currency",
+   "label": "Total Value",
+   "options": "Company:company:default_currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_qty",
+   "fieldtype": "Float",
+   "label": "Total Qty",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "ref_sec",
+   "fieldtype": "Section Break",
+   "label": "References"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "column_break_19",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "outgoing_stock_entry",
+   "fieldtype": "Link",
+   "label": "Outgoing Stock Entry",
+   "options": "Stock Entry",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "incoming_stock_entry",
+   "fieldtype": "Link",
+   "label": "Incoming Stock Entry",
+   "options": "Stock Entry",
+   "read_only": 1
+  }
+ ],
+ "is_submittable": 1,
+ "modified": "2021-03-08 18:00:53.984106",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Stock Transfer",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock Manager",
+   "set_user_permissions": 1,
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Store User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "ASC",
+ "track_changes": 1
+}

@@ -1,0 +1,106 @@
+{
+ "creation": "2020-04-29 19:00:53.874882",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "account",
+  "column_break_3",
+  "template_type",
+  "tax_template",
+  "section_break_6",
+  "net_amount",
+  "tax_amount",
+  "remarks",
+  "column_break_9",
+  "rate",
+  "total_amount",
+  "account_head"
+ ],
+ "fields": [
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "template_type",
+   "fieldtype": "Link",
+   "label": "Template Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "tax_template",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Tax Template",
+   "options": "template_type"
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "net_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Net Amount",
+   "options": "Company:company:default_currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tax_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Tax Amount",
+   "options": "Company:company:default_currency"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Percent",
+   "label": "Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "options": "Company:company:default_currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "account_head",
+   "fieldtype": "Link",
+   "label": "Account Head",
+   "options": "Account",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2021-03-29 16:31:39.398984",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "GL Payment Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

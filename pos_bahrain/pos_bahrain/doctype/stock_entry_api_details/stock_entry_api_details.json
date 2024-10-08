@@ -1,0 +1,85 @@
+{
+ "creation": "2022-09-11 09:21:19.034582",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "batch_no",
+  "item_code",
+  "warehouse",
+  "stock_uom",
+  "qty",
+  "update_qty",
+  "check"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "fieldname": "batch_no",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Batch No",
+   "options": "Batch",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Qty",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "stock_uom",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Stock uom",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "update_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Update Qty"
+  },
+  {
+   "columns": 1,
+   "default": "0",
+   "fieldname": "check",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Check"
+  }
+ ],
+ "istable": 1,
+ "modified": "2022-09-12 08:20:20.591135",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Stock Entry Api Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

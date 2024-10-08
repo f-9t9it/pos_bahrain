@@ -1,0 +1,27 @@
+{
+ "add_total_row": 0,
+ "creation": "2020-02-26 21:06:50.289734",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "idx": 0,
+ "is_standard": "Yes",
+ "modified": "2021-05-25 17:22:10.127709",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Sales and Purchase History",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Stock Ledger Entry",
+ "report_name": "Sales and Purchase History",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "Accounts Manager"
+  }
+ ]
+}

@@ -1,0 +1,117 @@
+{
+ "creation": "2022-09-12 07:29:05.814971",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item",
+  "details",
+  "update",
+  "purchase_receipt_section",
+  "prec_item",
+  "column_break_6",
+  "supplier",
+  "supplier_invoice_no",
+  "column_break_8",
+  "warehouse",
+  "supplier_invoice_date",
+  "section_break_10",
+  "prec_details",
+  "create_purchase_receipt"
+ ],
+ "fields": [
+  {
+   "fieldname": "item",
+   "fieldtype": "Data",
+   "label": "Item"
+  },
+  {
+   "fieldname": "details",
+   "fieldtype": "Table",
+   "label": "Details",
+   "options": "Stock Entry Api Details",
+   "read_only": 1
+  },
+  {
+   "fieldname": "update",
+   "fieldtype": "Button",
+   "label": "Update"
+  },
+  {
+   "fieldname": "purchase_receipt_section",
+   "fieldtype": "Section Break",
+   "label": "Purchase Receipt"
+  },
+  {
+   "fieldname": "prec_details",
+   "fieldtype": "Table",
+   "label": "PREC Details",
+   "options": "PREC Details",
+   "read_only": 1
+  },
+  {
+   "fieldname": "prec_item",
+   "fieldtype": "Data",
+   "label": "Scan Item"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "section_break_10",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "create_purchase_receipt",
+   "fieldtype": "Button",
+   "label": "Create Purchase Receipt"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "supplier_invoice_no",
+   "fieldtype": "Data",
+   "label": "Supplier Invoice No"
+  },
+  {
+   "fieldname": "supplier_invoice_date",
+   "fieldtype": "Date",
+   "label": "Supplier Invoice Date"
+  }
+ ],
+ "issingle": 1,
+ "modified": "2022-09-15 14:21:19.820296",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Stock Adjustment And PREC API",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

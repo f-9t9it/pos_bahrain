@@ -1,0 +1,29 @@
+{
+ "creation": "2022-09-18 10:08:01.159493",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "price_list"
+ ],
+ "fields": [
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Price List",
+   "options": "Price List"
+  }
+ ],
+ "istable": 1,
+ "modified": "2022-09-18 14:36:41.453451",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Apply Offer Pricelist",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

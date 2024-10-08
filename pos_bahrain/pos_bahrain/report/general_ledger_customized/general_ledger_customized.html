@@ -1,0 +1,156 @@
+<h2 class="text-center"><b>{%= __("Statement of ") %} {%= filters.party_type %} {%= __(" Account") %}</b></h2>
+<h5 class="text-right"><p class="text-center">
+    {% if (filters.party && filters.party.length) { %}
+    <b>{%= filters.party %}</b><br>{%= filters.primary_address %}
+    {% } %}
+</p>
+
+
+<!-- <p class="text-left"> 
+    {% if (filters.primary_address) { %}
+    {%= filters.primary_address %}
+    {% } %}
+</p> -->
+
+
+
+    {%= __("Date From") %} {%= frappe.datetime.str_to_user(filters.from_date) %}
+    {%= __("to") %}
+    {%= frappe.datetime.str_to_user(filters.to_date) %}
+</h5>
+<h6 class="text-right">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th style="width: 15">{%= __("Date") %}</th>
+            <th style="width: 15">{%= __("Voucher No") %}</th>
+            <th style="width: 25">{%= __("LPO No") %}</th>
+            <th style="width: 20">{%= __("Remarks") %}</th>
+            <th style="width: 20">{%= __("Debit") %}</th>
+            <th style="width: 20">{%= __("Credit") %}</th>
+            <th style="width: 25">{%= __("Net Balance (Dr - Cr)") %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for(var i=0, l=data.length; i<l; i++) { %}
+        {% if(!data[i].reference_no) { %}
+        {% if(!data[i].total_due) { %}
+            <tr>
+            {% if(data[i].posting_date) { %}
+            
+                <td>{%= frappe.datetime.str_to_user(data[i].posting_date) %}</td>
+                <td>
+                    {%= data[i].voucher_no %}
+                </td>
+                <td>
+                    {%= data[i].po_no %}
+                    
+                </td>
+
+                <td>
+                    
+                    {% if(!(filters.party || filters.account)) { %}
+                        {%= data[i].party || data[i].account %}
+                        <br>
+                    {% } %}
+
+                    <br>
+                    {% if(data[i].bill_no) { %}
+                        <br>{%= __("Supplier Invoice No") %}: {%= data[i].bill_no %}
+                    {% } %}
+                    
+                    </td>
+                    <td style="text-align: right">
+                        {%= format_currency(data[i].debit, filters.presentation_currency || data[i].account_currency)
+ %}</td>
+                    <td style="text-align: right">
+                        {%= format_currency(data[i].credit, filters.presentation_currency || data[i].account_currency) %}</td>
+            {% } else { %}
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><b>{%= frappe.format(data[i].account, {fieldtype: "Link"}) || "&nbsp;" %}</b></td>
+                <td style="text-align: right">
+                    {%= data[i].account && format_currency(data[i].debit, filters.presentation_currency || data[i].account_currency) %}
+                </td>
+                <td style="text-align: right">
+                    {%= data[i].account && format_currency(data[i].credit, filters.presentation_currency || data[i].account_currency) %}
+                </td>
+            {% } %}
+                <td style="text-align: right">
+                    {%= format_currency(data[i].balance, filters.presentation_currency || data[i].account_currency) %}
+                </td>
+            </tr>
+            {% } %}
+        {% } %}
+        {% } %}
+    </tbody>
+</table>
+
+<p class="text-left"> <b>Post Dated Cheque Details:</b></p>
+<table class="table table-bordered" width="100%" >
+    <thead>
+        <tr>
+            <th style="width: 15">{%= __("Chq. Date") %}</th>
+            <th style="width: 20">{%= __("Bank") %}</th>
+            <th style="width: 20">{%= __("Chq. No") %}</th>
+            <th style="width: 25">{%= __("Remarks") %}</th>
+            <th style="width: 20">{%= __("Amount") %}</th>
+            
+            
+        </tr>
+    </thead>
+    <tbody>
+        {% for(var i=0, l=data.length; i<l; i++) { %}
+        <tr>
+        {% if(data[i].reference_date) { %}
+        <td>{%=data[i].reference_date %}</td>
+          <td>{%=data[i].paid_to %}</td>
+          <td>{%=data[i].reference_no %}</td>
+          <td>{%=data[i].remarks %}</td>
+          <td>{%=data[i].paid_amount %}</td>
+        {% } %}
+        </tr>
+    {% } %}
+        </tbody>
+           
+</table>
+
+<!-- <p> <b>Aging Analysis:</b></p>
+    <hr>
+<table class="table table-bordered" width="75%" >
+    <thead>
+        <tr>
+            <th style="width: 15%">{%= __("0-30") %}</th>
+            <th style="width: 15%">{%= __("31-60") %}</th>
+            <th style="width: 15%">{%= __("61-90") %}</th>
+            <th style="width: 15%">{%= __("91-120") %}</th>
+            <th style="width: 20%">{%= __("121-Above") %}</th>
+            <th style="width: 20%">{%= __("Total Amount Due") %}</th>
+            
+            
+        </tr>
+    </thead>
+    <tbody>
+        {% for(var i=0, l=data.length; i<l; i++) { %}
+        <tr>
+        {% if(data[i].total_due) { %}
+        <td>{%=data[i].range1 %}</td>
+          <td>{%=data[i].range2 %}</td>
+          <td>{%=data[i].range3 %}</td>
+          <td>{%=data[i].range4 %}</td>
+          <td>{%=data[i].range5 %}</td>
+          <td>{%=data[i].total_due %}</td>
+        {% } %}
+        </tr>
+    {% } %}
+        </tbody>
+           
+</table> -->
+
+<p class="text-right text-muted">Printed On 
+    {%= frappe.datetime.str_to_user(frappe.datetime.get_datetime_as_string()) %}</p></h6>
+
+
+    
+   

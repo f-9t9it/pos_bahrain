@@ -1,0 +1,103 @@
+{
+ "creation": "2020-08-19 19:27:36.094532",
+ "doctype": "DocType",
+ "document_type": "Setup",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "batch",
+  "email_template",
+  "item_name",
+  "item_code",
+  "main_col",
+  "no_of_invoices",
+  "no_of_customers",
+  "total_qty_sold",
+  "invoices_sec",
+  "invoices"
+ ],
+ "fields": [
+  {
+   "fieldname": "batch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Name, Code or Batch No.",
+   "options": "Batch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "email_template",
+   "fieldtype": "Link",
+   "label": "Email Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "main_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "no_of_invoices",
+   "fieldtype": "Int",
+   "label": "No of Invoices",
+   "read_only": 1
+  },
+  {
+   "fieldname": "no_of_customers",
+   "fieldtype": "Int",
+   "label": "No of Customers",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_qty_sold",
+   "fieldtype": "Float",
+   "label": "Total Qty Sold",
+   "read_only": 1
+  },
+  {
+   "fieldname": "invoices_sec",
+   "fieldtype": "Section Break",
+   "label": "Invoices"
+  },
+  {
+   "fieldname": "invoices",
+   "fieldtype": "Table",
+   "options": "Batch Recall Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item",
+   "read_only": 1
+  }
+ ],
+ "hide_toolbar": 1,
+ "issingle": 1,
+ "modified": "2021-08-02 18:16:12.619372",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Batch Recall",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Item Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

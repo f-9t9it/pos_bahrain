@@ -1,0 +1,120 @@
+{
+ "creation": "2022-09-11 09:21:19.034582",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "stock_entry_no",
+  "stock_entry_type",
+  "batch_no",
+  "item_code",
+  "t_warehouse",
+  "qty",
+  "stock_uom",
+  "expiry_date",
+  "manufacturing_date",
+  "item_name",
+  "s_warehouse"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "stock_entry_no",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Stock entry no",
+   "options": "Stock Entry",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "stock_entry_type",
+   "fieldtype": "Data",
+   "label": "Stock Entry Type",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "batch_no",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Batch no",
+   "options": "Batch",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "t_warehouse",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Target Warehouse",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Qty",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "stock_uom",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Stock uom",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "manufacturing_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Manufacturing Date",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Expiry Date",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "s_warehouse",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Source Warehouse",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2022-09-11 10:41:14.714777",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Stock Adjustment Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
