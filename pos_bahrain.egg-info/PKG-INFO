@@ -1,0 +1,9 @@
+Metadata-Version: 2.1
+Name: pos_bahrain
+Version: 0.4.4
+Summary: Pos Customization
+Author: 	9t9it
+Author-email: hafeesk@gmail.com
+Requires-Dist: frappe
+Requires-Dist: erpnext
+Requires-Dist: toolz==0.9.0
