@@ -651,7 +651,7 @@ def create_jv_for_oustanding_invoices(doc):
                     "party_type": "Customer",
                     "party": doc.customer,
                      "reference_type":"Sales Invoice",
-                    "reference_name":item.name,
+                    "reference_name":item.invoice,
                     "debit_in_account_currency": item.outstanding_amount,
                     "credit_in_account_currency": 0,
                 },
