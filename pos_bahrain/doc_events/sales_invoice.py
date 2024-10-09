@@ -665,7 +665,7 @@ def create_jv_for_oustanding_invoices(doc):
 def on_cancel_create_jv_for_oustanding_invoices(doc):
     if doc.custom_credit_note_list:
         for item in doc.custom_credit_note_list:
-            jv = frappe.db.get_all("Journal Entry Account", filters={"reference_name":item.name}, fields=["*"])
+            jv = frappe.db.get_all("Journal Entry Account", filters={"reference_name":item.invoice}, fields=["*"])
            
             for value in jv:
                 doc = frappe.get_doc("Journal Entry", value["parent"])
