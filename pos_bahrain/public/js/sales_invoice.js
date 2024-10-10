@@ -19,14 +19,14 @@ frappe.ui.form.on('Sales Invoice', {
     set_discount(frm)
     check_duplicate(frm);
   },
- custom_use_credit_note: function(frm)
+ pb_use_credit_if_available: function(frm)
   {
-    if(frm.doc.custom_use_credit_note == 1)
+    if(frm.doc.pb_use_credit_if_available == 1)
     {
       frm.set_df_property("custom_credit_note_list", "hidden",  false)
      
     }
-    if(frm.doc.custom_use_credit_note == 0)
+    if(frm.doc.pb_use_credit_if_available == 0)
     {
       frm.set_df_property("custom_credit_note_list", "hidden",  true)
      
