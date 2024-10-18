@@ -101,9 +101,19 @@ def execute(filters=None):
     net_profit = calculate_net_profit(gross_profit, indirect_income, indirect_expense, period_list, filters.company)
 
     data = []
+    data.append({
+    "account_name": _("Direct"),
+    "account": _("Direct"),
+    "currency": None,
+    })
     data.extend(direct_income or [])
     data.extend(direct_expense or [])
     data.append(gross_profit)   
+    data.append({
+    "account_name": _("Indirect"),
+    "account": _("Indirect"),
+    "currency": None,
+    })
     data.extend(indirect_income or [])
     data.extend(indirect_expense or [])
     data.append(net_profit)  
