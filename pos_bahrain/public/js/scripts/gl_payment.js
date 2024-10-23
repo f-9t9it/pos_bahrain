@@ -76,6 +76,7 @@ function set_tax_amount(frm, cdt, cdn) {
     'tax_amount',
     (net_amount * rate) / 100
   );
+   frm.refresh();
 }
 
 function show_general_ledger(frm) {
@@ -101,6 +102,9 @@ const gl_payment_item = {
   items_add: function (frm, cdt, cdn) {
     const { payment_type } = frm.doc;
     set_template_type(payment_type, cdt, cdn);
+  },
+  items_remove: function (frm, cdt, cdn) {
+    set_calculated_fields(frm, cdt, cdn);
   },
   template_type: function (frm, cdt, cdn) {
     frappe.model.set_value(cdt, cdn, 'tax_template', null);
