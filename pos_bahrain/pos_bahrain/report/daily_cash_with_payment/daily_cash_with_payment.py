@@ -210,7 +210,7 @@ def _sum_invoice_payments(invoice_payments, mop, cash_mop):
     )
 
     def make_change_total(row):
-        row[cash_mop] = row.get(cash_mop) - row.get('change')
+        row['cash_mop'] = row.get('cash_mop') - row.get('change')
         row['total'] = sum([
             row[mop_col] for mop_col in mop_cols
         ])
