@@ -1,4 +1,5 @@
 {
+    "custom_fields":[],
     "custom_perms": [],
     "doctype": "Stock Reconciliation",
     "property_setters": [
