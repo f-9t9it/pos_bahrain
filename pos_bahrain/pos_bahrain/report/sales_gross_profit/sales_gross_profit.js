@@ -16,6 +16,12 @@ frappe.query_reports["Sales Gross Profit"] = {
 			"fieldtype": "Date",
 			"default": frappe.datetime.month_end()
 		},
+			{
+			"fieldname": "show_supplier",
+			"label": "Show Supplier",
+			"fieldtype": "Check",
+			"default": 0
+		},
 
 	],
 	"formatter": function(value, row, column, data, default_formatter) {
