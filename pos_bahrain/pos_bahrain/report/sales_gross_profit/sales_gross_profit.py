@@ -108,6 +108,16 @@ def execute(filters=None):
 			"width": 100
 		}
 	]
+	if filters.get("show_supplier"):
+		columns.append(
+            {
+                "label": _("Supplier"),
+                "fieldname": "supplier",
+                "fieldtype": "Link",
+                "options": "Supplier",
+                "width": 120
+            }
+        )
 
 	data = get_data(filters['from_date'], filters['to_date'])
 	return columns, data
@@ -142,6 +152,7 @@ def get_data(from_date, to_date):
 								(%(total_field)s - si.outstanding_amount) AS payment,
 								si.outstanding_amount AS outstanding, 
 								ip.mode_of_payment AS mop,
+								item_sup.supplier as supplier,
 								si.pb_discount_percentage as disc_percent1,
 								round((( SELECT sum(inv_item.discount_amount  * inv_item.qty ) 
 								AS discount FROM `tabSales Invoice Item` inv_item 
@@ -155,6 +166,12 @@ def get_data(from_date, to_date):
 								`tabSales Invoice` si
 							LEFT JOIN
 								`tabSales Invoice Payment` ip ON ip.parent = si.name
+							LEFT JOIN
+       							 	`tabSales Invoice Item` i ON i.parent = si.name
+    							LEFT JOIN
+        							`tabItem` it ON it.item_code = i.item_code
+							LEFT JOIN
+        							`tabItem Supplier` item_sup ON item_sup.parent = i.item_code
 							GROUP BY
 								si.name
 							HAVING
