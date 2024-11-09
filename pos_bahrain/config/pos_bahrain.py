@@ -3,7 +3,7 @@ import frappe
 
 
 def get_data():
-    def make_item(type, name, label, is_query_report=None):
+    def make_item(type, name, label, is_query_report=None, filters=None):
         return {
             "type": type,
             "name": name,
@@ -154,7 +154,8 @@ def get_data():
         ),
         make_section(
             "Documents",
-            [
+            [   make_item("doctype", "Stock Entry", "Stock Entry - Repack", filters={"stock_entry_type":"Repack"}),
+                make_item("doctype", "Material Request", "Material Request - Repack", filters={"material_request_type":"Repack"}),
                 make_item("doctype", "Opening Cash", "Opening Cash"),
                 make_item("doctype", "Barcode Print", "Barcode Print"),
                 make_item("doctype", "Branch Barcode Print", "Branch Barcode Print"),
