@@ -98,7 +98,6 @@ def _get_columns(filters):
             make_column("customer", type="Link", options="Customer"),
             make_column("customer_name", width="150"),
             make_column("notes", type="Small Text", width=150),
-            make_column("dispensor", "Optometrist", type="Link", options="Employee"),
             make_column("branch", type="Link", options="Branch"),
             make_column(
                 "sales_status", type="Select", options=["Achieved", "Collected"]
@@ -309,7 +308,6 @@ def _query(clauses, values):
                 si.customer AS customer,
                 si.customer_name AS customer_name,
                 si.pb_notes AS notes,
-                si.orx_dispensor AS dispensor,
                 si.pb_branch AS branch,
                 IF(
                     si.update_stock = 1 OR so.workflow_state = 'Collected',
