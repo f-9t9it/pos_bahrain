@@ -230,7 +230,6 @@ fixtures = [
                     "Sales Order-customer_price_list",
                     "Sales Order-apply_offer",
                     "Sales Order-workflow_state",
-                    "Sales Invoice-orx_dispensor",
                     "Sales Invoice-pb_notes",
                     "Sales Invoice Item-pb_minimum_selling_2_rate",
                     "Sales Invoice Item-pb_minimum_selling_rate",
