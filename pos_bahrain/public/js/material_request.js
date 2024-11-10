@@ -10,19 +10,22 @@ frappe.ui.form.on('Material Request', {
     });
   },
   refresh: function (frm) {
-      // add button to create stock entry when type is Repack
+       // add button to create stock entry when type is Repack
      if (frm.doc.docstatus == 1 && frm.doc.material_request_type == "Repack")
       {
        
         frm.add_custom_button(__("Create Stock Entry"), function() {
+          frappe.run_serially([
+         ()=>{
           var stock_entry = frappe.model.get_new_doc('Stock Entry');
 		      stock_entry.stock_entry_type = frm.doc.material_request_type
           stock_entry.company = frm.doc.company
           frm.doc.items.forEach(function(item) {
-          var st_item = frappe.model.add_child(stock_entry,"Stock Entry", 'items');
+          var st_item = frappe.model.add_child(stock_entry, "Item", "items", item.idx);
           st_item.item_code = item.item_code;
           st_item.item_name = item.item_name;
            st_item.item_group=item.item_group;
+           st_item.set_basic_rate_manually = 1
            st_item.qty= item.qty;
            st_item.transfer_qty = item.qty
            st_item.basic_rate= item.rate;
@@ -31,13 +34,17 @@ frappe.ui.form.on('Material Request', {
            st_item.stock_uom = item.stock_uom;
            st_item.conversion_factor = item.conversion_factor;
            st_item.t_warehouse=item.warehouse;
+           st_item.actual_qty = item.actual_qty
            st_item.cost_center = item.cost_center;
            st_item.transferred_qty = item.qty;
            st_item.material_request= frm.doc.name
            st_item.material_request_item = item.name
           })
 		      frappe.set_route('Form',"Stock Entry",stock_entry.name);
+          setInterval(function(){cur_frm.call("get_stock_and_rate")}, 1000)
           
+         } 
+          ])
          }).css({"color":"white", "background-color": "#5E64FF", "font-weight": "800"});
 
 
