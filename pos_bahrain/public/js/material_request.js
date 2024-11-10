@@ -41,7 +41,7 @@ frappe.ui.form.on('Material Request', {
            st_item.material_request_item = item.name
           })
 		      frappe.set_route('Form',"Stock Entry",stock_entry.name);
-          setInterval(function(){cur_frm.call("get_stock_and_rate")}, 1000)
+          setTimeout(function(){cur_frm.call("get_stock_and_rate")}, 1000)
           
          } 
           ])
