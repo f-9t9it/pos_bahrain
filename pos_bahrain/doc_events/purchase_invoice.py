@@ -19,4 +19,4 @@ def before_save(doc, method):
     
 def check_invoice_no(doc, method):
     if frappe.db.exists("Purchase Invoice", {"bill_no":doc.bill_no, "supplier":doc.supplier, "docstatus":['!=', 2]}):
-        frappe.throw(f"Cannot make Supplier Invoice No:{doc.bill_no} unique cause other supplier may have same invoice numbers")
+        frappe.throw(f"Same supplier may have same invoice number")
