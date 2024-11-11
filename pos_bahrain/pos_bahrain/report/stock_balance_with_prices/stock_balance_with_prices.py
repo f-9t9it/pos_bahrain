@@ -73,6 +73,9 @@ def _get_data(data, prices, filters):
             ip.price_list = %({price})s AND
             ip.item_code IN %(item_codes)s AND
             IFNULL(ip.uom, '') IN ('', i.stock_uom)
+            ORDER BY
+            ip.creation DESC
+            LIMIT 1
     """
 
     suppliers_by_item_code = get_query_by_item_code(
