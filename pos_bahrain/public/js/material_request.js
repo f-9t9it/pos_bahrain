@@ -10,8 +10,14 @@ frappe.ui.form.on('Material Request', {
     });
   },
   refresh: function (frm) {
-       // add button to create stock entry when type is Repack
-     if (frm.doc.docstatus == 1 && frm.doc.material_request_type == "Repack")
+        frappe.call({
+      "method":"pos_bahrain.doc_events.material_request.check_material_request_repack_items",
+      "args": {"items": frm.doc.items},
+      "callback": (r)=>{
+        console.log(r.message)
+        item_exists = r.message
+         // add button to create stock entry when type is Repack
+     if (frm.doc.docstatus == 1 && frm.doc.material_request_type == "Repack" && frm.doc.status != "Transferred" && frm.doc.status != "Received" && item_exists == false)
       {
        
         frm.add_custom_button(__("Create Stock Entry"), function() {
@@ -41,7 +47,10 @@ frappe.ui.form.on('Material Request', {
            st_item.material_request_item = item.name
           })
 		      frappe.set_route('Form',"Stock Entry",stock_entry.name);
-          setTimeout(function(){cur_frm.call("get_stock_and_rate")}, 1000)
+          
+            setTimeout(function(){cur_frm.call("get_stock_and_rate")}, 1000)
+          
+          
           
          } 
           ])
@@ -50,6 +59,8 @@ frappe.ui.form.on('Material Request', {
 
          
       }
+      }
+    })
     _make_custom_buttons(frm);
   },
   pb_to_warehouse: function (frm) {
