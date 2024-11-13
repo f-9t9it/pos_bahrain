@@ -24,7 +24,7 @@ app_include_js = [
     "/assets/js/pos_bahrain.min.js",
     "/assets/pos_bahrain/js/batch_quick_entry.js",
     "/assets/pos_bahrain/js/meta.js",
-    "pos_bahain/public/js/taxes_and_totals.js",
+    "/assets/pos_bahrain/js/taxes_and_totals.js",
 ]
 
 # include js, css files in header of web template
@@ -231,7 +231,6 @@ fixtures = [
                     "Sales Order-customer_price_list",
                     "Sales Order-apply_offer",
                     "Sales Order-workflow_state",
-                    "Sales Invoice-orx_dispensor",
                     "Sales Invoice-pb_notes",
                     "Sales Invoice Item-pb_minimum_selling_2_rate",
                     "Sales Invoice Item-pb_minimum_selling_rate",

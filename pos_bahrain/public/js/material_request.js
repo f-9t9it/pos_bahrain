@@ -66,9 +66,6 @@ frappe.ui.form.on('Material Request', {
       }
       }
     })
-    
-    
-
     _make_custom_buttons(frm);
   },
   pb_to_warehouse: function (frm) {
