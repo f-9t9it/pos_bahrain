@@ -30,7 +30,6 @@ def custom_after_save(doc, method):
     if doc.is_new():
         from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
         make_packing_list(doc)
-    pass
 
 def before_save(doc, method):
     set_location(doc)

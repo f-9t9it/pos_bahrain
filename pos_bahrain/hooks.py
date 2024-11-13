@@ -358,9 +358,8 @@ doc_events = {
 		"after_save": "pos_bahrain.doc_events.sales_order.custom_after_save",
 		"on_update": "pos_bahrain.doc_events.sales_order.on_update",
     },
-	    "Quotation": {
-		"on_update": "pos_bahrain.doc_events.quotation.on_update",
-		"after_save": "pos_bahrain.doc_events.quotation.custom_after_save",
+	"Quotation": {
+		"validate": "pos_bahrain.doc_events.quotation.validate",
     },
     "Sales Invoice": {
         "validate": "pos_bahrain.doc_events.sales_invoice.validate",
