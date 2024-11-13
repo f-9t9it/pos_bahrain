@@ -65,6 +65,7 @@ def _get_data(data, prices, filters):
     )
     price_query = """
         SELECT
+            ip.creation,
             ip.item_code AS item_code,
             ip.price_list_rate AS value
         FROM `tabItem Price` AS ip
@@ -72,7 +73,10 @@ def _get_data(data, prices, filters):
         WHERE
             ip.price_list = %({price})s AND
             ip.item_code IN %(item_codes)s AND
-            IFNULL(ip.uom, '') IN ('', i.stock_uom)
+            IFNULL(ip.uom, '') IN ('', i.stock_uom) 
+        ORDER BY 
+            ip.creation DESC 
+        LIMIT 1        
     """
 
     suppliers_by_item_code = get_query_by_item_code(

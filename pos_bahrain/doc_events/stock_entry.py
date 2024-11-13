@@ -15,3 +15,6 @@ def before_validate(doc, method):
 def on_submit(doc, method):
     if doc.pb_repack_request:
         frappe.db.set_value("Repack Request", doc.pb_repack_request, "status", "Completed")
+
+ 
+

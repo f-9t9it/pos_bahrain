@@ -120,7 +120,7 @@ def make_stock_entry(source_name, target_doc=None):
             },
         },
         target_doc,
-        set_missing_values,
+        bench ,
     )
 
     return doclist

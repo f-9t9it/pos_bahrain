@@ -13,8 +13,42 @@ from functools import partial
 from frappe.utils import get_link_to_form
 from toolz import first, compose, pluck, unique
 from frappe.utils import get_url_to_form
+from frappe.utils import flt,cint
+# from erpnext.accounts.doctype.sales_invoice.sales_invoice import SalesInvoice
+from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
 
+def on_update(doc, method):
+    # frappe.msgprint("Hello.")
+    
+    custom_update_packing_list(doc)
+    custom_update_current_stock(doc)
 
+def custom_update_current_stock(doc):
+    # frappe.msgprint("Updating current stock.")
+    for d in doc.get('items'):
+        if d.item_code and d.warehouse:
+            bin = frappe.db.sql("SELECT actual_qty FROM `tabBin` WHERE item_code = %s AND warehouse = %s", 
+                                 (d.item_code, d.warehouse), as_dict=1)
+            d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
+
+    for d in doc.get('packed_items'):
+        bin = frappe.db.sql("SELECT actual_qty, projected_qty FROM `tabBin` WHERE item_code = %s AND warehouse = %s", 
+                             (d.item_code, d.warehouse), as_dict=1)
+        d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
+        d.projected_qty = bin and flt(bin[0]['projected_qty']) or 0
+
+        if not d.parent_item:
+            if doc.items:
+                d.parent_item = doc.items[0].item_code 
+
+    
+def custom_update_packing_list(doc):
+    # frappe.msgprint("condition")
+    if cint(doc.update_stock) == 1 and doc.is_new():
+        make_packing_list(doc)
+    else:
+        pass
+    
 @frappe.whitelist()
 def set_discount_on_return(doc):
     # frappe.msgprint(doc)
