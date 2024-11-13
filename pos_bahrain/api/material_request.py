@@ -69,3 +69,5 @@ def _get_branch_by_warehouse(warehouse):
     if not data:
         frappe.throw(_("No branch is associated with Warehouse {}".format(warehouse)))
     return first(data).get("name")
+
+ 

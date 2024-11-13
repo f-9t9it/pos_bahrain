@@ -65,6 +65,7 @@ def _get_data(data, prices, filters):
     )
     price_query = """
         SELECT
+            ip.creation,
             ip.item_code AS item_code,
             ip.price_list_rate AS value
         FROM `tabItem Price` AS ip

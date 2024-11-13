@@ -187,6 +187,7 @@ fixtures = [
                     "Branch-pb_cr_expiry",
                     "Stock Entry-pb_reference_stock_transfer",
                     "Stock Entry-pb_repack_request",
+                    "Stock Entry-material_request",
                     "Material Request-pb_to_warehouse",
                     "Sales Order-pb_branch",
                     "Sales Invoice-pb_branch",
@@ -354,13 +355,19 @@ doc_events = {
         "before_save": "pos_bahrain.doc_events.sales_order.before_save",
         "on_submit": "pos_bahrain.doc_events.sales_order.on_submit",
         "before_cancel": "pos_bahrain.doc_events.sales_order.before_cancel",
+		"after_save": "pos_bahrain.doc_events.sales_order.custom_after_save",
+		"on_update": "pos_bahrain.doc_events.sales_order.on_update",
+    },
+	    "Quotation": {
+		"on_update": "pos_bahrain.doc_events.quotation.on_update",
+		"after_save": "pos_bahrain.doc_events.quotation.custom_after_save",
     },
     "Sales Invoice": {
         "validate": "pos_bahrain.doc_events.sales_invoice.validate",
         "before_save": "pos_bahrain.doc_events.sales_invoice.before_save",
         "on_submit": "pos_bahrain.doc_events.sales_invoice.on_submit",
         "before_cancel": "pos_bahrain.doc_events.sales_invoice.before_cancel",
-        "on_cancel": "pos_bahrain.doc_events.sales_invoice.on_cancel",
+        "on_update": "pos_bahrain.doc_events.sales_invoice.on_update",
     },
     "Journal Entry": {
         # "before_cancel": "pos_bahrain.doc_events.journal_entry.cancel_jv",
@@ -406,6 +413,9 @@ on_session_creation = "pos_bahrain.doc_events.set_user_defaults"
 
 scheduler_events = {
     "daily": ["pos_bahrain.scheduler_events.daily.send_email_to_manager"]
+}
+override_doctype_dashboards = {
+	"Stock Entry": "pos_bahrain.doc_events.stock_entry_dashboard.get_data"
 }
 # scheduler_events = {
 # 	"all": [

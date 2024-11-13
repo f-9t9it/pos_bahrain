@@ -7,8 +7,6 @@ from frappe.utils import flt
 # Customer = Cost Center & Set Cost Center
 # Set Cost Center = Supplier
 # Date = Date & Supplier Invoice Date
-
-
 @frappe.whitelist()
 def make_purchase_invoice(source_name, target_doc=None):
     def set_missing_values(source, target):

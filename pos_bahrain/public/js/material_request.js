@@ -1,5 +1,8 @@
 frappe.ui.form.on('Material Request', {
   setup: function (frm) {
+   
+   
+
     frm.set_query('pb_to_warehouse', function () {
       return {
         filters: {
@@ -10,7 +13,9 @@ frappe.ui.form.on('Material Request', {
     });
   },
   refresh: function (frm) {
-        frappe.call({
+    let item_exists = false;
+
+    frappe.call({
       "method":"pos_bahrain.doc_events.material_request.check_material_request_repack_items",
       "args": {"items": frm.doc.items},
       "callback": (r)=>{
@@ -100,3 +105,4 @@ function _set_items_warehouse(frm) {
     );
   }
 }
+
