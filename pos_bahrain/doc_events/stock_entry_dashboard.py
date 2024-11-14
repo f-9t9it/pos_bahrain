@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from frappe import _
 
 
+
 # Todo: non_standard_fieldnames is to be decided
 def get_data(data):
 	return {

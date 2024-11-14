@@ -9,9 +9,10 @@ from functools import partial
 from toolz import first, compose, pluck, unique
 from .sales_invoice import set_location
 
-def on_update(doc, method):
+def validate(doc, method):
 
     custom_update_current_stock(doc)
+    custom_after_save(doc, method)
 
 def custom_update_current_stock(doc):
 
@@ -30,7 +31,6 @@ def custom_after_save(doc, method):
     if doc.is_new():
         from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
         make_packing_list(doc)
-    pass
 
 def before_save(doc, method):
     set_location(doc)

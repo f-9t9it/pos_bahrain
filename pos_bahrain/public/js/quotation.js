@@ -100,5 +100,52 @@ function get_total_stock_qty(frm, cdt, cdn) {
   })
 }
 
+frappe.ui.form.on('Packed Item', {
+  packed_items_add(frm, cdt, cdn) {
+    const fields = ["parent_item","item_code", "item_name", "qty"];
+    const new_row = locals[cdt][cdn];
+    frm.new_packed_item = new_row; // Store the newly added row in frm.new_packed_item
 
+    fields.forEach(function(field) {
+      const field_doc = frm.fields_dict['packed_items'].grid.get_docfield(field);
+      field_doc.read_only = 0; 
+      field_doc.hidden = 0;  
+    });
 
+    frm.refresh_field('packed_items');  
+  },
+});
+
+frappe.ui.form.on('Quotation', {
+  validate(frm) {
+    if (frm.new_packed_item) {
+      const new_packed_item = frm.new_packed_item;
+
+      let exists = false;
+
+      
+      frm.doc.packed_items.forEach(item => {
+        if (item.item_code === new_packed_item.item_code) {
+          exists = true;
+        }
+      
+      });
+
+      if (!exists) {
+        let new_row = frm.add_child('packed_items', {
+          parent_item: new_packed_item.parent_item,
+          item_code: new_packed_item.item_code,
+          item_name: new_packed_item.item_name,
+          qty: new_packed_item.qty
+        });
+        
+        new_row.item_name = new_packed_item.item_name; 
+        new_row.qty = new_packed_item.qty; 
+
+        frm.refresh_field('packed_items'); 
+      }
+
+      frm.new_packed_item = null;  
+    }
+  },
+});
