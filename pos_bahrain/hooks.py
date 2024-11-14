@@ -356,7 +356,7 @@ doc_events = {
         "on_submit": "pos_bahrain.doc_events.sales_order.on_submit",
         "before_cancel": "pos_bahrain.doc_events.sales_order.before_cancel",
 		"after_save": "pos_bahrain.doc_events.sales_order.custom_after_save",
-		"on_update": "pos_bahrain.doc_events.sales_order.on_update",
+		"validate": "pos_bahrain.doc_events.sales_order.validate",
     },
 	"Quotation": {
 		"validate": "pos_bahrain.doc_events.quotation.validate",
@@ -366,7 +366,7 @@ doc_events = {
         "before_save": "pos_bahrain.doc_events.sales_invoice.before_save",
         "on_submit": "pos_bahrain.doc_events.sales_invoice.on_submit",
         "before_cancel": "pos_bahrain.doc_events.sales_invoice.before_cancel",
-        "on_update": "pos_bahrain.doc_events.sales_invoice.on_update",
+        "after_save": "pos_bahrain.doc_events.sales_invoice.after_save",
     },
     "Journal Entry": {
         # "before_cancel": "pos_bahrain.doc_events.journal_entry.cancel_jv",

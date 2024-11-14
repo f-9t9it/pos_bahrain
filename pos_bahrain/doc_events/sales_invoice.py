@@ -15,9 +15,9 @@ from toolz import first, compose, pluck, unique
 from frappe.utils import get_url_to_form
 from frappe.utils import flt,cint
 # from erpnext.accounts.doctype.sales_invoice.sales_invoice import SalesInvoice
-from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
 
-def on_update(doc, method):
+
+def after_save(doc, method):
     # frappe.msgprint("Hello.")
     
     custom_update_packing_list(doc)
@@ -45,6 +45,7 @@ def custom_update_current_stock(doc):
 def custom_update_packing_list(doc):
     # frappe.msgprint("condition")
     if cint(doc.update_stock) == 1 and doc.is_new():
+        from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
         make_packing_list(doc)
     else:
         pass

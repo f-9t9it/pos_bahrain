@@ -9,9 +9,10 @@ from functools import partial
 from toolz import first, compose, pluck, unique
 from .sales_invoice import set_location
 
-def on_update(doc, method):
+def validate(doc, method):
 
     custom_update_current_stock(doc)
+    custom_after_save(doc, method)
 
 def custom_update_current_stock(doc):
 
