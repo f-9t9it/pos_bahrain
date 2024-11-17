@@ -3,6 +3,7 @@ frappe.ui.form.on('Sales Invoice', {
     frm.set_df_property("custom_credit_note_list", "hidden",  true
     frm.set_df_property("return_si_no", "read_only",  false)
     frm.set_df_property("main_invoice", "read_only",  false)
+    frm.set_df_property("main_invoice", "hidden",  false)
   
   
   },
