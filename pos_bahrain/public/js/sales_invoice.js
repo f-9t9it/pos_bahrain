@@ -1,4 +1,8 @@
 frappe.ui.form.on('Sales Invoice', {
+ onload:function (frm){
+    frm.set_df_property("custom_credit_note_list", "hidden",  true)
+  
+  },
   refresh: function (frm) {
     get_employee(frm);
     _create_custom_buttons(frm);
@@ -9,13 +13,79 @@ frappe.ui.form.on('Sales Invoice', {
   },
   customer: function (frm) {
     _set_customer_account_balance(frm);
+	get_oustanding_invoices(frm)
   },
   validate: function(frm){
     set_discount(frm)
     check_duplicate(frm);
-  }
+  },
+ pb_use_credit_if_available: function(frm)
+  {
+    if(frm.doc.pb_use_credit_if_available == 1)
+    {
+      frm.set_df_property("custom_credit_note_list", "hidden",  false)
+     
+    }
+    if(frm.doc.pb_use_credit_if_available == 0)
+    {
+      frm.set_df_property("custom_credit_note_list", "hidden",  true)
+     
+    }
+   
+  },
  
 });
+
+frappe.ui.form.on('Credit Note List',{
+invoice(frm, cdt, cdn)
+{
+  let credit_note= locals[cdt][cdn];
+  frappe.call({
+    method: "pos_bahrain.doc_events.sales_invoice.get_sales_invoices_with_outstanding",
+    args: {
+      customer: frm.doc.customer
+    },
+    callback: function (r) {
+      if (r.message != [])
+      {
+        let invoice_amount = r.message.find(inv => inv.name === credit_note.invoice)
+        console.log(invoice_amount)
+        credit_note.outstanding_amount = invoice_amount.outstanding_amount * -1
+        frm.refresh_fields()
+      }}
+    })
+  
+}
+
+})
+
+
+
+
+function get_oustanding_invoices(frm){
+  frappe.call({
+    method: "pos_bahrain.doc_events.sales_invoice.get_sales_invoices_with_outstanding",
+    args: {
+      customer: frm.doc.customer
+    },
+    callback: function (r) {
+  
+      if (r.message != [])
+      {
+        frm.fields_dict.custom_credit_note_list.grid.get_field('invoice').get_query =
+      function() {
+        return {
+          filters: {
+              name: ['in', r.message.map(invoice => invoice.name)]
+          }
+        
+      } 
+      }
+      }
+      
+    }
+  })
+}
 
 function set_discount(frm){
   if(frm.doc.is_return == 1){

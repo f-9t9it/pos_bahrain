@@ -50,7 +50,9 @@ def _get_columns(filters):
 def _get_filters(filters):
     clauses = [
         "s.docstatus = 1",
+         "s.set_warehouse IN %(warehouse)s",
         "s.posting_date BETWEEN %(from_date)s AND %(to_date)s",
+        "s.company = %(company)s"
     ]
     return " AND ".join(clauses), filters
 

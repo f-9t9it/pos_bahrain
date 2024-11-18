@@ -611,4 +611,64 @@ def enforce_full_payment(doc):
     if enforce_payment == 1 and user_role not in user_logged_roles:
         if doc.grand_total != doc.total_advance and doc.outstanding_amount != 0 and doc.is_return != 1:
             return frappe.throw("Not allowed to make Sales Invoice without full payment")
+
+@frappe.whitelist()     
+def get_sales_invoices_with_outstanding(customer):
+    sales_invoices = frappe.db.get_list(
+        'Sales Invoice',
+        filters={'outstanding_amount': ['!=', 0], 'docstatus' : 1, 'is_return': 1, 'customer':customer},
+        fields=['*']
+    )
+    
+    return sales_invoices
+
+
+def create_jv_for_oustanding_invoices(doc):
+   
+    provision_account = frappe.db.get_single_value(
+        "POS Bahrain Settings",
+        "credit_note_provision_account",
+    )
+    
+    if doc.custom_credit_note_list:
+        je_doc = frappe.new_doc("Journal Entry")
+        je_doc.posting_date = doc.posting_date
+        for item in doc.custom_credit_note_list:
+            je_doc.append(
+                "accounts",
+                {
+                    "account": provision_account,
+                    "party_type": "Customer",
+                    "party": doc.customer,
+                    "debit_in_account_currency": 0,
+                    "credit_in_account_currency": item.outstanding_amount,
+                },
+            )
+            je_doc.append(
+                "accounts",
+                {
+                    "account": doc.debit_to,
+                    "party_type": "Customer",
+                    "party": doc.customer,
+                     "reference_type":"Sales Invoice",
+                    "reference_name":item.invoice,
+                    "debit_in_account_currency": item.outstanding_amount,
+                    "credit_in_account_currency": 0,
+                },
+            )
+
+        je_doc.save()
+        je_doc.submit()
+        frappe.db.commit()
         
+
+def on_cancel_create_jv_for_oustanding_invoices(doc):
+    if doc.custom_credit_note_list:
+        for item in doc.custom_credit_note_list:
+            jv = frappe.db.get_all("Journal Entry Account", filters={"reference_name":item.invoice}, fields=["*"])
+           
+            for value in jv:
+                doc = frappe.get_doc("Journal Entry", value["parent"])
+                doc.cancel()
+                doc.db_update()
+                frappe.db.commit()
