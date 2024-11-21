@@ -28,7 +28,7 @@
    "fieldname": "currency",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Currency",
+   "label": "Per Year Budget",
    "options": "Currency"
   },
   {
@@ -46,7 +46,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-21 09:21:21.859080",
+ "modified": "2024-11-21 13:56:56.503054",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
  "name": "Target Child",
