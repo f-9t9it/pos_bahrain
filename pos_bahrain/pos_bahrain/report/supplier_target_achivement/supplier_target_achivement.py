@@ -1,127 +1,4 @@
-# import frappe
 
-
-# def execute(filters=None):
-#     if not filters:
-#         filters = {}
-#     columns, data = [], []
-#     columns = get_columns(filters)
-#     data = get_data(filters)
-
-#     return columns, data
-
-
-# def get_columns(filters):
-#     columns = [
-#         {
-#             "fieldname": "name",
-#             "fieldtype": "Link",
-#             "label": "Supplier",
-#             "options": "Supplier",
-#         },
-#         {
-#             "fieldname": "default_currency",
-#             "fieldtype": "Data",
-#             "label": "Currency",
-#         },
-#         {
-#             "fieldname": "per_year",
-#             "fieldtype": "Currency",
-#             "label": "Per Year",
-#         },
-#         {
-#             "fieldname": "achivement",
-#             "fieldtype": "Currency",
-#             "label": "Achivement",
-#         },
-#         {
-#             "fieldname": "age",
-#             "fieldtype": "Float",
-#             "label": "Age",
-#         },
-#         {
-#             "fieldname": "company",
-#             "fieldtype": "Link",
-#             "label": "Company",
-#             "options": "Company",
-#         },
-#     ]
-
-#     if filters.get("show_variance") == 1:
-#         columns.append({
-#             "fieldname": "variance",
-#             "fieldtype": "Currency",
-#             "label": "Variance"
-#         })
-
-#     return columns
-
-
-# def get_data(filters):
-#     from_date = filters.get('from_date')
-#     to_date = filters.get('to_date')
-#     company = filters.get('company')
-#     supplier = filters.get('supplier')
-#     show_variance = filters.get('show_variance', 0)
-
-#     conditions = []
-#     params = [from_date, to_date]
-
-    
-#     sql_query = """
-#         SELECT x.name,
-#                x.default_currency,
-#                tot AS per_year,
-#                SUM(p.total) AS achivement,
-#                (SUM(p.total) / tot * 100) AS age,
-#                p.company
-#         FROM `tabSupplier` x
-#         LEFT JOIN (SELECT parent, SUM(currency) AS tot FROM `tabTarget Child` GROUP BY parent) AS y 
-#             ON x.name = y.parent
-#         LEFT JOIN `tabPurchase Order` p ON x.name = p.supplier
-#         WHERE p.docstatus = 1
-#         AND p.transaction_date BETWEEN %s AND %s
-#     """
-
-    
-#     if company:
-#         if isinstance(company, list):
-#             sql_query += " AND p.company IN (%s)" % ','.join(['%s'] * len(company))
-#             params.extend(company)
-#         else:
-#             sql_query += " AND p.company = %s"
-#             params.append(company)
-
-#     if supplier:
-#         sql_query += " AND p.supplier = %s"
-#         params.append(supplier)
-
-#     if conditions:
-#         sql_query += " AND " + " AND ".join(conditions)
-
-    
-#     if show_variance == 1:
-#         sql_query = sql_query.replace(
-#             "SUM(p.total) AS achivement, (SUM(p.total) / tot * 100) AS age",
-#             "SUM(p.total) AS achivement, (SUM(p.total) / tot * 100) AS age, (tot - SUM(p.total)) AS variance"
-#         )
-
-#     sql_query += " GROUP BY x.name"
-
-#     data = frappe.db.sql(sql_query, tuple(params), as_dict=True)
-#     blank_row = {
-#     "name": "",
-#     "default_currency": "",
-#     "per_year": None,
-#     "achivement": None,
-#     "age": None,
-#     "company": "",
-#     "variance": "" if show_variance == 0 else ""
-#     }
-
-#     # Insert the blank row at the second position (index 1)
-#     data.insert(1, blank_row)
-#     return data
 import frappe
 
 def execute(filters=None):
@@ -186,7 +63,7 @@ def get_region_data(filters):
     supplier = filters.get('supplier')
     show_variance = filters.get('show_variance', 0)
 
-    # Start building the SQL query
+     
     sql_query = """
         SELECT 
             y.region,
@@ -206,7 +83,7 @@ def get_region_data(filters):
     
     params = [from_date, to_date]
     # LEFT JOIN `tabPurchase Order` p ON x.name = p.supplier
-    # Apply filters for company and supplier
+    
     if company:
         if isinstance(company, list):
             sql_query += " AND p.company IN (%s)" % ','.join(['%s'] * len(company))
@@ -234,7 +111,7 @@ def get_region_data(filters):
             y.country
     """
     
-    # Execute the query
+    
     data = frappe.db.sql(sql_query, tuple(params), as_dict=True)
 
     if not data:
@@ -242,7 +119,7 @@ def get_region_data(filters):
     regions = {}
     totals = {'saudi_arabia': {'achivement': 0, 'age': 0, 'currency': 0}, 'other_regions': {}}
 
-    # Process the data
+     
     for row in data:
         if show_variance == 1:
             row['variance'] = row.get('variance', 0)
@@ -347,7 +224,8 @@ def get_data(filters):
     region_data = get_region_data(filters)
 
     saudi_region_data = {}
-    other_region_data = {}
+    other_region_data = {}  
+    total_currency = 0
 
     for region, region_values in region_data['regions'].items():
         country = region_values.get('country')
@@ -355,6 +233,7 @@ def get_data(filters):
             saudi_region_data[region] = region_values
         else:
             other_region_data[region] = region_values
+        total_currency += region_values.get('currency', 0)
 
     for region, region_values in saudi_region_data.items():
         region_row = {
@@ -370,8 +249,8 @@ def get_data(filters):
 
     total_row_saudi_arabia = {
         "name": "Total (Saudi Arabia)",
-        "default_currency": "",
-        "per_year": "",
+        "default_currency": region_values.get('default_currency', ''),
+        "per_year": total_currency,
         "achivement": region_data['totals']['saudi_arabia']['achivement'],
         "age": region_data['totals']['saudi_arabia']['age'],
         "company": "",
