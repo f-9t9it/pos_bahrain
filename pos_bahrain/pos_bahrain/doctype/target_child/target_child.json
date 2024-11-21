@@ -6,11 +6,11 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "region",
+  "country",
   "column_break_dbb7i",
-  "currency",
+  "region",
   "column_break_gjxho",
-  "country"
+  "currency"
  ],
  "fields": [
   {
@@ -46,7 +46,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-20 10:03:33.424392",
+ "modified": "2024-11-21 09:21:21.859080",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
  "name": "Target Child",

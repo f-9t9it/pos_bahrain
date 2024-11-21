@@ -141,26 +141,31 @@ def get_columns(filters):
             "fieldtype": "Link",
             "label": "Supplier",
             "options": "Supplier",
+            "width":200,
         },
         {
             "fieldname": "default_currency",
             "fieldtype": "Data",
             "label": "Currency",
+            "width":150,
         },
         {
             "fieldname": "per_year",
             "fieldtype": "Currency",
             "label": "Per Year",
+            "width":150,
         },
         {
             "fieldname": "achivement",
             "fieldtype": "Currency",
             "label": "Achivement",
+            "width":150,
         },
         {
             "fieldname": "age",
-            "fieldtype": "Float",
-            "label": "Age",
+            "fieldtype": "Percent",
+            "label": "Age %",
+            "width":150,
         },
     ]
 
@@ -193,13 +198,14 @@ def get_region_data(filters):
             SUM(p.total) / SUM(y.currency) * 100 AS age
         FROM `tabSupplier` x
         LEFT JOIN `tabTarget Child` AS y ON x.name = y.parent
-        LEFT JOIN `tabPurchase Order` p ON x.name = p.supplier
+        
+        LEFT JOIN `tabPurchase Order` p ON x.name = p.supplier and y.region = p.region
         WHERE p.docstatus = 1
         AND p.transaction_date BETWEEN %s AND %s
     """
     
     params = [from_date, to_date]
-
+    # LEFT JOIN `tabPurchase Order` p ON x.name = p.supplier
     # Apply filters for company and supplier
     if company:
         if isinstance(company, list):
