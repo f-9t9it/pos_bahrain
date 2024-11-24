@@ -1,6 +1,10 @@
 frappe.ui.form.on('Sales Invoice', {
  onload:function (frm){
     frm.set_df_property("custom_credit_note_list", "hidden",  true)
+    frm.set_df_property("return_si_no", "read_only",  false)
+    frm.set_df_property("main_invoice", "read_only",  false)
+    frm.set_df_property("main_invoice", "hidden",  false)
+  
   
   },
   refresh: function (frm) {
@@ -300,28 +304,28 @@ frappe.ui.form.on('Sales Invoice',"before_save", function(){
     cur_frm.doc.main_si=""
   // var main_si = frappe.db.get_value("Sales Invoice",{"name":cur_frm.doc.advances[i].reference_name},"return_against")
   // if (cur_frm.doc.advances[i].reference_type = "Sales Invoice") {  
-  if (cur_frm.doc.advances[i].allocated_amount > 0 && cur_frm.doc.advances[i].reference_type == "Sales Invoice") {    
-  cur_frm.doc.credit_note_invoice=cur_frm.doc.advances[i].reference_name
-  // cur_frm.doc.main_si =main_si.return_against
-  // }
-  }
+  // if (cur_frm.doc.advances[i].allocated_amount > 0 && cur_frm.doc.advances[i].reference_type == "Sales Invoice") {    
+  // cur_frm.doc.credit_note_invoice=cur_frm.doc.advances[i].reference_name
+  // // cur_frm.doc.main_si =main_si.return_against
+  // // }
+  // } -  removed credit note invoice pulling
    }
    }
   })
   frappe.ui.form.on('Sales Invoice',"before_submit", function(){
-    if (cur_frm.doc.advances){
-      for (var i =0; i < cur_frm.doc.advances.length; i++){
-        // cur_frm.doc.credit_note_invoice=""
-        // cur_frm.doc.main_si=""
-      // var main_si = frappe.db.get_value("Sales Invoice",{"name":cur_frm.doc.advances[i].reference_name},"return_against")
-      // if (cur_frm.doc.advances[i].reference_type = "Sales Invoice") {  
-      if (cur_frm.doc.advances[i].allocated_amount > 0 && cur_frm.doc.advances[i].reference_type == "Sales Invoice") {    
-      cur_frm.doc.credit_note_invoice=cur_frm.doc.advances[i].reference_name
-      // cur_frm.doc.main_si =main_si.return_against
-      // }
-      }
-       }
-       }
+    // if (cur_frm.doc.advances){
+    //   for (var i =0; i < cur_frm.doc.advances.length; i++){
+    //     // cur_frm.doc.credit_note_invoice=""
+    //     // cur_frm.doc.main_si=""
+    //   // var main_si = frappe.db.get_value("Sales Invoice",{"name":cur_frm.doc.advances[i].reference_name},"return_against")
+    //   // if (cur_frm.doc.advances[i].reference_type = "Sales Invoice") {  
+    //   if (cur_frm.doc.advances[i].allocated_amount > 0 && cur_frm.doc.advances[i].reference_type == "Sales Invoice") {    
+    //   cur_frm.doc.credit_note_invoice=cur_frm.doc.advances[i].reference_name
+    //   // cur_frm.doc.main_si =main_si.return_against
+    //   // }
+    //   }
+    //    }
+    //    } -  removed credit note invoice pulling
       })
   function sales_invoice_payment(frm, cdt, cdn) {
         // var d = locals[cdt][cdn];

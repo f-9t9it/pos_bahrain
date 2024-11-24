@@ -31,12 +31,16 @@ frappe.query_reports['Item Consumption Report'] = {
       options: '\nWeekly\nMonthly\nYearly',
     },
     {
-      fieldname: 'warehouse',
+      fieldname:'warehouse',
       label: __('Warehouse'),
-      fieldtype: 'Link',
+      fieldtype: 'MultiSelectList',
       options: 'Warehouse',
-      get_query: { filters: { is_group: 0 } },
-    },
+      get_data: function(txt) {
+      return frappe.db.get_link_options('Warehouse', txt,{
+      company: frappe.query_report.get_filter_value("company")
+            });
+          }
+        },
     {
       fieldname: 'item_group',
       label: __('Item Group'),

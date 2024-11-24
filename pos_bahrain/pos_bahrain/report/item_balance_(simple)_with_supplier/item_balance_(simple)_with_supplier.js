@@ -39,12 +39,16 @@ frappe.query_reports['Item Balance (Simple) with Supplier'] = {
       },
     },
     {
-      fieldname: 'warehouse',
+      fieldname:'warehouse',
       label: __('Warehouse'),
-      fieldtype: 'Link',
+      fieldtype: 'MultiSelectList',
       options: 'Warehouse',
-      get_query: { filters: { is_group: 0 } },
-    },
+      get_data: function(txt) {
+      return frappe.db.get_link_options('Warehouse', txt,{
+      company: frappe.query_report.get_filter_value("company")
+            });
+          }
+        },
     {
       fieldname: 'hide_zero_stock',
       label: __('Hide Zero Stock'),
