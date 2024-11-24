@@ -28,10 +28,14 @@ frappe.query_reports['Sales and Purchase History'] = {
       default: frappe.datetime.get_today(),
     },
     {
-      fieldname: 'warehouse',
+      fieldname:'warehouse',
       label: __('Warehouse'),
-      fieldtype: 'Link',
+      fieldtype: 'MultiSelectList',
       options: 'Warehouse',
-    },
+      get_data: function(txt) {
+      return frappe.db.get_link_options('Warehouse', txt,{
+            });
+          }
+        },
   ],
 };

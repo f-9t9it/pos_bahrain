@@ -48,22 +48,18 @@ frappe.query_reports["Stock Balance report"] = {
 			}
 		},
 		{
-			"fieldname": "warehouse",
-			"label": __("Warehouse"),
-			"fieldtype": "Link",
-			"width": "80",
-			"options": "Warehouse",
-			get_query: () => {
-				var warehouse_type = frappe.query_report.get_filter_value('warehouse_type');
-				if(warehouse_type){
-					return {
-						filters: {
-							'warehouse_type': warehouse_type
-						}
-					};
-				}
-			}
-		},
+			fieldname:'warehouse',
+			label: __('Warehouse'),
+			fieldtype: 'MultiSelectList',
+			width: "80",
+			options: 'Warehouse',
+			get_data: function(txt) {
+			return frappe.db.get_link_options('Warehouse', txt,{
+			company: frappe.query_report.get_filter_value("company"),
+			warehouse_type : frappe.query_report.get_filter_value('warehouse_type')
+				});
+					}
+				},
 		{
 			"fieldname": "warehouse_type",
 			"label": __("Warehouse Type"),
