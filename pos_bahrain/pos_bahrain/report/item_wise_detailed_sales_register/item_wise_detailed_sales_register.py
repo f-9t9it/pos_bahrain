@@ -397,7 +397,7 @@ def get_conditions(filters):
 				and ifnull(`tabSales Invoice Payment`.mode_of_payment, '') = %(mode_of_payment)s)"""
 
 	if filters.get("warehouse"):
-		conditions +=  """and ifnull(`tabSales Invoice Item`.warehouse, '') = %(warehouse)s"""
+		conditions +=  """and ifnull(`tabSales Invoice Item`.warehouse, '') IN %(warehouse)s"""
 
 
 	if filters.get("brand"):

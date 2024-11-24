@@ -30,11 +30,16 @@ frappe.query_reports["Item wise detailed sales register"] = {
 			"options": "Mode of Payment"
 		},
 		{
-			"fieldname": "warehouse",
-			"label": __("Warehouse"),
-			"fieldtype": "Link",
-			"options": "Warehouse"
-		},
+			fieldname:'warehouse',
+			label: __('Warehouse'),
+			fieldtype: 'MultiSelectList',
+			options: 'Warehouse',
+			get_data: function(txt) {
+			return frappe.db.get_link_options('Warehouse', txt,{
+			company: frappe.query_report.get_filter_value("company")
+				});
+					}
+				},
 		{
 			"fieldname": "brand",
 			"label": __("Brand"),
