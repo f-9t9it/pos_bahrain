@@ -323,7 +323,9 @@ fixtures = [
 # ------------
 
 # before_install = "pos_bahrain.install.before_install"
-# after_install = "pos_bahrain.install.after_install"
+after_install = "pos_bahrain.install.after_install"
+after_migrate = "pos_bahrain.install.after_install"
+
 
 # Desk Notifications
 # ------------------
