@@ -368,7 +368,6 @@ doc_events = {
         "before_save": "pos_bahrain.doc_events.sales_invoice.before_save",
         "on_submit": "pos_bahrain.doc_events.sales_invoice.on_submit",
         "before_cancel": "pos_bahrain.doc_events.sales_invoice.before_cancel",
-        "after_save": "pos_bahrain.doc_events.sales_invoice.after_save",
     },
     "Journal Entry": {
         # "before_cancel": "pos_bahrain.doc_events.journal_entry.cancel_jv",
@@ -385,6 +384,9 @@ doc_events = {
         ],
         "on_submit": "pos_bahrain.doc_events.purchase_receipt.set_batch_references",
     },
+	# "Purchase Order":{
+	# 	"on_update_after_submit":"pos_bahrain.doc_events.purchase_order.before_update_after_submit"
+    # },
     "Payment Entry": {
         "before_save": "pos_bahrain.doc_events.payment_entry.before_save"
     },
@@ -503,6 +505,9 @@ from pos_bahrain.api.sales_invoice import set_advances_ov,get_advance_entries,re
 from pos_bahrain.api.sales_and_purchase_return import set_missing_values
 from pos_bahrain.api.taxes_and_totals import calculate_change_amount,calculate_write_off_amount,update_paid_amount_for_return_ov
 from pos_bahrain.api.item import get_customers_address as _get_customers_address
+from pos_bahrain.doc_events.purchase_order import update_child_qty_rate
+
+_AccountsController.update_child_qty_rate = update_child_qty_rate
 _AccountsController.set_advances = set_advances_ov
 _AccountsController.get_advance_entries = get_advance_entries
 _AccountsController.update_against_document_in_jv = update_against_document_in_jv_ov

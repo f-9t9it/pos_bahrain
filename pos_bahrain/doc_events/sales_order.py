@@ -15,25 +15,26 @@ def validate(doc, method):
     custom_after_save(doc, method)
 
 def custom_update_current_stock(doc):
+    if doc.get('packed_items'):
+        for d in doc.get('packed_items'):
+            bin = frappe.db.sql("SELECT actual_qty, projected_qty FROM `tabBin` WHERE item_code = %s AND warehouse = %s", 
+                                (d.item_code, d.warehouse), as_dict=1)
+            d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
+            d.projected_qty = bin and flt(bin[0]['projected_qty']) or 0
 
-    for d in doc.get('packed_items'):
-        bin = frappe.db.sql("SELECT actual_qty, projected_qty FROM `tabBin` WHERE item_code = %s AND warehouse = %s", 
-                             (d.item_code, d.warehouse), as_dict=1)
-        d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
-        d.projected_qty = bin and flt(bin[0]['projected_qty']) or 0
-
-        if not d.parent_item:
-            if doc.items:
-
-                d.parent_item = doc.items[0].item_code 
+            if not d.parent_item:
+                linked_item = next((item.item_code for item in doc.items if item.item_code == d.item_code), None)
+                d.parent_item = linked_item or doc.items[0].item_code
 
 def custom_after_save(doc, method):
-    if doc.is_new():
+    if doc.is_new() and not(item.prevdoc_docname for item in doc.items):
         from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
+        # from pos_bahrain.pos_bahrain.doc_events.quotation import make_packing_list
         make_packing_list(doc)
 
 def before_save(doc, method):
     set_location(doc)
+
 def on_submit(doc, method):
     update_against_quotation(doc)
 
