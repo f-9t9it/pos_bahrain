@@ -98,7 +98,8 @@ def get_data(filters):
     """
 
     result = frappe.db.sql(query, filters, as_dict=True)
-    
+    if not result:
+        frappe.throw("Add Currency Exchange For All Currency")
     companies = {}
 
     if filters.get("report_type") == "Yearly":
