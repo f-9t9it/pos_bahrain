@@ -47,6 +47,12 @@ frappe.query_reports["Purchase Plan Scheduling Report"] = {
 			"label": __("Minimum Months"),
 			"fieldtype": "Data",
 			"reqd": 1,
+					},
+							{
+			"fieldname": "uom_conversion",
+    			"label": "UOM Conversion",
+    			"fieldtype": "Float",
+    			"default": 1,
 					}
 	
 		
