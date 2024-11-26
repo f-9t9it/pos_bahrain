@@ -1,3 +1,5 @@
+
+ 
 import frappe
 from frappe import _
 
@@ -96,42 +98,64 @@ def get_data(filters):
         GROUP BY 
             c.name, c.default_currency, YEAR({date_field}), MONTH({date_field})
     """
-    try :
-        result = frappe.db.sql(query, filters, as_dict=True)
-        
+    
+    
+    result = frappe.db.sql(query, filters, as_dict=True)
+    
+    companies = {}
+    missing_currencies = set()   
+
+    if filters.get("report_type") == "Yearly":
+        for row in result:
+            company = row['name']
+                
+            tot = row['tot'] if row['tot'] is not None else 0
+            
+            
+            if row['default_currency'] not in missing_currencies and row['default_currency'] != "SAR" and row['tot'] is None:
+                missing_currencies.add(row['default_currency'])
+
+            if company not in companies:
+                companies[company] = {f"month_{i}": 0 for i in range(1, 13)}
+                companies[company].update({'name': company, 'default_currency': row['default_currency']})
+
+            companies[company][f"month_{row['month']}"] = tot
+
+            
+        for company in companies.values():
+            company['grand_total'] = sum(company[f"month_{i}"] for i in range(1, 13))
+
+        data = list(companies.values())
+
+    elif filters.get("report_type") == "Date Range":
         companies = {}
+        for row in result:
+            company = row['name']
+            tot = row['tot'] if row['tot'] is not None else 0
+            
+                
+            if row['default_currency'] not in missing_currencies and row['default_currency'] != "SAR" and row['tot'] is None:
+                missing_currencies.add(row['default_currency'])
 
-        if filters.get("report_type") == "Yearly":
-            for row in result:
-                company = row['name']
-                if company not in companies:
-                    companies[company] = {f"month_{i}": 0 for i in range(1, 13)}
-                    companies[company].update({'name': company, 'default_currency': row['default_currency']})
+            if company not in companies:
+                companies[company] = {
+                    'name': company,
+                    'default_currency': row['default_currency'],
+                    'total': 0
+                }
+            companies[company]['total'] += tot
 
-                companies[company][f"month_{row['month']}"] = row['tot']
+        data = list(companies.values())
 
-            for company in companies.values():
-                company['grand_total'] = sum(company[f"month_{i}"] for i in range(1, 13))
+         
+    if missing_currencies:
+        missing_currencies_str = ", ".join(missing_currencies)
+        frappe.throw(_("Please add currency exchange for the following currencies: {0}").format(missing_currencies_str))
 
-            data = list(companies.values())
+    return data
 
-        elif filters.get("report_type") == "Date Range":
-            companies = {}
-            for row in result:
-                company = row['name']
-                if company not in companies:
-                    companies[company] = {
-                        'name': company,
-                        'default_currency': row['default_currency'],
-                        'total': 0
-                    }
-                companies[company]['total'] += row['tot']
+     
 
-            data = list(companies.values())
-             
-                 
-        return data
-    except Exception as e:
-        frappe.throw(_("Please Add Currency Exchange For All Currency."))
+
 
 
