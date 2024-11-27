@@ -13,9 +13,9 @@ def execute(filters=None):
 	data = get_data(filters)
 	return columns, data
 
-def get_columns():
+def get_columns(filters):
 	columns = [
-	{
+		{
 			'fieldname': 'item',
 			'label': _('Item'),
 			'fieldtype': 'Link',
