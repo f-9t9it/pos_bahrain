@@ -4,6 +4,7 @@ from frappe import _
 from frappe.utils import flt, today
 from functools import partial
 from toolz import first, compose, pluck, unique
+from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
 from .sales_invoice import set_location
 
 def validate(doc, method):
@@ -19,16 +20,13 @@ def custom_update_current_stock(doc):
             d.projected_qty = bin and flt(bin[0]['projected_qty']) or 0
 
             if not d.parent_item:
-                if doc.items:
-
-                    d.parent_item = doc.items[0].item_code 
+                linked_item = next((item.item_code for item in doc.items if item.item_code == d.item_code), None)
+                d.parent_item = linked_item or doc.items[0].item_code
 
 def custom_after_save(doc, method):
     if doc.is_new():
-        from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
         make_packing_list(doc)
     else:
-        pass
-
-
-    
+        for item in doc.get("items", []):
+            if not any(d.parent_item == item.item_code for d in doc.get("packed_items", [])):
+                make_packing_list(doc)
