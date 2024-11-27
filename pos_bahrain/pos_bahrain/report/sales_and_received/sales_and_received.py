@@ -64,7 +64,7 @@ def get_data(filters):
             c.default_currency,
             CASE 
                 WHEN c.default_currency = "SAR" THEN SUM(s.total)
-                ELSE SUM(s.total) / e.exchange_rate
+                ELSE SUM(s.total) * e.exchange_rate
             END AS tot,
             MONTH({date_field}) AS month,
             YEAR({date_field}) AS year
