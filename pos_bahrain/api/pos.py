@@ -52,13 +52,13 @@ def make_invoice(pos_profile, doc_list={}, email_queue_list={}, customers_list={
         )
     ]
 
-    for doc_list_item in docs:
-        frappe.utils.background_jobs.enqueue(
-                make_invoice,
-                job_name="POs Creating",
-                doc_list=doc_list_item,
-                pos_profile=pos_profile,
-            )
+    frappe.utils.background_jobs.enqueue(
+    make_invoice,
+    job_name="POS Invoice Synchronisation",
+    doc_list=docs,
+    pos_profile=pos_profile,
+    
+    )
 
     return merge(result, {"invoice": prev_synced_invoices})
 
