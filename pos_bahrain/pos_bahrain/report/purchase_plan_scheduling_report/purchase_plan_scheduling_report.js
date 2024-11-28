@@ -51,8 +51,7 @@ frappe.query_reports["Purchase Plan Scheduling Report"] = {
 							{
 			"fieldname": "uom_conversion",
     			"label": "UOM Conversion",
-    			"fieldtype": "Float",
-    			"default": 1,
+    			"fieldtype": "Float"
 					}
 	
 		
