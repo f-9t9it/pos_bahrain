@@ -27,10 +27,23 @@ def custom_update_current_stock(doc):
                 d.parent_item = linked_item or doc.items[0].item_code
 
 def custom_after_save(doc, method):
-    if doc.is_new() and not(item.prevdoc_docname for item in doc.items):
-        from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
-        # from pos_bahrain.pos_bahrain.doc_events.quotation import make_packing_list
-        make_packing_list(doc)
+    if doc.is_new():  
+        for item in doc.items:
+            if item.prevdoc_docname:  
+                quotation = frappe.get_doc("Quotation", item.prevdoc_docname)
+
+                existing_packed_item_codes = {p.item_code for p in doc.packed_items}
+
+                for packed_item in quotation.packed_items:
+                    if packed_item.item_code not in existing_packed_item_codes:
+                        doc.append("packed_items", {
+                            "parent_item": packed_item.parent_item,  
+                            "item_code": packed_item.item_code,
+                            "item_name": packed_item.item_name,
+                            "qty": packed_item.qty,
+                            "description": packed_item.description,  
+                        })
+
 
 def before_save(doc, method):
     set_location(doc)

@@ -236,14 +236,25 @@ def custom_update_current_stock(doc):
             linked_item = next((item.item_code for item in doc.items if item.item_code == d.item_code), None)
             d.parent_item = linked_item or doc.items[0].item_code
 
+def custom_update_packing_list(doc, method):
+    if cint(doc.update_stock) == 1 and doc.is_new():
+        
+        if doc.get("sales_order"):  
+            sales_order_name = doc.get("sales_order")
+            sales_order = frappe.get_doc("Sales Order", sales_order_name)
+            
+            existing_packed_item_codes = {p.item_code for p in doc.packed_items}
 
-def custom_update_packing_list(doc,method):
-    # frappe.log_error("condition")
+            for packed_item in sales_order.packed_items:
+                if packed_item.item_code not in existing_packed_item_codes:
+                    doc.append("packed_items", {
+                        "parent_item": packed_item.parent_item,
+                        "item_code": packed_item.item_code,
+                        "item_name": packed_item.item_name,
+                        "qty": packed_item.qty,
+                        "description": packed_item.description
+                    })
 
-		if cint(doc.update_stock) == 1 and doc.is_new() and not(item.sales_order for item in doc.items):
-			from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
-			make_packing_list(doc)
-		
 def _make_return_dn(doc):
     if not doc.is_return or not doc.pb_returned_to_warehouse:
         return
