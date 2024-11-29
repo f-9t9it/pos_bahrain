@@ -1,5 +1,3 @@
-
- 
 import frappe
 from frappe import _
 
@@ -7,9 +5,14 @@ def execute(filters=None):
     if not filters:
         filters = {}
     
-    columns, data = [], []
     columns = get_columns(filters)
     data = get_data(filters)
+    
+    black_row = get_black_row(filters)
+    payment_data = get_payment_data(filters)
+    
+    data.append(black_row)
+    data.extend(payment_data)
     
     return columns, data
 
@@ -83,7 +86,7 @@ def get_data(filters):
                 `tabCurrency Exchange`
             WHERE 
                 to_currency = "SAR"
-        ) e ON c.default_currency = e.from_currency AND e.rn = 1  -- Join with latest exchange rate
+        ) e ON c.default_currency = e.from_currency AND e.rn = 1
         WHERE 
             s.docstatus = 1
     """
@@ -99,19 +102,16 @@ def get_data(filters):
             c.name, c.default_currency, YEAR({date_field}), MONTH({date_field})
     """
     
-    
     result = frappe.db.sql(query, filters, as_dict=True)
     
     companies = {}
-    missing_currencies = set()   
+    missing_currencies = set()
 
     if filters.get("report_type") == "Yearly":
         for row in result:
             company = row['name']
-                
             tot = row['tot'] if row['tot'] is not None else 0
-            
-            
+
             if row['default_currency'] not in missing_currencies and row['default_currency'] != "SAR" and row['tot'] is None:
                 missing_currencies.add(row['default_currency'])
 
@@ -121,7 +121,6 @@ def get_data(filters):
 
             companies[company][f"month_{row['month']}"] = tot
 
-            
         for company in companies.values():
             company['grand_total'] = sum(company[f"month_{i}"] for i in range(1, 13))
 
@@ -133,7 +132,6 @@ def get_data(filters):
             company = row['name']
             tot = row['tot'] if row['tot'] is not None else 0
             
-                
             if row['default_currency'] not in missing_currencies and row['default_currency'] != "SAR" and row['tot'] is None:
                 missing_currencies.add(row['default_currency'])
 
@@ -147,15 +145,102 @@ def get_data(filters):
 
         data = list(companies.values())
 
-         
     if missing_currencies:
         missing_currencies_str = ", ".join(missing_currencies)
         frappe.throw(_("Please add currency exchange for the following currencies: {0}").format(missing_currencies_str))
 
     return data
 
-     
+def get_black_row(filters):
+    return {
+        'name': '',
+        'default_currency': '',
+        'total': 0,
+        'grand_total': 0
+    }
 
+def get_payment_data(filters):
+    base_payment_query = """
+        SELECT 
+            c.name AS company,
+            p.paid_to_account_currency AS currency,
+            MONTH(p.posting_date) AS month,
+            YEAR(p.posting_date) AS year,
+            CASE 
+                WHEN c.default_currency = "SAR" THEN SUM(p.paid_amount) 
+                ELSE SUM(p.paid_amount) * e.exchange_rate 
+            END AS tot
+        FROM
+            `tabCompany` c
+        LEFT JOIN
+            `tabPayment Entry` p ON p.company = c.name
+        LEFT JOIN (
+            SELECT 
+                from_currency,
+                to_currency,
+                exchange_rate,
+                date,
+                ROW_NUMBER() OVER (PARTITION BY from_currency ORDER BY date DESC) AS rn
+            FROM 
+                `tabCurrency Exchange`
+            WHERE 
+                to_currency = "SAR"
+        ) e ON c.default_currency = e.from_currency AND e.rn = 1
+        WHERE
+            p.payment_type = "Receive"
+            AND p.party_type = "Customer"
+            AND p.docstatus = 1
+    """
 
+    if filters.get("report_type") == "Date Range":
+        if filters.get("from_date") and filters.get("to_date"):
+            payment_query = base_payment_query + f" AND p.posting_date BETWEEN %(from_date)s AND %(to_date)s"
+        else:
+            return []
 
+    elif filters.get("report_type") == "Yearly" and filters.get("year"):
+        payment_query = base_payment_query + f" AND YEAR(p.posting_date) = %(year)s"
 
+    payment_query += """
+        GROUP BY 
+            p.company,
+            p.paid_to_account_currency,
+            YEAR(p.posting_date),
+            MONTH(p.posting_date)
+    """
+
+    payment_result = frappe.db.sql(payment_query, filters, as_dict=True)
+
+    if not payment_result:
+        frappe.log_error("No payment entries found for the given filters.", exc_type="Warning")
+        return []
+
+    missing_currencies = set()
+    payment_data = {}
+
+    for row in payment_result:
+        company = row['company']
+        currency = row['currency']
+        month = row['month']
+        total_payment = row['tot'] if row['tot'] is not None else 0
+
+        if company not in payment_data:
+            payment_data[company] = {
+                'name': company,
+                'default_currency': currency,
+                'grand_total': 0,
+                'total': 0,
+            }
+
+        payment_data[company][f"month_{month}"] = total_payment
+        payment_data[company]['total'] += total_payment
+        payment_data[company]['grand_total'] += total_payment
+
+        if currency not in missing_currencies and currency != "SAR" and total_payment is None:
+            missing_currencies.add(currency)
+
+    if missing_currencies:
+        missing_currencies_str = ", ".join(missing_currencies)
+        frappe.throw(_("Please add currency exchange for the following currencies: {0}").format(missing_currencies_str))
+
+    return list(payment_data.values())
