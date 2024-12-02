@@ -9,11 +9,13 @@ data = []
 columns = []
 
 def execute(filters=None):
-	return get_columns(), get_data(filters)
+	columns = get_columns(filters)
+	data = get_data(filters)
+	return columns, data
 
-def get_columns():
-	return [
-	{
+def get_columns(filters):
+	columns = [
+		{
 			'fieldname': 'item',
 			'label': _('Item'),
 			'fieldtype': 'Link',
@@ -122,13 +124,31 @@ def get_columns():
 			
 		},
 		{
+			'fieldname': 'minimum_purchase_qty',
+			'label': _('Minimum Purchase Qty'),
+			'fieldtype': 'Int'
+		},
+		{
 			'fieldname': 'expected_order_quantity',
 			'label': _('Expected Order Quantity'),
 			'fieldtype':'Int',
 			
 		},
+		{
+            		'fieldname': 'priority_month',
+            		'label': _('Priority Month'),
+            		'fieldtype': 'Int',
+       		 }
 
 	]
+	if filters and filters.get('uom_conversion'):
+		columns.append({
+			'fieldname': 'meter',
+			'label': _('Meter'),
+			'fieldtype': 'Float'
+		})
+	
+	return columns
 
 
 def get_data(filters):
@@ -212,11 +232,34 @@ def get_data(filters):
 			period_expected_sales = monthly_sales * float(filters.months_to_arrive)
 			shortage_happened = (available_qty + on_purchase) -period_expected_sales 
 			min = monthly_sales * float(filters.minimum_months)
-			expected_order_quantity = shortage_happened - min - min
-			data.append([item.name , item.item_name, item.stock_uom, last_purchase_invoice_date, last_sales_invoice_date, total_sales, float(filters.percentage), expected_sales, min, available_qty, on_purchase, available_qty + on_purchase, total_months_in_report, monthly_sales ,annual_sales, float(filters.months_to_arrive), period_expected_sales, shortage_happened, expected_order_quantity])
+			minimum_purchase_qty = get_minimum_purchase_qty(item.item_code, frappe.defaults.get_user_default("Company"))
+			expected_order_quantity = shortage_happened - min - min - minimum_purchase_qty
+			priority_month = (available_qty + on_purchase) / monthly_sales if monthly_sales > 0 else 0
+
+			if filters.get('uom_conversion'):
+				meter = expected_order_quantity / filters.get('uom_conversion')
+			else:
+				meter = None
+
+			data.append([item.name , item.item_name, item.stock_uom, last_purchase_invoice_date, last_sales_invoice_date, total_sales, float(filters.percentage), expected_sales, min, available_qty, on_purchase, available_qty + on_purchase, total_months_in_report, monthly_sales ,annual_sales, float(filters.months_to_arrive), period_expected_sales, shortage_happened, minimum_purchase_qty , expected_order_quantity, priority_month , meter])
 	return data
+	
+def get_minimum_purchase_qty(item_code, company_abbr):
+	company_abbr = frappe.get_value("Company", company_abbr, "abbr")
+	
+	reorder_entry = frappe.db.sql("""
+		SELECT warehouse_reorder_level
+		FROM `tabItem Reorder` ir
+		WHERE 
+			ir.parent = %(item_code)s
+			AND ir.warehouse_group = %(warehouse_group)s
+			AND ir.material_request_type = 'Purchase'
+	""", values={
+		'item_code': item_code,
+		'warehouse_group': f"All Warehouses - {company_abbr}"
+	}, as_dict=1)
 
-
+	return reorder_entry[0].warehouse_reorder_level if reorder_entry else 0	
 
 def get_last_sales_stock_ledger_entry(filters=None):
 	query = frappe.db.sql("""
