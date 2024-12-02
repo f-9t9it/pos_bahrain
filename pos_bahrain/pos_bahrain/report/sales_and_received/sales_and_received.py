@@ -149,6 +149,8 @@ def get_data(filters):
         missing_currencies_str = ", ".join(missing_currencies)
         frappe.throw(_("Please add currency exchange for the following currencies: {0}").format(missing_currencies_str))
 
+    if not data:
+        frappe.throw("Data Not Found")
     return data
 
 def get_black_row(filters):
