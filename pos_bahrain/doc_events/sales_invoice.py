@@ -51,6 +51,7 @@ def validate(doc, method):
     _validate_return_series(doc)
     custom_update_current_stock(doc)
     custom_update_packing_list(doc,method)
+    make_packing_list(doc)
     doc.pb_available_balance = get_customer_account_balance(doc.customer)
 
 def before_save(doc, method):
@@ -91,6 +92,7 @@ def on_submit(doc, method):
             )
     enforce_full_payment(doc)
     custom_update_packing_list(doc,method)
+    make_packing_list(doc)
     # _make_gl_entry_for_provision_credit(doc)
     # _make_gl_entry_on_credit_issued(doc)
     # _make_return_dn(doc)
@@ -238,6 +240,10 @@ def custom_update_current_stock(doc):
             d.parent_item = linked_item or doc.items[0].item_code
 
 def custom_update_packing_list(doc, method):
+    if doc.is_new() or (cint(doc.update_stock) == 1 and doc.docstatus == 1):
+        make_packing_list(doc)
+
+def make_packing_list(doc, update_existing=False):
     if doc.is_new() or (cint(doc.update_stock) == 1 and doc.docstatus == 1):  
         for item in doc.items:
             if item.sales_order:  
@@ -254,7 +260,10 @@ def custom_update_packing_list(doc, method):
                             "qty": packed_item.qty,
                             "description": packed_item.description,  
                         })
-                doc.set_df_property("packed_items", "read_only", 0)
+                    else:
+                        for item in doc.get("items", []):
+                            if not any(d.parent_item == item.item_code for d in doc.get("packed_items", [])):
+                                make_packing_list(doc)
 
 def _make_return_dn(doc):
     if not doc.is_return or not doc.pb_returned_to_warehouse:
