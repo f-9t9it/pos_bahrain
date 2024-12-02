@@ -90,6 +90,7 @@ def on_submit(doc, method):
                 flt(payment.base_amount) / flt(conversion_rate),
             )
     enforce_full_payment(doc)
+    custom_update_packing_list(doc,method)
     # _make_gl_entry_for_provision_credit(doc)
     # _make_gl_entry_on_credit_issued(doc)
     # _make_return_dn(doc)
@@ -237,23 +238,23 @@ def custom_update_current_stock(doc):
             d.parent_item = linked_item or doc.items[0].item_code
 
 def custom_update_packing_list(doc, method):
-    if cint(doc.update_stock) == 1 and doc.is_new():
-        
-        if doc.get("sales_order"):  
-            sales_order_name = doc.get("sales_order")
-            sales_order = frappe.get_doc("Sales Order", sales_order_name)
-            
-            existing_packed_item_codes = {p.item_code for p in doc.packed_items}
+    if doc.is_new() or (cint(doc.update_stock) == 1 and doc.docstatus == 1):  
+        for item in doc.items:
+            if item.sales_order:  
+                sales_orders = frappe.get_doc("Sales Order", item.sales_order)
 
-            for packed_item in sales_order.packed_items:
-                if packed_item.item_code not in existing_packed_item_codes:
-                    doc.append("packed_items", {
-                        "parent_item": packed_item.parent_item,
-                        "item_code": packed_item.item_code,
-                        "item_name": packed_item.item_name,
-                        "qty": packed_item.qty,
-                        "description": packed_item.description
-                    })
+                existing_packed_item_codes = {p.item_code for p in doc.packed_items}
+
+                for packed_item in sales_orders.packed_items:
+                    if packed_item.item_code not in existing_packed_item_codes:
+                        doc.append("packed_items", {
+                            "parent_item": packed_item.parent_item,  
+                            "item_code": packed_item.item_code,
+                            "item_name": packed_item.item_name,
+                            "qty": packed_item.qty,
+                            "description": packed_item.description,  
+                        })
+                doc.set_df_property("packed_items", "read_only", 0)
 
 def _make_return_dn(doc):
     if not doc.is_return or not doc.pb_returned_to_warehouse:

@@ -27,9 +27,9 @@ def custom_update_current_stock(doc):
                 d.parent_item = linked_item or doc.items[0].item_code
 
 def custom_after_save(doc, method):
-    if doc.is_new():  
+    if doc.is_new() or doc.docstatus == 1: 
         for item in doc.items:
-            if item.prevdoc_docname:  
+            if item.prevdoc_docname: 
                 quotation = frappe.get_doc("Quotation", item.prevdoc_docname)
 
                 existing_packed_item_codes = {p.item_code for p in doc.packed_items}
@@ -37,11 +37,11 @@ def custom_after_save(doc, method):
                 for packed_item in quotation.packed_items:
                     if packed_item.item_code not in existing_packed_item_codes:
                         doc.append("packed_items", {
-                            "parent_item": packed_item.parent_item,  
+                            "parent_item": packed_item.parent_item,
                             "item_code": packed_item.item_code,
                             "item_name": packed_item.item_name,
                             "qty": packed_item.qty,
-                            "description": packed_item.description,  
+                            "description": packed_item.description,
                         })
 
 
@@ -50,6 +50,7 @@ def before_save(doc, method):
 
 def on_submit(doc, method):
     update_against_quotation(doc)
+    custom_after_save(doc, method)
 
 def before_cancel(doc, method):
     update_quotation_sales_order(doc)
