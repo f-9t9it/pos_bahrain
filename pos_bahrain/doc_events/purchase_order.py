@@ -1193,7 +1193,7 @@ def set_order_defaults(parent_doctype, parent_doctype_name, child_doctype, child
 	child_item = frappe.new_doc(child_doctype, p_doc, child_docname)
 	item = frappe.get_doc("Item", trans_item.get('item_code'))
 	for field in ("item_code", "item_name", "description", "item_group"):
-	    child_item.update({field: item.get(field)})
+		child_item.update({field: item.get(field)})
 	date_fieldname = "delivery_date" if child_doctype == "Sales Order Item" else "schedule_date"
 	child_item.update({date_fieldname: trans_item.get(date_fieldname) or p_doc.get(date_fieldname)})
 	child_item.uom = trans_item.get("uom") or item.stock_uom
@@ -1235,6 +1235,42 @@ def validate_and_delete_children(parent, data):
 
 		d.cancel()
 		d.delete()
+
+def update_bin_on_delete(row, doctype):
+	"""Update bin for deleted item (row)."""
+	from erpnext.stock.stock_balance import (
+		get_indented_qty,
+		get_ordered_qty,
+		get_reserved_qty,
+		update_bin_qty,
+	)
+
+	qty_dict = {}
+
+	if doctype == "Sales Order":
+		qty_dict["reserved_qty"] = get_reserved_qty(row.item_code, row.warehouse)
+	else:
+		if row.material_request_item:
+			qty_dict["indented_qty"] = get_indented_qty(row.item_code, row.warehouse)
+
+		qty_dict["ordered_qty"] = get_ordered_qty(row.item_code, row.warehouse)
+
+	if row.warehouse:
+		update_bin_qty(row.item_code, row.warehouse, qty_dict)
+
+def validate_and_delete_children_values(parent_doctype, parent_doctype_name, data) -> bool:
+	deleted_children = []
+	updated_item_names = [d.get("item_code") for d in data]
+	p_item = frappe.db.get_all(f"{parent_doctype} Item", filters={"parent":parent_doctype_name}, fields=['*'], )
+	for item in p_item:
+		if item.item_code not in updated_item_names:
+			deleted_children.append(item)
+	
+	for d in deleted_children:
+		update_bin_on_delete(d, parent_doctype)
+
+
+	return bool(deleted_children)
 
 @frappe.whitelist()
 def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, child_docname="items"):
@@ -1286,7 +1322,10 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 	parent = frappe.get_doc(parent_doctype, parent_doctype_name)
 
 	check_doc_permissions(parent, 'write')
+ 
+	validate_and_delete_children_values(parent_doctype, parent_doctype_name, data)
 	validate_and_delete_children(parent, data)
+	
 
 	for d in data:
 		new_child_flag = False
@@ -1294,13 +1333,14 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 		if not d.get("item_code"):
 			# ignore empty rows
 			continue
-		
+
 		if not d.get("docname"):
 			new_child_flag = True
 			check_doc_permissions(parent, 'create')
 			child_item = get_new_child_item(d)
 		else:
 			check_doc_permissions(parent, 'write')
+			
 			child_item = frappe.get_doc(parent_doctype + ' Item', d.get("docname"))
 
 			prev_rate, new_rate = flt(child_item.get("rate")), flt(d.get("rate"))
@@ -1311,7 +1351,6 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 			if parent_doctype == 'Sales Order':
 				prev_date, new_date = child_item.get("delivery_date"), d.get("delivery_date")
 			elif parent_doctype == 'Purchase Order':
-				
 				prev_date, new_date = child_item.get("schedule_date"), d.get("schedule_date")
 
 			rate_unchanged = prev_rate == new_rate
@@ -1325,7 +1364,7 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 		validate_quantity(child_item, d)
 
 		child_item.qty = flt(d.get("qty"))
-		
+		child_item.warehouse = frappe.db.get_value(parent_doctype, parent_doctype_name, "set_warehouse")
 		rate_precision = child_item.precision("rate") or 2
 		conv_fac_precision = child_item.precision("conversion_factor") or 2
 		qty_precision = child_item.precision("qty") or 2
@@ -1374,7 +1413,7 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 					child_item.margin_type = ""
 					child_item.margin_rate_or_amount = 0
 					child_item.rate_with_margin = 0
-		
+
 		child_item.flags.ignore_validate_update_after_submit = True
 		if new_child_flag:
 			parent.load_from_db()
@@ -1406,7 +1445,6 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 
 	if parent_doctype == 'Purchase Order':
 		update_last_purchase_rate(parent, is_submit = 1)
-		parent.validate_warehouse()
 		parent.update_prevdoc_status()
 		parent.update_requested_qty()
 		parent.update_ordered_qty()
@@ -1428,6 +1466,7 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 	parent.update_blanket_order()
 	parent.update_billing_percentage()
 	parent.set_status()
+	
 
 @erpnext.allow_regional
 def validate_regional(doc):

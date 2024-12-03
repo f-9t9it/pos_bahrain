@@ -453,6 +453,7 @@ override_whitelisted_methods = {
     "erpnext.stock.get_item_details.get_item_details": "pos_bahrain.api.get_item_details.get_item_details",  # noqa
     # "erpnext.accounts.doctype.sales_invoice.pos.get_pos_data": "pos_bahrain.api.item.get_pos_data",  # noqa
     "erpnext.accounts.doctype.sales_invoice.pos.make_invoice": "pos_bahrain.api.pos.make_invoice",  # noqa
+    "erpnext.controllers.accounts_controller.update_child_qty_rate":"pos_bahrain.doc_events.purchase_order.update_child_qty_rate",
     "erpnext.selling.page.point_of_sale.point_of_sale.search_serial_or_batch_or_barcode_number": "pos_bahrain.api.item.search_serial_or_batch_or_barcode_number" # noqa
 }
 
@@ -505,9 +506,7 @@ from pos_bahrain.api.sales_invoice import set_advances_ov,get_advance_entries,re
 from pos_bahrain.api.sales_and_purchase_return import set_missing_values
 from pos_bahrain.api.taxes_and_totals import calculate_change_amount,calculate_write_off_amount,update_paid_amount_for_return_ov
 from pos_bahrain.api.item import get_customers_address as _get_customers_address
-from pos_bahrain.doc_events.purchase_order import update_child_qty_rate
 
-_AccountsController.update_child_qty_rate = update_child_qty_rate
 _AccountsController.set_advances = set_advances_ov
 _AccountsController.get_advance_entries = get_advance_entries
 _AccountsController.update_against_document_in_jv = update_against_document_in_jv_ov
