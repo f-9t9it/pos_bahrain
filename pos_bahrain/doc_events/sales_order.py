@@ -4,6 +4,7 @@ from frappe import _
 from frappe.utils import flt, today
 from erpnext.setup.utils import get_exchange_rate
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import make_delivery_note
+from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
 from pos_bahrain.api.sales_invoice import get_customer_account_balance
 from functools import partial
 from toolz import first, compose, pluck, unique
@@ -13,6 +14,7 @@ def validate(doc, method):
 
     custom_update_current_stock(doc)
     custom_after_save(doc, method)
+    make_packing_list(doc)
 
 def custom_update_current_stock(doc):
     if doc.get('packed_items'):
@@ -27,29 +29,38 @@ def custom_update_current_stock(doc):
                 d.parent_item = linked_item or doc.items[0].item_code
 
 def custom_after_save(doc, method):
-    if doc.is_new():  
-        for item in doc.items:
-            if item.prevdoc_docname:  
-                quotation = frappe.get_doc("Quotation", item.prevdoc_docname)
+    if doc.is_new():
+        make_packing_list(doc)
+  
 
-                existing_packed_item_codes = {p.item_code for p in doc.packed_items}
+def make_packing_list(doc, update_existing=False):
+    for item in doc.get("items", []):
+        if item.prevdoc_docname: 
+            quotation = frappe.get_doc("Quotation", item.prevdoc_docname)
 
-                for packed_item in quotation.packed_items:
-                    if packed_item.item_code not in existing_packed_item_codes:
-                        doc.append("packed_items", {
-                            "parent_item": packed_item.parent_item,  
-                            "item_code": packed_item.item_code,
-                            "item_name": packed_item.item_name,
-                            "qty": packed_item.qty,
-                            "description": packed_item.description,  
-                        })
+            existing_packed_items = {d.item_code for d in doc.get("packed_items", [])}
 
+            for packed_item in quotation.get("packed_items", []):
+                if packed_item.item_code not in existing_packed_items or update_existing:
+                    doc.append("packed_items", {
+                        "parent_item": item.item_code,
+                        "item_code": packed_item.item_code,
+                        "item_name": packed_item.item_name,
+                        "qty": packed_item.qty,
+                        "description": packed_item.description,
+                    })
+                else:
+                    for item in doc.get("items", []):
+                        if not any(d.parent_item == item.item_code for d in doc.get("packed_items", [])):
+                            make_packing_list(doc)
 
 def before_save(doc, method):
     set_location(doc)
 
 def on_submit(doc, method):
     update_against_quotation(doc)
+    custom_after_save(doc, method)
+    make_packing_list(doc)
 
 def before_cancel(doc, method):
     update_quotation_sales_order(doc)

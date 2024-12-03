@@ -1,6 +1,7 @@
 # Copyright (c) 2013, 	9t9it and contributors
 # For license information, please see license.txt
 
+
 import frappe
 from frappe import _
 from frappe.utils import today, date_diff
