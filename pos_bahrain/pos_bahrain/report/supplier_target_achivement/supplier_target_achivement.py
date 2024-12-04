@@ -56,6 +56,7 @@ def get_columns(filters):
     return columns
 
 
+ 
 def get_region_data(filters):
     from_date = filters.get('from_date')
     to_date = filters.get('to_date')
@@ -63,7 +64,6 @@ def get_region_data(filters):
     supplier = filters.get('supplier')
     show_variance = filters.get('show_variance', 0)
 
-     
     sql_query = """
         SELECT 
             y.region,
@@ -75,15 +75,13 @@ def get_region_data(filters):
             SUM(p.total) / SUM(y.currency) * 100 AS age
         FROM `tabSupplier` x
         LEFT JOIN `tabTarget Child` AS y ON x.name = y.parent
-        
         LEFT JOIN `tabPurchase Order` p ON x.name = p.supplier and y.region = p.region
         WHERE p.docstatus = 1
         AND p.transaction_date BETWEEN %s AND %s
     """
-    
+
     params = [from_date, to_date]
-    # LEFT JOIN `tabPurchase Order` p ON x.name = p.supplier
-    
+
     if company:
         if isinstance(company, list):
             sql_query += " AND p.company IN (%s)" % ','.join(['%s'] * len(company))
@@ -96,12 +94,6 @@ def get_region_data(filters):
         sql_query += " AND p.supplier = %s"
         params.append(supplier)
 
-    # Add conditions for show_variance if enabled
-    # if show_variance == 1:
-    #     sql_query += """
-    #         LEFT JOIN `tabTarget Child` t ON x.name = t.parent
-    #     """
-    
     sql_query += """
         GROUP BY 
             y.region,
@@ -110,23 +102,21 @@ def get_region_data(filters):
             y.currency,
             y.country
     """
-    
-    
-    data = frappe.db.sql(sql_query, tuple(params), as_dict=True)
 
+    data = frappe.db.sql(sql_query, tuple(params), as_dict=True)
+    
     if not data:
-        frappe.msgprint("There is not data in Target Table")
+        frappe.msgprint("No data found for the specified filters. Please ensure the Target Child table is populated in Supplier Master.")
+        return {'regions': {}, 'totals': {}}
+
     regions = {}
     totals = {'saudi_arabia': {'achivement': 0, 'age': 0, 'currency': 0}, 'other_regions': {}}
 
-     
     for row in data:
-        if show_variance == 1:
-            row['variance'] = row.get('variance', 0)
         region = row['region']
-        country = row.get('country')
+        country = row.get('country', '').strip()
 
-        if country == "Saudi Arabia":
+        if country.lower() == "saudi arabia":
             if region not in regions:
                 regions[region] = {
                     'achivement': 0,
@@ -138,7 +128,6 @@ def get_region_data(filters):
 
             regions[region]['achivement'] += row['achievement']
             regions[region]['age'] += row['age']
-
             totals['saudi_arabia']['achivement'] += row['achievement']
             totals['saudi_arabia']['age'] += row['age']
 
@@ -146,17 +135,18 @@ def get_region_data(filters):
                 regions[region]['variance'] = row['currency'] - row['achievement']
                 totals['saudi_arabia']['variance'] = row['currency'] - row['achievement']
         else:
-            totals['other_regions'].setdefault(region, {'achivement': 0, 'age': 0, 'currency': 0, 'default_currency': 0})
+            if region not in totals['other_regions']:
+                totals['other_regions'][region] = {
+                    'achivement': 0, 'age': 0, 'currency': 0, 'default_currency': row['default_currency']
+                }
             totals['other_regions'][region]['achivement'] += row['achievement']
             totals['other_regions'][region]['age'] += row['age']
             totals['other_regions'][region]['currency'] += row['currency']
-            totals['other_regions'][region]['default_currency'] = row['default_currency']
 
             if show_variance == 1:
                 totals['other_regions'][region]['variance'] = row['currency'] - row['achievement']
 
     return {'regions': regions, 'totals': totals}
-
 
 
 def get_data(filters):
@@ -166,17 +156,13 @@ def get_data(filters):
     supplier = filters.get('supplier')
     show_variance = filters.get('show_variance', 0)
 
-    conditions = []
-    params = [from_date, to_date]
-
     sql_query = """
         SELECT x.name,
                x.default_currency,
                tot AS per_year,
                SUM(p.total) AS achivement,
                (SUM(p.total) / tot * 100) AS age,
-               p.company,
-               (tot - SUM(p.total)) AS variance
+               p.company
         FROM `tabSupplier` x
         LEFT JOIN (SELECT parent, SUM(currency) AS tot FROM `tabTarget Child` GROUP BY parent) AS y 
             ON x.name = y.parent
@@ -184,6 +170,8 @@ def get_data(filters):
         WHERE p.docstatus = 1
         AND p.transaction_date BETWEEN %s AND %s
     """
+
+    params = [from_date, to_date]
 
     if company:
         if isinstance(company, list):
@@ -206,9 +194,11 @@ def get_data(filters):
     sql_query += " GROUP BY x.name, x.default_currency"
 
     data = frappe.db.sql(sql_query, tuple(params), as_dict=True)
-    # frappe.msgprint(str(data))
+
     if not data:
-        frappe.msgprint("There is not data in Target Table")
+        frappe.msgprint("No data found for the specified filters. Please ensure the Target Child table is populated in Supplier Master.")
+        return []
+
     blank_row = {
         "name": "",
         "default_currency": "",
@@ -222,11 +212,10 @@ def get_data(filters):
     data.insert(1, blank_row)
 
     region_data = get_region_data(filters)
-
     saudi_region_data = {}
-    other_region_data = {}  
-    total_currency = 0
+    other_region_data = {}
 
+    total_currency = 0
     for region, region_values in region_data['regions'].items():
         country = region_values.get('country')
         if country and country.strip().lower() == "saudi arabia".lower():
@@ -249,7 +238,7 @@ def get_data(filters):
 
     total_row_saudi_arabia = {
         "name": "Total (Saudi Arabia)",
-        "default_currency": region_values.get('default_currency', ''),
+        "default_currency": saudi_region_data.get('default_currency', ''),
         "per_year": total_currency,
         "achivement": region_data['totals']['saudi_arabia']['achivement'],
         "age": region_data['totals']['saudi_arabia']['age'],
@@ -270,8 +259,9 @@ def get_data(filters):
                 "variance": region_values.get('variance', 0) if show_variance == 1 else "",
             }
             data.append(region_row)
-    # frappe.msgprint(str(data))
+
     return data
+
 
 
 

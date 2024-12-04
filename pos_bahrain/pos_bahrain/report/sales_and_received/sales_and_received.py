@@ -147,7 +147,7 @@ def get_data(filters):
 
     if missing_currencies:
         missing_currencies_str = ", ".join(missing_currencies)
-        frappe.throw(_("Please add currency exchange for the following currencies: {0}").format(missing_currencies_str))
+        frappe.throw(_("Please add currency exchange for the following currencies: {0} to SAR").format(missing_currencies_str))
 
     if not data:
         frappe.throw("Data Not Found")
@@ -243,6 +243,6 @@ def get_payment_data(filters):
 
     if missing_currencies:
         missing_currencies_str = ", ".join(missing_currencies)
-        frappe.throw(_("Please add currency exchange for the following currencies: {0}").format(missing_currencies_str))
+        frappe.throw(_("Please add currency exchange for the following currencies : {0} to SAR").format(missing_currencies_str))
 
     return list(payment_data.values())
