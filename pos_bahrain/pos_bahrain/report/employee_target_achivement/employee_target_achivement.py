@@ -1,3 +1,4 @@
+ 
 import frappe
 
 def execute(filters=None):
@@ -7,9 +8,7 @@ def execute(filters=None):
     columns = get_columns(filters)
     data = get_data(filters)
 
-     
     if filters.get("country"):
-       
         data.append({
             "name": None,
             "salary_currency": None,
@@ -21,6 +20,9 @@ def execute(filters=None):
         
         supplier_data = get_supplier_data(filters)
         data.extend(supplier_data)
+
+    if not data:
+        frappe.msgprint("No data found for the specified filters. Please ensure the Target Child table is populated in Employee Master.")
 
     return columns, data
 
@@ -150,7 +152,16 @@ def get_data(filters):
         sql_query += " GROUP BY e.name, e.salary_currency, e.employee_name, y.tot"
 
     data = frappe.db.sql(sql_query, tuple(params), as_dict=True)
-	
+    
+     
+    if not data:
+        frappe.msgprint("No data found for the specified filters. Please ensure the Target Child table is populated in Employee Master.")
+
+     
+    for row in data:
+        if not row.get('salary_currency'):
+            frappe.msgprint(f"Salary Currency is missing for Employee: {row.get('name')}. Please fill Salary Currency in Employee Master.")
+
     return data
 
 

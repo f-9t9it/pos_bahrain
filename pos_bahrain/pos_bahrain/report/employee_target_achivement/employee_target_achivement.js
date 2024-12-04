@@ -5,6 +5,13 @@
 frappe.query_reports["Employee Target Achivement"] = {
 	"filters": [
 		{
+			fieldname: 'calculation_based_on',
+			label: __('Calculation Based On'),
+			fieldtype: 'Select',
+			options: 'Sales Order\nSales Invoice',
+			reqd: 1,
+		},
+		{
 			"fieldname": "from_date",
 			"label": __("From Date"),
 			"fieldtype": "Date",
@@ -26,13 +33,7 @@ frappe.query_reports["Employee Target Achivement"] = {
 			options: 'Company',
 			reqd: 1,
 		},
-		{
-			fieldname: 'calculation_based_on',
-			label: __('Calculation Based On'),
-			fieldtype: 'Select',
-			options: 'Sales Order\nSales Invoice',
-			reqd: 1,
-		},
+		
 		
 		{
 			fieldname: 'country',
