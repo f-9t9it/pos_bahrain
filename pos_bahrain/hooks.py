@@ -187,6 +187,7 @@ fixtures = [
                     "Branch-pb_cr_expiry",
                     "Stock Entry-pb_reference_stock_transfer",
                     "Stock Entry-pb_repack_request",
+                    "Stock Entry-material_request",
                     "Material Request-pb_to_warehouse",
                     "Sales Order-pb_branch",
                     "Sales Invoice-pb_branch",
@@ -322,7 +323,9 @@ fixtures = [
 # ------------
 
 # before_install = "pos_bahrain.install.before_install"
-# after_install = "pos_bahrain.install.after_install"
+after_install = "pos_bahrain.install.after_install"
+after_migrate = "pos_bahrain.install.after_install"
+
 
 # Desk Notifications
 # ------------------
@@ -354,13 +357,17 @@ doc_events = {
         "before_save": "pos_bahrain.doc_events.sales_order.before_save",
         "on_submit": "pos_bahrain.doc_events.sales_order.on_submit",
         "before_cancel": "pos_bahrain.doc_events.sales_order.before_cancel",
+		"after_save": "pos_bahrain.doc_events.sales_order.custom_after_save",
+		"validate": "pos_bahrain.doc_events.sales_order.validate",
+    },
+	"Quotation": {
+		"validate": "pos_bahrain.doc_events.quotation.validate",
     },
     "Sales Invoice": {
         "validate": "pos_bahrain.doc_events.sales_invoice.validate",
         "before_save": "pos_bahrain.doc_events.sales_invoice.before_save",
         "on_submit": "pos_bahrain.doc_events.sales_invoice.on_submit",
         "before_cancel": "pos_bahrain.doc_events.sales_invoice.before_cancel",
-        "on_cancel": "pos_bahrain.doc_events.sales_invoice.on_cancel",
     },
     "Journal Entry": {
         # "before_cancel": "pos_bahrain.doc_events.journal_entry.cancel_jv",
@@ -377,6 +384,9 @@ doc_events = {
         ],
         "on_submit": "pos_bahrain.doc_events.purchase_receipt.set_batch_references",
     },
+	# "Purchase Order":{
+	# 	"on_update_after_submit":"pos_bahrain.doc_events.purchase_order.before_update_after_submit"
+    # },
     "Payment Entry": {
         "before_save": "pos_bahrain.doc_events.payment_entry.before_save"
     },
@@ -406,6 +416,9 @@ on_session_creation = "pos_bahrain.doc_events.set_user_defaults"
 
 scheduler_events = {
     "daily": ["pos_bahrain.scheduler_events.daily.send_email_to_manager"]
+}
+override_doctype_dashboards = {
+	"Stock Entry": "pos_bahrain.doc_events.stock_entry_dashboard.get_data"
 }
 # scheduler_events = {
 # 	"all": [
@@ -440,6 +453,7 @@ override_whitelisted_methods = {
     "erpnext.stock.get_item_details.get_item_details": "pos_bahrain.api.get_item_details.get_item_details",  # noqa
     # "erpnext.accounts.doctype.sales_invoice.pos.get_pos_data": "pos_bahrain.api.item.get_pos_data",  # noqa
     "erpnext.accounts.doctype.sales_invoice.pos.make_invoice": "pos_bahrain.api.pos.make_invoice",  # noqa
+    "erpnext.controllers.accounts_controller.update_child_qty_rate":"pos_bahrain.doc_events.purchase_order.update_child_qty_rate",
     "erpnext.selling.page.point_of_sale.point_of_sale.search_serial_or_batch_or_barcode_number": "pos_bahrain.api.item.search_serial_or_batch_or_barcode_number" # noqa
 }
 
@@ -492,6 +506,7 @@ from pos_bahrain.api.sales_invoice import set_advances_ov,get_advance_entries,re
 from pos_bahrain.api.sales_and_purchase_return import set_missing_values
 from pos_bahrain.api.taxes_and_totals import calculate_change_amount,calculate_write_off_amount,update_paid_amount_for_return_ov
 from pos_bahrain.api.item import get_customers_address as _get_customers_address
+
 _AccountsController.set_advances = set_advances_ov
 _AccountsController.get_advance_entries = get_advance_entries
 _AccountsController.update_against_document_in_jv = update_against_document_in_jv_ov

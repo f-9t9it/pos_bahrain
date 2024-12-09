@@ -13,7 +13,7 @@ from functools import partial
 from frappe.utils import get_link_to_form
 from toolz import first, compose, pluck, unique
 from frappe.utils import get_url_to_form
-
+from frappe.utils import flt,cint
 
 @frappe.whitelist()
 def set_discount_on_return(doc):
@@ -49,6 +49,9 @@ def validate(doc, method):
                 )
 
     _validate_return_series(doc)
+    custom_update_current_stock(doc)
+    custom_update_packing_list(doc,method)
+    make_packing_list(doc)
     doc.pb_available_balance = get_customer_account_balance(doc.customer)
 
 def before_save(doc, method):
@@ -88,6 +91,8 @@ def on_submit(doc, method):
                 flt(payment.base_amount) / flt(conversion_rate),
             )
     enforce_full_payment(doc)
+    custom_update_packing_list(doc,method)
+    make_packing_list(doc)
     # _make_gl_entry_for_provision_credit(doc)
     # _make_gl_entry_on_credit_issued(doc)
     # _make_return_dn(doc)
@@ -216,7 +221,49 @@ def _validate_return_series(doc):
                     )
                 )
             )
+def custom_update_current_stock(doc):
+    # frappe.msgprint("Updating current stock.")
+    for d in doc.get('items'):
+        if d.item_code and d.warehouse:
+            bin = frappe.db.sql("SELECT actual_qty FROM `tabBin` WHERE item_code = %s AND warehouse = %s", 
+                                 (d.item_code, d.warehouse), as_dict=1)
+            d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
 
+    for d in doc.get('packed_items'):
+        bin = frappe.db.sql("SELECT actual_qty, projected_qty FROM `tabBin` WHERE item_code = %s AND warehouse = %s", 
+                             (d.item_code, d.warehouse), as_dict=1)
+        d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
+        d.projected_qty = bin and flt(bin[0]['projected_qty']) or 0
+
+        if not d.parent_item:
+            linked_item = next((item.item_code for item in doc.items if item.item_code == d.item_code), None)
+            d.parent_item = linked_item or doc.items[0].item_code
+
+def custom_update_packing_list(doc, method):
+    if doc.is_new() or (cint(doc.update_stock) == 1 and doc.docstatus == 1):
+        make_packing_list(doc)
+
+def make_packing_list(doc, update_existing=False):
+    if doc.is_new() or (cint(doc.update_stock) == 1 and doc.docstatus == 1):  
+        for item in doc.items:
+            if item.sales_order:  
+                sales_orders = frappe.get_doc("Sales Order", item.sales_order)
+
+                existing_packed_item_codes = {p.item_code for p in doc.packed_items}
+
+                for packed_item in sales_orders.packed_items:
+                    if packed_item.item_code not in existing_packed_item_codes:
+                        doc.append("packed_items", {
+                            "parent_item": packed_item.parent_item,  
+                            "item_code": packed_item.item_code,
+                            "item_name": packed_item.item_name,
+                            "qty": packed_item.qty,
+                            "description": packed_item.description,  
+                        })
+                    else:
+                        for item in doc.get("items", []):
+                            if not any(d.parent_item == item.item_code for d in doc.get("packed_items", [])):
+                                make_packing_list(doc)
 
 def _make_return_dn(doc):
     if not doc.is_return or not doc.pb_returned_to_warehouse:
