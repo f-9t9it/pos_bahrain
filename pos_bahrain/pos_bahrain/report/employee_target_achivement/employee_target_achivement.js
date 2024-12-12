@@ -15,7 +15,7 @@ frappe.query_reports["Employee Target Achivement"] = {
 			"fieldname": "from_date",
 			"label": __("From Date"),
 			"fieldtype": "Date",
-			"default": frappe.datetime.month_start(),
+			"default": frappe.datetime.year_start(),
 			reqd: 1,
 
 		},
@@ -23,7 +23,7 @@ frappe.query_reports["Employee Target Achivement"] = {
 			"fieldname": "to_date",
 			"label": __("To Date"),
 			"fieldtype": "Date",
-			"default": frappe.datetime.month_end(),
+			"default": frappe.datetime.year_end(),
 			reqd: 1,
 		},
 		{
@@ -35,12 +35,13 @@ frappe.query_reports["Employee Target Achivement"] = {
 		},
 		
 		
-		{
-			fieldname: 'country',
-			label: __('Country'),
-			fieldtype: 'Link',
-			options: 'Country',
-		},
+		// {
+		// 	fieldname: 'country',
+		// 	label: __('Country'),
+		// 	fieldtype: 'Link',
+		// 	options: 'Country',
+		// 	reqd: 1,
+		// },
 		{
 			"fieldname": "show_variance",
 			"label": "Show Variance",

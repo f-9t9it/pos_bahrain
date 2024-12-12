@@ -1,4 +1,4 @@
- 
+
 import frappe
 
 def execute(filters=None):
@@ -8,7 +8,7 @@ def execute(filters=None):
     columns = get_columns(filters)
     data = get_data(filters)
 
-    if filters.get("country"):
+    if filters.get("company"):
         data.append({
             "name": None,
             "salary_currency": None,
@@ -23,7 +23,7 @@ def execute(filters=None):
 
     if not data:
         frappe.msgprint("No data found for the specified filters. Please ensure the Target Child table is populated in Employee Master.")
-
+    print(data)
     return columns, data
 
 
@@ -88,10 +88,10 @@ def get_data(filters):
                 e.name,
                 e.employee_name,
                 e.salary_currency,
-                y.tot,
-                (SUM(s.total) / tot * 100) AS age,
-                COALESCE(SUM(s.total), 0) AS total_sales,
-                (tot - SUM(s.total)) AS variance
+                ROUND(y.tot, 2) AS tot,
+                ROUND((SUM(s.total) / tot * 100), 2) AS age,
+                ROUND(COALESCE(SUM(s.total), 0), 2) AS total_sales,
+                ROUND((tot - SUM(s.total)), 2) AS variance
             FROM 
                 `tabEmployee` e
             LEFT JOIN
@@ -122,11 +122,11 @@ def get_data(filters):
                 e.name,
                 e.employee_name,
                 e.salary_currency,
-                y.tot,
+                ROUND(y.tot, 2) AS tot,
                 s.posting_date,
-                (SUM(s.total) / tot * 100) AS age,
-                COALESCE(SUM(s.total), 0) AS total_sales,
-                (tot - SUM(s.total)) AS variance
+                ROUND((SUM(s.total) / tot * 100), 2) AS age,
+                ROUND(COALESCE(SUM(s.total), 0), 2) AS total_sales,
+                ROUND((tot - SUM(s.total)), 2) AS variance
             FROM 
                 `tabEmployee` e
             LEFT JOIN
@@ -152,49 +152,61 @@ def get_data(filters):
         sql_query += " GROUP BY e.name, e.salary_currency, e.employee_name, y.tot"
 
     data = frappe.db.sql(sql_query, tuple(params), as_dict=True)
-    
-     
+
     if not data:
         frappe.msgprint("No data found for the specified filters. Please ensure the Target Child table is populated in Employee Master.")
 
-     
     for row in data:
-        if not row.get('salary_currency'):
-            frappe.msgprint(f"Salary Currency is missing for Employee: {row.get('name')}. Please fill Salary Currency in Employee Master.")
+        row['tot'] = round(row['tot'], 2)
+        row['total_sales'] = round(row['total_sales'], 2)
+        row['age'] = round(row['age'], 2)
+        if 'variance' in row:
+            row['variance'] = round(row['variance'], 2)
 
     return data
+
 
 
 def get_supplier_data(filters):
     from_date = filters.get('from_date')
     to_date = filters.get('to_date')
-    country = filters.get('country')
+    company = filters.get('company')
 
-    params = [from_date, to_date]
+    params = [from_date, to_date, company]
     sql_query = """
         SELECT 
             x.name,
             x.default_currency as salary_currency,
-            y.tot,
-            SUM(p.total) AS total_sales,
-            (SUM(p.total) / y.tot * 100) AS age,
+            ROUND(y.tot, 2) AS tot,
+            ROUND(SUM(p.total), 2) AS total_sales,
+            ROUND((SUM(p.total) / y.tot * 100), 2) AS age,
             p.company,
-            (y.tot - SUM(p.total)) AS variance
+            ROUND((y.tot - SUM(p.total)), 2) AS variance,
+            c.country
         FROM 
             `tabSupplier` x
-        LEFT JOIN 
+        INNER JOIN 
             (SELECT parent, SUM(currency) AS tot FROM `tabTarget Child` GROUP BY parent) AS y ON x.name = y.parent
         LEFT JOIN 
             `tabPurchase Order` p ON x.name = p.supplier 
+        left join
+            `tabCompany` c on p.company = c.name and p.country = c.country
         WHERE 
             p.docstatus = 1
-            AND p.transaction_date BETWEEN %s AND %s
-            AND p.country = %s
+            AND p.transaction_date BETWEEN %s AND %s and  p.company = %s
+            
         GROUP BY 
-            x.name, x.default_currency, y.tot, p.company
+            x.name, x.default_currency, y.tot, p.company 
     """
-    params.append(country)
 
     supplier_data = frappe.db.sql(sql_query, tuple(params), as_dict=True)
 
+    for row in supplier_data:
+        row['tot'] = round(row['tot'], 2)
+        row['total_sales'] = round(row['total_sales'], 2)
+        row['age'] = round(row['age'], 2)
+        if 'variance' in row:
+            row['variance'] = round(row['variance'], 2)
+
     return supplier_data
+

@@ -1,0 +1,168 @@
+<style type="text/css">
+	.bcolor{border-color: black; border-style: solid;}
+	.center{text-align: center;}
+   
+    hr {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        border: 0;
+        border-top: 1px solid #000000;
+    }
+    * {
+        box-sizing: content-box;
+    }
+    .print-format td, .print-format th {
+        padding: 5px !important;
+    }
+    
+    .print-format {
+        font-size:10px;
+        font-family: Cambria;    
+        padding: 0.25in;
+    }
+    body {
+        font-family: "Cambria", sans-serif; 
+        font-size: 12px; 
+    }
+    table tr td{
+        border: 1px solid;
+    }
+    h1, h2, h3, h4, h5, h6, p{
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+    table tr td,
+    table tr th{
+        padding: 3px;
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    tr{
+        border:1px solid black;
+    }
+    .border0{
+        border:none;
+    }
+    .bordertopbottom0{
+        border-top:0;
+        border-bottom:0;
+    }
+    .footer-table {
+       margin-top: 20px;
+    }
+</style>
+
+<div id="header-html" class="visible-pdf">
+    <div style="margin-top: 1px;">
+    </div>
+  </div>
+
+<div class="conatiner">
+    <!-- <table class="header-table">
+        <img src="/files/header.png" alt="Letter Head" width="100%" height="100%">
+    </table> -->
+  	<table width="100%" style="margin-bottom: 50px;">
+
+
+            <tr>
+                <td colspan="3" class="border0" style="text-align:center;font-size :15px;">
+                   <b>  {% for m in data %}
+                    {% if m.country %}
+                    <b>{{ m.country }}</b>
+                        {% break %}
+                    {% endif %}
+                {% endfor %} Target Achivement</b>
+            </td>
+            <td colspan="2"   style="text-align:center;font-size :15px;">
+                <b> Achivements </b>
+         </td>
+
+            </tr>
+            <tr>
+                <td width="30%" style="font-weight:bold; text-align: left;"><b>Country</b> </td>
+                <td width="10%" style="font-weight:bold; text-align: center;"><b>CUR</b> </td>
+                <td width="20%" style="font-weight:bold; text-align: center;"><b>Per Year</b> </td>
+                <td width="20%" style="font-weight:bold; text-align: center;"><b>Total</b> </td>
+                <td width="20%" style="font-weight:bold; text-align: center;"><b>% Age</b></td>
+                {% if filters.show_variance == 1 %}
+                <td width="20%" style="font-weight:bold; text-align: center;"><b>Variance</b></td>
+            {% endif %}
+            </tr>
+            {% for row in data %}
+            {% if row.employee_name%}
+            <tr>
+                <td  style="font-weight:bold;text-align: left;">{%= row.employee_name %}</td>
+                <td style="font-weight:bold; text-align: center;">{%= row.salary_currency %}</td>
+                <td style="font-weight:bold; text-align: center;">{%= row.tot %}</td>
+                <td style="font-weight:bold; text-align: center;">{%= row.total_sales %}</td>
+                <td style="font-weight:bold; text-align: center;">{%= row.age %} %</td>
+                {% if filters.show_variance == 1 %}
+                <td style="font-weight:bold; text-align: center;">{%= row.variance %}</td>
+            {% endif %}
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+        <table style= "width:100%">
+            <tr style="width:100%">
+                <td colspan="5" class="border0" style="text-align:center;font-size :15px;">
+                    {% for m in data %}
+    {% if m.country %}
+    <b>{{ m.country }}</b>
+        {% break %}
+    {% endif %}
+{% endfor %}
+
+                   
+                     
+             </td>
+            </tr>
+            <tr style="width:100%">
+                <td colspan="5" class="border0" style="text-align:center;font-size :15px;">
+                   <b>Supplier Wise Target And Achivement</b>
+                     
+            </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="border0" style="text-align:center;font-size :15px;">
+                   <b>Suppliers Target</b>
+            </td>
+            <td colspan="2"   style="text-align:center;font-size :15px;">
+                <b> Achivements </b>
+         </td>
+
+            </tr>
+            <tr>
+                <td  width="30%" style="font-weight:bold; text-align: left;">Supplier</td>
+                <td  width="10%" style="font-weight:bold; text-align: center;">CUR</td>
+                <td  width="20%" style="font-weight:bold; text-align: center;">Per Year</td>
+                <td  width="20%" style="font-weight:bold; text-align: center;">Achivement</td>
+                <td  width="20%" style="font-weight:bold; text-align: center;">% Age</td>
+                {% if filters.show_variance == 1 %}
+                <td width="20%" style="font-weight:bold; text-align: center;"><b>Variance</b></td>
+            {% endif %}
+                 
+            </tr>
+            {% for row in data %}
+             {% if row.company %}
+            <tr>
+                <td style="font-weight:bold; text-align: left;">{{ row.name }} </td>
+                <td style="font-weight:bold; text-align: center;">{{ row.salary_currency }}</td>
+                <td style="font-weight:bold; text-align: center;">{{ row.tot }}</td>
+                <td style="font-weight:bold; text-align: center;">{{ row.total_sales }}</td>
+                <td style="font-weight:bold; text-align: center;">{{ row.age}} %</td>
+                {% if filters.show_variance == 1 %}
+                <td style="font-weight:bold; text-align: center;">{%= row.variance %}</td>
+            {% endif %}
+                 
+
+            </tr>
+             {% endif %}
+            {% endfor %}
+        </table>
+
+
+      
+
+
+</div>

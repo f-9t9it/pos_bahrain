@@ -13,7 +13,7 @@ def execute(filters=None):
     
     data.append(black_row)
     data.extend(payment_data)
-    
+    print(data)
     return columns, data
 
 def get_columns(filters):
@@ -119,12 +119,18 @@ def get_data(filters):
                 companies[company] = {f"month_{i}": 0 for i in range(1, 13)}
                 companies[company].update({'name': company, 'default_currency': row['default_currency']})
 
-            companies[company][f"month_{row['month']}"] = tot
+            companies[company][f"month_{row['month']}"] = round(tot, 2)
 
         for company in companies.values():
-            company['grand_total'] = sum(company[f"month_{i}"] for i in range(1, 13))
+            company['grand_total'] = round(sum(company[f"month_{i}"] for i in range(1, 13)), 2)
 
         data = list(companies.values())
+
+        total_row = {'name': 'Total', 'default_currency': 'SAR'}
+        for month in range(1, 13):
+            total_row[f"month_{month}"] = round(sum(company[f"month_{month}"] for company in companies.values()), 2)
+        total_row['grand_total'] = round(sum(total_row[f"month_{month}"] for month in range(1, 13)), 2)
+        data.append(total_row)
 
     elif filters.get("report_type") == "Date Range":
         companies = {}
@@ -145,13 +151,19 @@ def get_data(filters):
 
         data = list(companies.values())
 
+        total_row = {'name': 'Total', 'default_currency': 'SAR', 'total': 0}
+        total_row['total'] = round(sum(company['total'] for company in companies.values()), 2)
+        data.append(total_row)
+
     if missing_currencies:
         missing_currencies_str = ", ".join(missing_currencies)
         frappe.throw(_("Please add currency exchange for the following currencies: {0} to SAR").format(missing_currencies_str))
 
     if not data:
-        frappe.throw("Data Not Found")
+        frappe.throw("No data found for the specified filters.")
+     
     return data
+
 
 def get_black_row(filters):
     return {
@@ -219,6 +231,8 @@ def get_payment_data(filters):
 
     missing_currencies = set()
     payment_data = {}
+    monthly_totals = {}
+    grand_total = 0
 
     for row in payment_result:
         company = row['company']
@@ -234,15 +248,35 @@ def get_payment_data(filters):
                 'total': 0,
             }
 
-        payment_data[company][f"month_{month}"] = total_payment
+        payment_data[company][f"month_{month}"] = round(total_payment, 2)
         payment_data[company]['total'] += total_payment
         payment_data[company]['grand_total'] += total_payment
 
+        if f"month_{month}" not in monthly_totals:
+            monthly_totals[f"month_{month}"] = 0
+        monthly_totals[f"month_{month}"] += total_payment
+
+        grand_total += total_payment
+
         if currency not in missing_currencies and currency != "SAR" and total_payment is None:
             missing_currencies.add(currency)
+
+    total_row = {
+        'name': "Total",
+        'default_currency': "SAR",   
+        'grand_total': round(grand_total, 2),
+        'total': round(grand_total, 2),
+    }
+
+    for month in monthly_totals:
+        total_row[month] = round(monthly_totals[month], 2)
+
+    payment_data["Total"] = total_row
 
     if missing_currencies:
         missing_currencies_str = ", ".join(missing_currencies)
         frappe.throw(_("Please add currency exchange for the following currencies : {0} to SAR").format(missing_currencies_str))
 
     return list(payment_data.values())
+
+

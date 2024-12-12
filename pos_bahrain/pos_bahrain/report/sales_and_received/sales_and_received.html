@@ -1,0 +1,218 @@
+<style type="text/css">
+	.bcolor{border-color: black; border-style: solid;}
+	.center{text-align: center;}
+   
+    hr {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        border: 0;
+        border-top: 1px solid #000000;
+    }
+    * {
+        box-sizing: content-box;
+    }
+    .print-format td, .print-format th {
+        padding: 5px !important;
+    }
+    
+    .print-format {
+        font-size:10px;
+        font-family: Cambria;    
+        padding: 0.25in;
+    }
+    body {
+        font-family: "Cambria", sans-serif; 
+        font-size: 12px; 
+    }
+    table tr td{
+        border: 1px solid;
+    }
+    h1, h2, h3, h4, h5, h6, p{
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+    table tr td,
+    table tr th{
+        padding: 3px;
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    tr{
+        border:1px solid black;
+    }
+    .border0{
+        border:none;
+    }
+    .bordertopbottom0{
+        border-top:0;
+        border-bottom:0;
+    }
+    .footer-table {
+       margin-top: 20px;
+    }
+</style>
+
+<div id="header-html" class="visible-pdf">
+    <div style="margin-top: 1px;">
+    </div>
+  </div>
+
+<div class="conatiner">
+    <!-- <table class="header-table">
+        <img src="/files/header.png" alt="Letter Head" width="100%" height="100%">
+    </table> -->
+    <table width="100%" style="margin-bottom: 50px;">
+        <tr>
+            <td width="25%" colspan="1" rowspan="2" class="border0" style="text-align:center;">
+                <h5><b>ANALYTICAONE GROUP (Saudi, Bahrain, Qatar, Jordan, Oman, and UAE)</b></h5>
+            </td>
+            <td colspan="13" style="text-align:center;">
+                <h5><b>SALES ACHIEVEMENT FOR ANALYTICAONE GROUP FOR  {%= filters.year %}
+                     </b></h5>
+            </td>
+        </tr>
+        <tr>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>JAN</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>FEB</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>MAR</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>APR</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>MAY</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>JUN</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>JUL</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>AUG</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>SEP</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>OCT</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>NOV</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>DEC</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>TOTAL SAR</b></td>
+        </tr>
+        {% for item in data %}
+            {% if not item.total %}
+            <tr>
+                <td style="font-weight:bold; text-align: left;">{{ item.name }}</td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_1 %}{{ item.month_1 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_2 %}{{ item.month_2 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_3 %}{{ item.month_3 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_4 %}{{ item.month_4 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_5 %}{{ item.month_5 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_6 %}{{ item.month_6 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_7 %}{{ item.month_7 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_8 %}{{ item.month_8 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_9 %}{{ item.month_9 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_10 %}{{ item.month_10 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_11 %}{{ item.month_11 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.month_12 %}{{ item.month_12 }}{% else %}-{% endif %}
+                </td>
+                <td style="font-weight:bold; text-align: right;">
+                    {% if item.grand_total %}{{ item.grand_total }}{% else %}-{% endif %}
+                </td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    
+    <table width="100%" style="margin-bottom: 50px;">
+        <tr>
+            <td width="25%" colspan="1" rowspan="2" class="border0" style="text-align:center;">
+                <h5><b>ANALYTICAONE GROUP (Saudi, Bahrain, Qatar, Jordan, Oman, and UAE)</b></h5>
+            </td>
+            <td colspan="13" style="text-align:center;">
+                <h5><b>RECEIVABLE SAR FOR 
+                    {%= filters.year %} </b></h5>
+            </td>
+        </tr>
+        <tr>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>JAN</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>FEB</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>MAR</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>APR</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>MAY</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>JUN</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>JUL</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>AUG</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>SEP</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>OCT</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>NOV</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>DEC</b></td>
+            <td width="7.5%" style="font-weight:bold; text-align: center;"><b>TOTAL SAR</b></td>
+        </tr>
+        {% for item in data %}
+    {% if item.total %}
+        <tr>
+            <td style="font-weight:bold; text-align: left;">{{ item.name }}</td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_1 %}{{ item.month_1 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_2 %}{{ item.month_2 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_3 %}{{ item.month_3 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_4 %}{{ item.month_4 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_5 %}{{ item.month_5 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_6 %}{{ item.month_6 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_7 %}{{ item.month_7 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_8 %}{{ item.month_8 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_9 %}{{ item.month_9 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_10 %}{{ item.month_10 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_11 %}{{ item.month_11 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.month_12 %}{{ item.month_12 }}{% else %}-{% endif %}
+            </td>
+            <td style="font-weight:bold; text-align: right;">
+                {% if item.grand_total %}{{ item.grand_total }}{% else %}-{% endif %}
+            </td>
+        </tr>
+    {% endif %}
+{% endfor %}
+
+
+    
+
+    </table>
+    
+
+      
+
+
+</div>
