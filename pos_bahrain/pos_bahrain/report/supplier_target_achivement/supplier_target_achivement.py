@@ -63,6 +63,8 @@ def get_region_data(filters):
     company = filters.get('company')
     supplier = filters.get('supplier')
     show_variance = filters.get('show_variance', 0)
+    if not company :
+        frappe.throw("Please Select Company")
 
     sql_query = """
         SELECT 
@@ -72,7 +74,7 @@ def get_region_data(filters):
             x.default_currency,
             y.currency,
             SUM(p.total) AS achievement,
-            SUM(p.total) / SUM(y.currency) * 100 AS age
+            ROUND((SUM(p.total) / SUM(y.currency) * 100),2) AS age
         FROM `tabSupplier` x
         LEFT JOIN `tabTarget Child` AS y ON x.name = y.parent
         LEFT JOIN `tabPurchase Order` p ON x.name = p.supplier and y.region = p.region
@@ -102,7 +104,7 @@ def get_region_data(filters):
             y.currency,
             y.country
     """
-
+    
     data = frappe.db.sql(sql_query, tuple(params), as_dict=True)
     
     if not data:
@@ -148,7 +150,7 @@ def get_region_data(filters):
 
     return {'regions': regions, 'totals': totals}
 
-
+ 
 def get_data(filters):
     from_date = filters.get('from_date')
     to_date = filters.get('to_date')
@@ -156,13 +158,18 @@ def get_data(filters):
     supplier = filters.get('supplier')
     show_variance = filters.get('show_variance', 0)
 
-    sql_query = """
+    select_columns = """
         SELECT x.name,
                x.default_currency,
                tot AS per_year,
                SUM(p.total) AS achivement,
-               (SUM(p.total) / tot * 100) AS age,
+               round((SUM(p.total) / NULLIF(tot, 0) * 100),2) AS age,
                p.company
+    """
+    if show_variance == 1:
+        select_columns += ", (tot - SUM(p.total)) AS variance"
+
+    sql_query = select_columns + """
         FROM `tabSupplier` x
         LEFT JOIN (SELECT parent, SUM(currency) AS tot FROM `tabTarget Child` GROUP BY parent) AS y 
             ON x.name = y.parent
@@ -185,13 +192,9 @@ def get_data(filters):
         sql_query += " AND p.supplier = %s"
         params.append(supplier)
 
-    if show_variance == 1:
-        sql_query = sql_query.replace(
-            "SUM(p.total) AS achivement, (SUM(p.total) / tot * 100) AS age",
-            "SUM(p.total) AS achivement, (SUM(p.total) / tot * 100) AS age, (tot - SUM(p.total)) AS variance"
-        )
-
     sql_query += " GROUP BY x.name, x.default_currency"
+
+    
 
     data = frappe.db.sql(sql_query, tuple(params), as_dict=True)
 
@@ -208,7 +211,6 @@ def get_data(filters):
         "company": "",
         "variance": "" if show_variance == 0 else ""
     }
-
     data.insert(1, blank_row)
 
     region_data = get_region_data(filters)
@@ -259,9 +261,9 @@ def get_data(filters):
                 "variance": region_values.get('variance', 0) if show_variance == 1 else "",
             }
             data.append(region_row)
-
+    print(data)
     return data
-
+     
 
 
 
