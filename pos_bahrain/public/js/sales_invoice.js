@@ -240,6 +240,9 @@ function _create_custom_buttons(frm) {
   frm.add_custom_button(__("Purchase Invoice"), function () {
     _make_purchase_invoice(frm);
   }, __("Create"));
+
+  frm.add_custom_button(__("Delivery Note"), function () { _make_delivery_note(frm); }, __("Create"));
+ 
 }
 
 
@@ -250,6 +253,11 @@ function _make_purchase_invoice(frm) {
   });
 }
 
+function _make_delivery_note(frm) {
+  frappe.model.open_mapped_doc({
+      method: "pos_bahrain.api.sales_invoice.make_delivery_note",
+      frm,
+  });
 
 async function _set_customer_account_balance(frm) {
   if(frm.doc.customer != null){
