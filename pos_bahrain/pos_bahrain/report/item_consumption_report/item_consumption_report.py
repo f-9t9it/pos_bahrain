@@ -205,15 +205,17 @@ def _get_data(clauses, values, columns,filters):
         return values
     
     for item in items:
+        total_sales = 0
         if additional_warehouse:
             stock_balance = get_stock_balance(item['item_code'], additional_warehouse)
             item['additional_warehouse_stock_qty'] = stock_balance
-        item_qty = 0
-        so = frappe.get_all("Sales Order Item", filters={"item_code":item.item_code, "creation": ["between", [filters["start_date"], filters["end_date"]]]}, fields=["*"])
-        for x in so:
-            if get_sales_order_parent(x.parent) != []:
-                item_qty += x.qty
-        total_sales = item_qty
+        if filters["include_sales_order_in_average_sales"]:
+            item_qty = 0
+            so = frappe.get_all("Sales Order Item", filters={"item_code":item.item_code, "creation": ["between", [filters["start_date"], filters["end_date"]]]}, fields=["*"])
+            for x in so:
+                if get_sales_order_parent(x.parent) != []:
+                    item_qty += x.qty
+            total_sales = item_qty
         number_of_days = 0
         week_average = 0
         number_of_days = get_number_of_days(filters["start_date"], filters["end_date"])
