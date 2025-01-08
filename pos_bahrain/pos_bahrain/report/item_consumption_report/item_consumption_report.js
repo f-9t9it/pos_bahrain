@@ -76,5 +76,11 @@ frappe.query_reports['Item Consumption Report'] = {
       description:"New Column is added with stock qty",
       get_query: { filters: { is_group: 0 } },
     },
+    {
+      fieldname: 'include_sales_order_in_average_sales',
+      label: __('Include Sales Order In Average Sales'),
+      fieldtype: 'Check',
+      
+    }
   ],
 };
