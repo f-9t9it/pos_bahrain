@@ -209,7 +209,7 @@ def _get_data(clauses, values, columns,filters):
         if additional_warehouse:
             stock_balance = get_stock_balance(item['item_code'], additional_warehouse)
             item['additional_warehouse_stock_qty'] = stock_balance
-        if filters["include_sales_order_in_average_sales"]:
+        if filters.get("include_sales_order_in_average_sales"):
             item_qty = 0
             so = frappe.get_all("Sales Order Item", filters={"item_code":item.item_code, "creation": ["between", [filters["start_date"], filters["end_date"]]]}, fields=["*"])
             for x in so:
