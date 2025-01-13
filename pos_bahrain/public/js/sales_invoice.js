@@ -225,36 +225,36 @@ var total_advance = 0;
 frm.doc.advances.forEach(function(d) { total_advance += d.allocated_amount});
 frm.set_value('total_advance', total_advance);
  }	
-frappe.ui.form.on('Sales Invoice',"before_save", function(){
-  if (cur_frm.doc.advances){
-  for (var i =0; i < cur_frm.doc.advances.length; i++){
-    cur_frm.doc.credit_note_invoice=""
-    cur_frm.doc.main_si=""
-  // var main_si = frappe.db.get_value("Sales Invoice",{"name":cur_frm.doc.advances[i].reference_name},"return_against")
-  // if (cur_frm.doc.advances[i].reference_type = "Sales Invoice") {  
-  if (cur_frm.doc.advances[i].allocated_amount > 0 && cur_frm.doc.advances[i].reference_type == "Sales Invoice") {    
-  cur_frm.doc.credit_note_invoice=cur_frm.doc.advances[i].reference_name
-  // cur_frm.doc.main_si =main_si.return_against
-  // }
-  }
-   }
-   }
-  })
-  frappe.ui.form.on('Sales Invoice',"before_submit", function(){
-    if (cur_frm.doc.advances){
-      for (var i =0; i < cur_frm.doc.advances.length; i++){
-        // cur_frm.doc.credit_note_invoice=""
-        // cur_frm.doc.main_si=""
-      // var main_si = frappe.db.get_value("Sales Invoice",{"name":cur_frm.doc.advances[i].reference_name},"return_against")
-      // if (cur_frm.doc.advances[i].reference_type = "Sales Invoice") {  
-      if (cur_frm.doc.advances[i].allocated_amount > 0 && cur_frm.doc.advances[i].reference_type == "Sales Invoice") {    
-      cur_frm.doc.credit_note_invoice=cur_frm.doc.advances[i].reference_name
-      // cur_frm.doc.main_si =main_si.return_against
-      // }
-      }
-       }
-       }
-      })
+// frappe.ui.form.on('Sales Invoice',"before_save", function(){
+//   if (cur_frm.doc.advances){
+//   for (var i =0; i < cur_frm.doc.advances.length; i++){
+//     cur_frm.doc.credit_note_invoice=""
+//     cur_frm.doc.main_si=""
+//   // var main_si = frappe.db.get_value("Sales Invoice",{"name":cur_frm.doc.advances[i].reference_name},"return_against")
+//   // if (cur_frm.doc.advances[i].reference_type = "Sales Invoice") {  
+//   if (cur_frm.doc.advances[i].allocated_amount > 0 && cur_frm.doc.advances[i].reference_type == "Sales Invoice") {    
+//   cur_frm.doc.credit_note_invoice=cur_frm.doc.advances[i].reference_name
+//   // cur_frm.doc.main_si =main_si.return_against
+//   // }
+//   }
+//    }
+//    }
+//   })
+//   frappe.ui.form.on('Sales Invoice',"before_submit", function(){
+//     if (cur_frm.doc.advances){
+//       for (var i =0; i < cur_frm.doc.advances.length; i++){
+//         // cur_frm.doc.credit_note_invoice=""
+//         // cur_frm.doc.main_si=""
+//       // var main_si = frappe.db.get_value("Sales Invoice",{"name":cur_frm.doc.advances[i].reference_name},"return_against")
+//       // if (cur_frm.doc.advances[i].reference_type = "Sales Invoice") {  
+//       if (cur_frm.doc.advances[i].allocated_amount > 0 && cur_frm.doc.advances[i].reference_type == "Sales Invoice") {    
+//       cur_frm.doc.credit_note_invoice=cur_frm.doc.advances[i].reference_name
+//       // cur_frm.doc.main_si =main_si.return_against
+//       // }
+//       }
+//        }
+//        }
+//       })
   function sales_invoice_payment(frm, cdt, cdn) {
         // var d = locals[cdt][cdn];
         // // var amount = 0;
