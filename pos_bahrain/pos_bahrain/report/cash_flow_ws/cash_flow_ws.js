@@ -9,14 +9,14 @@ frappe.query_reports["Cash Flow WS"] = {
 			label: __('From Date'),
 			fieldtype: 'Date',
 			reqd: 1,
-			default:frappe.datetime.month_start(),
+			default:frappe.datetime.add_months(frappe.datetime.get_today(), -12),
 		  },
 		  {
 			fieldname: 'to_date',
 			label: __('To Date'),
 			fieldtype: 'Date',
 			reqd: 1,
-			default:frappe.datetime.month_end(),
+			default:frappe.datetime.get_today(),
 		  },
 		  {
 			fieldname: 'support_amount',
@@ -30,3 +30,4 @@ frappe.query_reports["Cash Flow WS"] = {
 		  },
 	]
 };
+add .
