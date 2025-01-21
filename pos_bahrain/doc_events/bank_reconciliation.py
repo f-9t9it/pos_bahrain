@@ -114,10 +114,10 @@ def get_payment_entries(doc, method):
     # )
 
     payment_entries = sorted(
-        # [dissoc(x.as_dict(), "idx") for x in filter_sip_credit(doc.payment_entries)]
-        [make_row(x) for x in gl_payments],
-        key=lambda k: k["posting_date"] or frappe.utils.getdate(frappe.utils.nowdate()),
-    )
+			[dissoc(x.as_dict(), "idx") for x in doc.payment_entries]
+			+[make_row(x) for x in gl_payments],
+			key=lambda k: k["posting_date"] or frappe.utils.getdate(frappe.utils.nowdate()),
+		)
 
     doc.set("payment_entries", [])
     for row in payment_entries:
