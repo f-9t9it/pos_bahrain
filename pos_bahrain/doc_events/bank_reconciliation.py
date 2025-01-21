@@ -106,16 +106,16 @@ def get_payment_entries(doc, method):
         ]
     )
 
-    filter_sip_credit = filter(
-        lambda x: not (
-            x.get("payment_document") == "Sales Invoice Payment"
-            and "Cr" in x.get("amount")
-        )
-    )
+    # filter_sip_credit = filter(
+    #     lambda x: not (
+    #         x.get("payment_document") == "Sales Invoice Payment"
+    #         and "Cr" in x.get("amount")
+    #     )
+    # )
 
     payment_entries = sorted(
-        [dissoc(x.as_dict(), "idx") for x in filter_sip_credit(doc.payment_entries)]
-        + [make_row(x) for x in gl_payments],
+        # [dissoc(x.as_dict(), "idx") for x in filter_sip_credit(doc.payment_entries)]
+        [make_row(x) for x in gl_payments],
         key=lambda k: k["posting_date"] or frappe.utils.getdate(frappe.utils.nowdate()),
     )
 
