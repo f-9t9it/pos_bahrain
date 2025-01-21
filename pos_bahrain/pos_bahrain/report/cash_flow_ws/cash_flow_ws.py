@@ -222,7 +222,7 @@ def get_daily_expenses(date):
             SUM(IFNULL(debit, 0)) + SUM(IFNULL(credit, 0)) AS daily_expenses
         FROM `tabGL Entry`
         WHERE posting_date = %(date)s
-          AND (account IN ('Indirect Expenses - WCPW'))
+          AND (account IN ('Direct Expenses - WCPW', 'Indirect Expenses - WCPW'))
     """
     params = {'date': date}
     result = frappe.db.sql(sql_query, params, as_dict=True)
@@ -232,6 +232,7 @@ def get_daily_expenses(date):
     return 0
 
 def generate_dates(from_date, to_date):
+    
     date_list = []
     start_date = datetime.strptime(from_date, '%Y-%m-%d')
     end_date = datetime.strptime(to_date, '%Y-%m-%d')
