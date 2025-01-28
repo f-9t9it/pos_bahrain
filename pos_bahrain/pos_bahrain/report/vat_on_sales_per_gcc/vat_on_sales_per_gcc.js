@@ -1,7 +1,10 @@
-// Copyright (c) 2016, 	9t9it and contributors
+// Copyright (c) 2016, 9t9it and contributors
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports[
-  'VAT on Sales per GCC'
-] = pos_bahrain.reports.vat_on_sales_per_gcc();
+frappe.provide('pos_bahrain.reports');
+
+// Access the filters from the global namespace
+frappe.query_reports["VAT on Sales per GCC"] = {
+  filters: pos_bahrain.reports.vat_on_sales_per_gcc,
+};
