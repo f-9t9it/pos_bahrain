@@ -1,0 +1,36 @@
+{
+ "creation": "2025-01-27 15:41:09.208233",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "account",
+  "percentage"
+ ],
+ "fields": [
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "percentage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Percentage"
+  }
+ ],
+ "istable": 1,
+ "modified": "2025-01-27 15:41:54.038899",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Vat Charges Payable",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
