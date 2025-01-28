@@ -20,3 +20,14 @@ def custom_field_quotation():
 
         },
     )
+    create_custom_field(
+        "Purchase Order",
+        {
+            "label": _("Purchase Invoice Date"),
+            "fieldname": "purchase_invoice_date",
+            "fieldtype": "Date",
+            "insert_after": "schedule_date",
+             
+
+        },
+    )

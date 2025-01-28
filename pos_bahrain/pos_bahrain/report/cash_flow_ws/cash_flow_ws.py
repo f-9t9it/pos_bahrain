@@ -1,5 +1,3 @@
-
-from __future__ import unicode_literals
 import frappe
 from datetime import datetime, timedelta
 
@@ -19,67 +17,67 @@ def get_columns(filters):
             "fieldtype": "Link",
             "label": "Bank Account",
             "options": "Account",
-            "width":150
+            "width": 150
         },
         {
             "fieldname": "balance",
             "fieldtype": "Currency",
             "label": "Amount",
-            "width":150
-        },
-        {
-            "fieldname": " ",
-            "fieldtype": " ",
-            "label": " ",
-            "width":150
+            "width": 150
         },
         {
             "fieldname": "date",
             "fieldtype": "Date",
             "label": "Date",
-            "width":150,
+            "width": 150,
         },
         {
             "fieldname": "daily_sale",
             "fieldtype": "Currency",
             "label": "Last year Daily Sales",
-            "width":150,
+            "width": 150,
+        },
+        {
+            "fieldname": "exp_date",
+            "fieldtype": "Date",
+            "label": "Expense Date",
+            "width": 150,
         },
         {
             "fieldname": "daily_expenses",
             "fieldtype": "Currency",
             "label": "Last Year Daily Expenses = Direct + Indirect",
-            "width":150,
+            "width": 150,
         },
         {
             "fieldname": "purchase_amount",
             "fieldtype": "Currency",
             "label": "Purchase Amount",
-            "width":150,
+            "width": 150,
         },
         {
-            "fieldname": "Custom",
+            "fieldname": "custom_amount",
             "fieldtype": "Currency",
             "label": "Custom",
-            "width":150,
+            "width": 150,
         },
         {
-            "fieldname": "vat",
+            "fieldname": "vat_amount",
             "fieldtype": "Currency",
             "label": "Vat",
-            "width":150,
+            "width": 150,
         },
         {
             "fieldname": "comment",
             "fieldtype": "Data",
             "label": "Comment",
-            "width":150,
+            "width": 150,
         },
         {
             "fieldname": "est_cash",
             "fieldtype": "Currency",
             "label": "Estimated Cash in Hand",
-            "width":150,
+            "width": 150,
         },
     ]
 
@@ -89,21 +87,25 @@ def get_data(filters):
     support_amount = filters.get('support_amount', 0)
     estimated_percentage = filters.get('estimated', 0)
 
+    if not from_date or not to_date:
+        frappe.throw("From Date and To Date are required.")
+
     conditions = []
     params = {
         'from_date': from_date,
         'to_date': to_date
     }
 
+    # SQL Query to get account balance data
     sql_query = """
         SELECT
             a.account,
-            SUM(IFNULL(g.debit, 0)) AS debit,
-            SUM(IFNULL(g.credit, 0)) AS credit,
-            SUM(IFNULL(g.debit, 0) - IFNULL(g.credit, 0)) AS balance
+            SUM(COALESCE(g.debit, 0)) AS debit,
+            SUM(COALESCE(g.credit, 0)) AS credit,
+            SUM(COALESCE(g.debit, 0) - COALESCE(g.credit, 0)) AS balance
         FROM `tabAccount List` a
         LEFT JOIN `tabGL Entry` g ON g.account = a.account
-        WHERE g.posting_date >= %(from_date)s AND g.posting_date <= %(to_date)s
+        WHERE g.posting_date BETWEEN %(from_date)s AND %(to_date)s
         GROUP BY a.account
         ORDER BY a.account
     """
@@ -114,6 +116,7 @@ def get_data(filters):
     total_credit = sum(d['credit'] or 0 for d in data)
     total_balance = sum(d['balance'] or 0 for d in data) + support_amount
 
+    # Adding support amount and total rows
     support_row = {
         'account': 'Support Amount',
         'debit': support_amount,
@@ -138,20 +141,25 @@ def get_data(filters):
     }
     data.append(blank_row)
 
+    # Generating all the dates between from_date and to_date
     date_list = generate_dates(from_date, to_date)
     
-    monthly_totals = {}  
+    monthly_totals = {}
 
     for date in date_list:
+        exp_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=31)).strftime('%Y-%m-%d')
+
         last_year_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=366)).strftime('%Y-%m-%d')
-        
-        daily_expenses = get_daily_expenses(last_year_date) or 0
+        daily_expenses = get_daily_expenses(exp_date) or 0
+        purchase_amount = get_purchase(exp_date) or 0
+        custom_amount = get_custom(exp_date) or 0
+        vat_amount = get_vat(exp_date) or 0
         daily_sale = get_daily_sale(last_year_date) or 0
 
         if estimated_percentage:
             daily_sale = daily_sale + (daily_sale * estimated_percentage)
         
-        est_cash = (total_balance or 0) + (daily_sale or 0) - (daily_expenses or 0)
+        est_cash = (total_balance or 0) + (daily_sale or 0) - ((daily_expenses or 0) + (vat_amount or 0))
 
         month_year = datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m')
 
@@ -159,18 +167,28 @@ def get_data(filters):
             monthly_totals[month_year] = {
                 'daily_sale': 0,
                 'daily_expenses': 0,
-                'est_cash': 0
+                'est_cash': 0,
+                'purchase_amount': 0,
+                'custom_amount':0,
+                'vat_amount':0
             }
 
         monthly_totals[month_year]['daily_sale'] += daily_sale
         monthly_totals[month_year]['daily_expenses'] += daily_expenses
         monthly_totals[month_year]['est_cash'] += est_cash
-
+        monthly_totals[month_year]['purchase_amount'] += purchase_amount
+        monthly_totals[month_year]['custom_amount'] += custom_amount
+        monthly_totals[month_year]['vat_amount'] += vat_amount
+         
         date_row = {
             'account': "",
             'debit': "",
             'credit': "",
             'balance': "",
+            'exp_date': exp_date,
+            'purchase_amount': purchase_amount,
+            'custom_amount':custom_amount,
+            'vat_amount': vat_amount,
             'date': date,
             'daily_expenses': daily_expenses,
             'daily_sale': daily_sale,
@@ -186,15 +204,21 @@ def get_data(filters):
                 'account': f'Month Total ({month_year})',
                 'daily_sale': monthly_totals[month_year]['daily_sale'],
                 'daily_expenses': monthly_totals[month_year]['daily_expenses'],
-                'est_cash': monthly_totals[month_year]['est_cash']
+                'est_cash': monthly_totals[month_year]['est_cash'],
+                'purchase_amount': monthly_totals[month_year]['purchase_amount'],
+                'custom_amount': monthly_totals[month_year]['custom_amount'],
+                'vat_amount': monthly_totals[month_year]['vat_amount']
             }
             data.append(month_row)
-
+    
     final_totals_row = {
         'account': 'Final Total',
         'daily_sale': sum(month['daily_sale'] for month in monthly_totals.values()),
         'daily_expenses': sum(month['daily_expenses'] for month in monthly_totals.values()),
-        'est_cash': sum(month['est_cash'] for month in monthly_totals.values())
+        'est_cash': sum(month['est_cash'] for month in monthly_totals.values()),
+        'purchase_amount': sum(month['purchase_amount'] for month in monthly_totals.values()),
+        'custom_amount': sum(month['custom_amount'] for month in monthly_totals.values()),
+        'vat_amount': sum(month['vat_amount'] for month in monthly_totals.values())
     }
     data.append(final_totals_row)
 
@@ -203,7 +227,7 @@ def get_data(filters):
 def get_daily_sale(date):
     sql_query = """
         SELECT
-            SUM(IFNULL(credit, 0)) AS daily_sale
+            SUM(COALESCE(credit, 0)) AS daily_sale
         FROM `tabGL Entry`
         WHERE posting_date = %(date)s
           AND (account IN ('Sales - WCPW'))
@@ -216,15 +240,68 @@ def get_daily_sale(date):
      
     return 0
 
-def get_daily_expenses(date):
+def get_purchase(exp_date):
     sql_query = """
         SELECT
-            SUM(IFNULL(debit, 0)) + SUM(IFNULL(credit, 0)) AS daily_expenses
-        FROM `tabGL Entry`
-        WHERE posting_date = %(date)s
-          AND (account IN ('Direct Expenses - WCPW', 'Indirect Expenses - WCPW'))
+            SUM(COALESCE(base_total, 0)) AS purchase_amount
+        FROM `tabPurchase Order`
+        WHERE purchase_invoice_date = %(exp_date)s
     """
-    params = {'date': date}
+    params = {'exp_date': exp_date}
+    result = frappe.db.sql(sql_query, params, as_dict=True)
+    
+    if result:
+        return result[0].get('purchase_amount', 0)
+     
+    return 0
+
+def get_custom(exp_date):
+    sql_query = """
+        SELECT
+            SUM(ptc.base_tax_amount) AS custom_amount
+        FROM `tabPurchase Taxes and Charges` ptc
+        JOIN `tabPurchase Order` po ON po.name = ptc.parent
+         
+        WHERE po.transaction_date = %(exp_date)s
+          AND  ptc.account_head ="VAT - WCPW"
+    """
+    params = {'exp_date': exp_date}
+    result = frappe.db.sql(sql_query, params, as_dict=True)
+    print(f"SQL Query Result for {exp_date}: {result}")
+    if result:
+        return result[0].get('custom_amount', 0)
+     
+    return 0
+
+def get_vat(exp_date):
+    sql_query = """
+        SELECT
+            SUM(ptc.base_tax_amount) AS vat_amount
+        FROM `tabPurchase Taxes and Charges` ptc
+        JOIN `tabPurchase Order` po ON po.name = ptc.parent
+         
+        WHERE po.transaction_date = %(exp_date)s
+          AND  ptc.account_head ="VAT - WCPW"
+    """
+    params = {'exp_date': exp_date}
+    result = frappe.db.sql(sql_query, params, as_dict=True)
+    
+    if result:
+        return result[0].get('vat_amount', 0) if result else 0
+     
+     
+
+def get_daily_expenses(exp_date):
+    sql_query = """
+        SELECT
+            SUM(ptc.base_tax_amount) AS daily_expenses
+        FROM `tabPurchase Taxes and Charges` ptc
+        JOIN `tabPurchase Order` po ON po.name = ptc.parent
+        JOIN `tabAccount` acc ON acc.name = ptc.account_head
+        WHERE po.transaction_date = %(exp_date)s
+          AND acc.parent_account = 'Indirect Expenses - WCPW'
+    """
+    params = {'exp_date': exp_date}
     result = frappe.db.sql(sql_query, params, as_dict=True)
     
     if result:
@@ -232,7 +309,6 @@ def get_daily_expenses(date):
     return 0
 
 def generate_dates(from_date, to_date):
-    
     date_list = []
     start_date = datetime.strptime(from_date, '%Y-%m-%d')
     end_date = datetime.strptime(to_date, '%Y-%m-%d')
