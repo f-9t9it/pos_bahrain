@@ -141,7 +141,7 @@ def get_data(filters):
     }
     data.append(blank_row)
 
-    # Generating all the dates between from_date and to_date
+  
     date_list = generate_dates(from_date, to_date)
     
     monthly_totals = {}
@@ -227,10 +227,10 @@ def get_data(filters):
 def get_daily_sale(date):
     sql_query = """
         SELECT
-            SUM(COALESCE(credit, 0)) AS daily_sale
-        FROM `tabGL Entry`
-        WHERE posting_date = %(date)s
-          AND (account IN ('Sales - WCPW'))
+            SUM(COALESCE(base_total, 0)) AS daily_sale
+        FROM `tabSales Order`
+        WHERE transaction_date = %(date)s
+          and docstatus = 1
     """
     params = {'date': date}
     result = frappe.db.sql(sql_query, params, as_dict=True)
@@ -245,7 +245,7 @@ def get_purchase(exp_date):
         SELECT
             SUM(COALESCE(base_total, 0)) AS purchase_amount
         FROM `tabPurchase Order`
-        WHERE purchase_invoice_date = %(exp_date)s
+        WHERE purchase_invoice_date = %(exp_date)s and docstatus = 1
     """
     params = {'exp_date': exp_date}
     result = frappe.db.sql(sql_query, params, as_dict=True)
@@ -261,9 +261,9 @@ def get_custom(exp_date):
             SUM(ptc.base_tax_amount) AS custom_amount
         FROM `tabPurchase Taxes and Charges` ptc
         JOIN `tabPurchase Order` po ON po.name = ptc.parent
+        join `tabCutsom Charges Payable` cp on cp.account = ptc.account_head
          
-        WHERE po.transaction_date = %(exp_date)s
-          AND  ptc.account_head ="VAT - WCPW"
+        WHERE po.purchase_invoice_date = %(exp_date)s and po.docstatus = 1
     """
     params = {'exp_date': exp_date}
     result = frappe.db.sql(sql_query, params, as_dict=True)
@@ -279,9 +279,10 @@ def get_vat(exp_date):
             SUM(ptc.base_tax_amount) AS vat_amount
         FROM `tabPurchase Taxes and Charges` ptc
         JOIN `tabPurchase Order` po ON po.name = ptc.parent
+        join `tabVat Charges Payable` cp on cp.account = ptc.account_head
          
-        WHERE po.transaction_date = %(exp_date)s
-          AND  ptc.account_head ="VAT - WCPW"
+        WHERE po.purchase_invoice_date = %(exp_date)s and po.docstatus = 1
+         
     """
     params = {'exp_date': exp_date}
     result = frappe.db.sql(sql_query, params, as_dict=True)
@@ -294,12 +295,12 @@ def get_vat(exp_date):
 def get_daily_expenses(exp_date):
     sql_query = """
         SELECT
-            SUM(ptc.base_tax_amount) AS daily_expenses
-        FROM `tabPurchase Taxes and Charges` ptc
-        JOIN `tabPurchase Order` po ON po.name = ptc.parent
-        JOIN `tabAccount` acc ON acc.name = ptc.account_head
-        WHERE po.transaction_date = %(exp_date)s
-          AND acc.parent_account = 'Indirect Expenses - WCPW'
+            SUM(po.base_total) AS daily_expenses
+         
+        from `tabPurchase Order` po 
+         
+        WHERE po.transaction_date = %(exp_date)s and po.docstatus = 1
+           
     """
     params = {'exp_date': exp_date}
     result = frappe.db.sql(sql_query, params, as_dict=True)
