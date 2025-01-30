@@ -226,11 +226,17 @@ def get_data(filters):
 
 def get_daily_sale(date):
     sql_query = """
-        SELECT
-            SUM(COALESCE(base_total, 0)) AS daily_sale
-        FROM `tabSales Order`
-        WHERE transaction_date = %(date)s
-          and docstatus = 1
+
+    SELECT
+           
+            
+            SUM(COALESCE(a.credit, 0)) AS daily_sale
+            
+        FROM `tabGL Entry` a
+        LEFT JOIN `tabAccount` g ON g.name = a.account
+        WHERE a.posting_date  = %(date)s and g.root_type ="Income"
+         
+        
     """
     params = {'date': date}
     result = frappe.db.sql(sql_query, params, as_dict=True)
