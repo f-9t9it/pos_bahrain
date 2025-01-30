@@ -8,18 +8,21 @@
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": "Well Care Pharmacy",
- "modified": "2025-01-13 15:23:05.038825",
+ "modified": "2025-01-30 09:27:28.479474",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
  "name": "Cash Flow WS",
  "owner": "Administrator",
  "prepared_report": 0,
- "ref_doctype": "Cashflow Setting",
+ "ref_doctype": "Cash Flow Setting",
  "report_name": "Cash Flow WS",
  "report_type": "Script Report",
  "roles": [
   {
    "role": "System Manager"
+  },
+  {
+   "role": "Accounts Manager"
   }
  ]
 }
