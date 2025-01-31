@@ -248,10 +248,22 @@ def get_daily_sale(date):
 
 def get_purchase(exp_date):
     sql_query = """
-        SELECT
-            SUM(COALESCE(base_total, 0)) AS purchase_amount
-        FROM `tabPurchase Order`
-        WHERE purchase_invoice_date = %(exp_date)s and docstatus = 1
+    SELECT
+    SUM(
+        COALESCE(
+            CASE
+                WHEN po.name IS NOT NULL THEN pi.base_total   
+                ELSE po.base_total   
+            END, 0)
+    ) AS purchase_amount
+FROM `tabPurchase Order` po
+LEFT JOIN `tabPurchase Invoice Item` pii ON pii.purchase_order = po.name
+LEFT JOIN `tabPurchase Invoice` pi ON pi.name = pii.parent AND pi.posting_date = %(exp_date)s AND pi.docstatus = 1
+WHERE 
+    (po.purchase_invoice_date = %(exp_date)s OR pi.posting_date = %(exp_date)s)  
+    AND po.docstatus = 1
+  
+ 
     """
     params = {'exp_date': exp_date}
     result = frappe.db.sql(sql_query, params, as_dict=True)

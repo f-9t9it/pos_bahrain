@@ -7,6 +7,7 @@ from frappe.custom.doctype.property_setter.property_setter import make_property_
 @frappe.whitelist()
 def after_install():
     custom_field_quotation()
+    property_setter()
 
 def custom_field_quotation():
     create_custom_field(
@@ -30,4 +31,14 @@ def custom_field_quotation():
              
 
         },
+    )
+def property_setter():
+    make_property_setter(
+        "Purchase Order",
+        "purchase_invoice_date",
+        "allow_on_submit",
+        1,
+        "Check"
+        
+         
     )
