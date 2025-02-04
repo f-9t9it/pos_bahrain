@@ -297,6 +297,20 @@ fixtures = [
             ]
         ],
     },
+	{
+        "doctype": "Role",
+        "filters": [
+            [
+                "name",
+                "in",
+                [
+                    "Daily Cash Report Manager",
+                
+                   
+                ],
+            ]
+        ],
+    },
 ]
 
 # Home Pages
