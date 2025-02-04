@@ -293,6 +293,22 @@ fixtures = [
             ]
         ],
     },
+	
+     {
+        "doctype": "Role",
+        "filters": [
+            [
+                "name",
+                "in",
+                [
+                    "Daily Cash Report Manager",
+                
+                   
+                ],
+            ]
+        ],
+    },
+	
     # {
     #     "doctype": "Print Format",
     #     "filters": [
