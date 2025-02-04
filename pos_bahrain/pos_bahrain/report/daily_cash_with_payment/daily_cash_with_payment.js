@@ -9,7 +9,8 @@ frappe.query_reports["Daily Cash with Payment"] = {
 			label: __('From Date'),
 			fieldtype: 'Date',
 			reqd: 1,
-			default: frappe.datetime.get_today(),
+			read_only:1,
+			default: frappe.datetime.add_days(frappe.datetime.get_today() ,  3),
 		},
 		{
 			fieldname: 'to_date',
@@ -54,6 +55,27 @@ frappe.query_reports["Daily Cash with Payment"] = {
 			fieldname: 'show_creator',
 			label: __('Show Creator'),
 			fieldtype: 'Check'
+		},
+		{
+			fieldname: 'edit_from_date',
+			label: __('Edit date'),
+			fieldtype: 'Check',
+			hidden: !frappe.user.has_role('Daily Cash Report Manager'),
+			on_change: function () {
+                let filter_date = frappe.query_report.get_filter("from_date");
+                let edit_check = frappe.query_report.get_filter("edit_from_date").get_value();
+				
+				console.log(edit_check)
+                if (edit_check) {
+					console.log(edit_check)
+                    filter_date.df.read_only = 0; // Make date editable
+                } else {
+                    filter_date.df.read_only = 1; // Lock the date field
+                    filter_date.set_value(frappe.datetime.add_days(frappe.datetime.get_today(), 3));
+                }
+                
+				filter_date.refresh()
+            }
 		},
 	]
 }
