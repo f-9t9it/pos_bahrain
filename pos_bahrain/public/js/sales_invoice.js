@@ -258,6 +258,7 @@ function _make_delivery_note(frm) {
       method: "pos_bahrain.api.sales_invoice.make_delivery_note",
       frm,
   });
+}
 
 async function _set_customer_account_balance(frm) {
   if(frm.doc.customer != null){
