@@ -432,7 +432,8 @@ scheduler_events = {
     "daily": ["pos_bahrain.scheduler_events.daily.send_email_to_manager"]
 }
 override_doctype_dashboards = {
-	"Stock Entry": "pos_bahrain.doc_events.stock_entry_dashboard.get_data"
+	"Stock Entry": "pos_bahrain.doc_events.stock_entry_dashboard.get_data",
+    "Repack Request": "pos_bahrain.doc_events.repack_request_dashboard.get_data"
 }
 # scheduler_events = {
 # 	"all": [
