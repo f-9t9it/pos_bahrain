@@ -10,7 +10,7 @@ frappe.query_reports["Daily Cash with Payment"] = {
 			fieldtype: 'Date',
 			reqd: 1,
 			read_only:1,
-			default: frappe.datetime.add_days(frappe.datetime.get_today() ,  3),
+			default: frappe.datetime.add_days(frappe.datetime.get_today() ,  -3),
 		},
 		{
 			fieldname: 'to_date',
