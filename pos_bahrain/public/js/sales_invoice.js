@@ -475,3 +475,4 @@ frm.set_value('total_advance', total_advance);
            }
           }
            });
+	}
