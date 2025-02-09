@@ -10,7 +10,9 @@ frappe.query_reports["Daily Cash with Payment"] = {
 			fieldtype: 'Date',
 			reqd: 1,
 			read_only:1,
-			default: frappe.datetime.add_days(frappe.datetime.get_today() ,  -3),
+
+			default: frappe.datetime.get_today(),
+
 		},
 		{
 			fieldname: 'to_date',
@@ -18,6 +20,11 @@ frappe.query_reports["Daily Cash with Payment"] = {
 			fieldtype: 'Date',
 			reqd: 1,
 			default: frappe.datetime.get_today(),
+			on_change: function () 
+			{
+			let filter_date = frappe.query_report.get_filter("from_date");
+			filter_date.set_value(frappe.query_report.get_filter("to_date").get_value());
+			}
 		},
 		{
 			fieldname: 'query_doctype',
