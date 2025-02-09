@@ -37,6 +37,7 @@ def _get_filters(filters):
 
     clauses = concatv(
         ["TRUE"],
+        ["i.is_stock_item = 1"],
         ["i.item_group = %(item_group)s"] if filters.item_group else [],
         ["i.brand = %(brand)s"] if filters.brand else [],
         ["i.name = %(item_code)s"] if filters.item_code else [],
@@ -150,6 +151,7 @@ def _get_columns(filters):
 
 def _get_data(clauses, values, columns,filters):
     additional_warehouse = filters.get("additional_warehouse")
+    items = []
     items = frappe.db.sql(
         """
             SELECT
@@ -194,24 +196,26 @@ def _get_data(clauses, values, columns,filters):
         end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
 
         return (end_date_obj - start_date_obj).days
+    statuses_to_exclude = ["Cancelled", "Closed"]
+    def get_sales_order_parent(parent):
+        values = frappe.db.get_list("Sales Order",filters={
+                                                "name":parent,
+                                                "status": ["not in", statuses_to_exclude]
+                                            })
+        return values
     
     for item in items:
+        total_sales = 0
         if additional_warehouse:
             stock_balance = get_stock_balance(item['item_code'], additional_warehouse)
             item['additional_warehouse_stock_qty'] = stock_balance
-        item_qty ={item.item_code:0}
-        statuses_to_exclude = ["Cancelled", "Closed"]
-        si = frappe.get_all("Sales Order",filters={
-                                            "status": ["not in", statuses_to_exclude],
-                                            "creation": ["between", [filters["start_date"], filters["end_date"]]]
-                                        })
-
-        for i in si:
-            so = frappe.get_doc("Sales Order", i.name)
-            for x in so.items:
-                if x.item_code == item.item_code:
-                    item_qty[item.item_code] += x.qty
-        total_sales = item_qty[item.item_code]
+        if filters.get("include_sales_order_in_average_sales"):
+            item_qty = 0
+            so = frappe.get_all("Sales Order Item", filters={"item_code":item.item_code, "creation": ["between", [filters["start_date"], filters["end_date"]]]}, fields=["*"])
+            for x in so:
+                if get_sales_order_parent(x.parent) != []:
+                    item_qty += x.qty
+            total_sales = item_qty
         number_of_days = 0
         week_average = 0
         number_of_days = get_number_of_days(filters["start_date"], filters["end_date"])

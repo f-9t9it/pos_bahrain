@@ -1,0 +1,36 @@
+{
+ "creation": "2025-01-27 15:40:24.633681",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "account",
+  "percentage"
+ ],
+ "fields": [
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "percentage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Percentage"
+  }
+ ],
+ "istable": 1,
+ "modified": "2025-01-27 15:42:04.240780",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Cutsom Charges Payable",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

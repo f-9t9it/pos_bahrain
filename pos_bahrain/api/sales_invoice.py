@@ -42,7 +42,42 @@ def make_purchase_invoice(source_name, target_doc=None):
 
     return doc
 
+@frappe.whitelist()
+def make_delivery_note(source_name, target_doc=None):
+    def set_missing_values(source, target):
+        target.due_date = source.posting_date
+        target.posting_date = source.posting_date
+        target.taxes_and_charges = ""
+        
+        # Copy batch_no from Sales Invoice Item to Purchase Invoice Item
+        for i, item in enumerate(source.items):
+            target_item = target.items[i]
+            target_item.against_sales_invoice = source_name
+            target_item.si_detail = item.name
 
+        target.run_method("set_missing_values")
+        target.run_method("calculate_taxes_and_totals")
+
+    doc = get_mapped_doc("Sales Invoice", source_name, {
+        "Sales Invoice": {
+            "doctype": "Delivery Note",
+            "validation": {
+                "docstatus": ["=", 1],
+            },
+        },
+        "Sales Invoice Item": {
+            "doctype": "Delivery Note Item",
+        },
+        "Sales Team": {
+            "doctype": "Sales Team",
+        }
+        
+    
+    }, target_doc, set_missing_values)
+    doc.bill_no = source_name
+    doc.shipping_address = ""
+
+    return doc
 
 @frappe.whitelist()
 def make_sales_return(source_name, target_doc=None):
