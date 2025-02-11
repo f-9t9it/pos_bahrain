@@ -49,6 +49,8 @@ def _get_columns(filters):
 
 
 def _get_filters(filters):
+    if not filters["warehouse"]:
+        filters["warehouse"] = ('',)
     clauses = [
         "s.docstatus = 1",
         "s.posting_date BETWEEN %(from_date)s AND %(to_date)s",
