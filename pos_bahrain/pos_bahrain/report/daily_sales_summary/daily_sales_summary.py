@@ -48,6 +48,8 @@ def _get_columns(filters):
 
 
 def _get_filters(filters):
+    if not filters["warehouse"]:
+        filters["warehouse"] = ('',)
     clauses = [
         "s.docstatus = 1",
          "s.set_warehouse IN %(warehouse)s",

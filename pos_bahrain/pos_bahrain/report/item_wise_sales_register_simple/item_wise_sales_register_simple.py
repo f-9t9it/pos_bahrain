@@ -70,10 +70,10 @@ def _get_filters(filters, transaction_type):
         ["inv_item.item_group = %(item_group)s"] if filters.item_group else [],
         ["inv.customer = %(customer)s"] if filters.customer else [],
         ["inv.supplier = %(supplier)s"] if filters.supplier else [],
-        ["inv_item.warehouse = %(warehouse)s"] if filters.warehouse else [],
+        ["inv_item.warehouse IN %(warehouse)s"] if filters.warehouse else [],
     )
     bin_clauses = concatv(
-        ["TRUE"], ["warehouse = %(warehouse)s"] if filters.warehouse else []
+        ["TRUE"], ["warehouse IN %(warehouse)s"] if filters.warehouse else []
     )
     values = merge(
         pick(

@@ -485,7 +485,7 @@ def get_conditions(filters):
 	if filters.get("warehouse"):
 		conditions +=  """ and exists(select name from `tabSales Invoice Item`
 			 where parent=i.name
-			 	and ifnull(`tabSales Invoice Item`.warehouse, '') = %(warehouse)s)"""
+			 	and ifnull(`tabSales Invoice Item`.warehouse, '') IN %(warehouse)s)"""
 
 	if filters.get("brand"):
 		conditions +=  """ and exists(select name from `tabSales Invoice Item`

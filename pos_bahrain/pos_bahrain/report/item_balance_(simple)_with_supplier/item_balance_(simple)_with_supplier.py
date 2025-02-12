@@ -62,7 +62,7 @@ def _get_filters(filters):
     )
     bin_clauses = concatv(
         ["b.item_code = i.item_code"],
-        ["b.warehouse = %(warehouse)s"] if filters.warehouse else [],
+        ["b.warehouse IN %(warehouse)s"] if filters.warehouse else [],
     )
     defaults_clauses = concatv(["id.parent = i.name"], ["id.company = %(company)s"])
     supplier_clauses = concatv(

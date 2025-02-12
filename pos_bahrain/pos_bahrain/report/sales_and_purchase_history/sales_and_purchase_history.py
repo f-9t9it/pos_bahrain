@@ -58,7 +58,7 @@ def _get_filters(filters, opening=False):
         if not opening
         else ["sle.posting_date < %(from_date)s"],
         ["sle.item_code = %(item_code)s"],
-        ["sle.warehouse = %(warehouse)s"] if filters.warehouse else [],
+        ["sle.warehouse IN %(warehouse)s"] if filters.warehouse else [],
     )
     values = merge(
         pick(["item_code", "price_list", "warehouse"], filters),

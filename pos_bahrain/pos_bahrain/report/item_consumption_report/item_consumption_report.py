@@ -38,7 +38,7 @@ def _get_filters(filters):
     )
     warehouse_clauses = concatv(
         ["item_code = %(item_code)s"] if filters.item_code else [],
-        ["warehouse = %(warehouse)s"]
+        ["warehouse IN %(warehouse)s"]
         if filters.warehouse
         else [
             "warehouse IN (SELECT name FROM `tabWarehouse` WHERE company = %(company)s)"

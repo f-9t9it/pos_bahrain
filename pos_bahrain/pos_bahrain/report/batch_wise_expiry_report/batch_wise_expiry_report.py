@@ -97,7 +97,7 @@ def _sle_clauses(args):
             "IFNULL(sle.batch_no, '') != ''",
             "id.company = %(company)s",
         ],
-        ["sle.warehouse = %(warehouse)s"] if args.get("warehouse") else [],
+        ["sle.warehouse in %(warehouse)s"] if args.get("warehouse") else [],
     )
 
 
