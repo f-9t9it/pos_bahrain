@@ -20,7 +20,6 @@ def execute(filters=None):
 
         columns = _get_columns(mop, filters)
         data = _get_data(_get_clauses(filters), filters, mop, cash_mop)
-        
 
     return columns, data
 
