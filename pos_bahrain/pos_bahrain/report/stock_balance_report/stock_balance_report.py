@@ -9,7 +9,7 @@ from frappe.utils import flt, cint, getdate, now, date_diff
 from erpnext.stock.utils import add_additional_uom_columns
 from erpnext.stock.report.stock_ledger.stock_ledger import get_item_group_condition
 
-from erpnext.stock.report.stock_ageing.stock_ageing import get_fifo_queue, get_average_age
+from erpnext.stock.report.stock_ageing.stock_ageing import FIFOSlots, get_average_age
 
 from six import iteritems
 
@@ -31,7 +31,7 @@ def execute(filters=None):
 
 	if filters.get('show_stock_ageing_data'):
 		filters['show_warehouse_wise_stock'] = True
-		item_wise_fifo_queue = get_fifo_queue(filters, sle)
+		item_wise_fifo_queue = FIFOSlots(filters, sle)
 
 	# if no stock ledger entry found return
 	if not sle:
