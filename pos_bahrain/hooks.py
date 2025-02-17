@@ -378,7 +378,7 @@ doc_events = {
 		"validate": "pos_bahrain.doc_events.quotation.validate",
     },
     "Sales Invoice": {
-        "validate": "pos_bahrain.doc_events.sales_invoice.validate",
+        "validate": ["pos_bahrain.doc_events.sales_order.validate","pos_bahrain.api.pricing_rule._apply_pricing_rule_on_transaction"],
         "before_save": "pos_bahrain.doc_events.sales_invoice.before_save",
         "on_submit": "pos_bahrain.doc_events.sales_invoice.on_submit",
         "before_cancel": "pos_bahrain.doc_events.sales_invoice.before_cancel",
