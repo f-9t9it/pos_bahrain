@@ -6,9 +6,10 @@ import frappe
 from frappe import _
 from frappe.utils import flt, getdate, date_diff
 from frappe.utils import flt, cint, getdate
-from erpnext.stock.report.stock_balance.stock_balance import (get_item_details,
-	get_item_reorder_details, get_item_warehouse_map, get_items, get_stock_ledger_entries)
-from erpnext.stock.report.stock_ageing.stock_ageing import get_fifo_queue, get_average_age
+
+from pos_bahrain.pos_bahrain.report.stock_balance_report.stock_balance_report import (
+	get_item_reorder_details, get_item_warehouse_map, get_items, get_stock_ledger_entries, get_item_details)
+from erpnext.stock.report.stock_ageing.stock_ageing import FIFOSlots, get_average_age
 from six import iteritems
 
 def execute(filters=None):
@@ -31,7 +32,7 @@ def execute(filters=None):
 		item_map = get_item_details(items, sle, filters)
 		iwb_map = get_item_warehouse_map(filters, sle)
 		warehouse_list = get_warehouse_list(filters)
-		item_ageing = get_fifo_queue(filters)
+		item_ageing = FIFOSlots(filters).generate()
 		#data = []
 		item_balance = {}
 		item_value = {}
@@ -45,7 +46,7 @@ def execute(filters=None):
 			total_stock_value = 0.00
 			for wh in warehouse_list:
 				row += [qty_dict.bal_qty] if wh.name == warehouse else [0.00]
-				total_stock_value += qty_dict.bal_val if wh.name == warehouse else 0.00
+				total_stock_value += float(qty_dict.bal_val) if wh.name == warehouse else 0.00
 
 			item_balance[(item, item_map[item]["item_group"])].append(row)
 			item_value.setdefault((item, item_map[item]["item_group"]),[])
