@@ -372,7 +372,7 @@ doc_events = {
         "on_submit": "pos_bahrain.doc_events.sales_order.on_submit",
         "before_cancel": "pos_bahrain.doc_events.sales_order.before_cancel",
 		"after_save": "pos_bahrain.doc_events.sales_order.custom_after_save",
-		"validate": "pos_bahrain.doc_events.sales_order.validate",
+		"validate": ["pos_bahrain.doc_events.sales_order.validate","pos_bahrain.api.pricing_rule._apply_pricing_rule_on_transaction"]
     },
 	"Quotation": {
 		"validate": "pos_bahrain.doc_events.quotation.validate",
@@ -510,6 +510,58 @@ def delete_auto_created_batches_override(self):
 		frappe.delete_doc("Batch", data.name)
 
 StockController.delete_auto_created_batches = delete_auto_created_batches_override
+
+from erpnext.controllers.accounts_controller import AccountsController, validate_return, validate_regional, validate_einvoice_fields
+from frappe.utils import cint
+def validate(self):
+		if not self.get('is_return'):
+			self.validate_qty_is_not_zero()
+
+		if self.get("_action") and self._action != "update_after_submit":
+			self.set_missing_values(for_validate=True)
+
+		self.ensure_supplier_is_not_blocked()
+
+		self.validate_date_with_fiscal_year()
+
+		if self.meta.get_field("currency"):
+			self.calculate_taxes_and_totals()
+
+			if not self.meta.get_field("is_return") or not self.is_return:
+				self.validate_value("base_grand_total", ">=", 0)
+
+			validate_return(self)
+			self.set_total_in_words()
+
+		self.validate_all_documents_schedule()
+
+		if self.meta.get_field("taxes_and_charges"):
+			self.validate_enabled_taxes_and_charges()
+			self.validate_tax_account_company()
+
+		self.validate_party()
+		self.validate_currency()
+
+		if self.doctype == 'Purchase Invoice':
+			self.calculate_paid_amount()
+
+		if self.doctype in ['Purchase Invoice', 'Sales Invoice']:
+			pos_check_field = "is_pos" if self.doctype=="Sales Invoice" else "is_paid"
+			if cint(self.allocate_advances_automatically) and not cint(self.get(pos_check_field)):
+				self.set_advances()
+
+			if self.is_return:
+				self.validate_qty()
+			else:
+				self.validate_deferred_start_and_end_date()
+
+		validate_regional(self)
+		
+		validate_einvoice_fields(self)
+
+		
+AccountsController.validate = validate
+
 
 from erpnext.controllers.accounts_controller import AccountsController as _AccountsController
 # from erpnext.accounts import utils
