@@ -14,11 +14,14 @@ from toolz import first, compose, pluck, unique
 
 
 @frappe.whitelist()
-def set_discount_on_return(doc):
+def set_discount_on_return(doc=None):
     # frappe.msgprint(doc)
-    if isinstance(doc,str):
-        doc = frappe.get_doc('Sales Invoice', doc)
-        return doc  
+    if doc:
+        if isinstance(doc,str):
+            doc = frappe.get_doc('Sales Invoice', doc)
+            return doc  
+    if not doc:
+        return 0 
             
 def validate(doc, method):
     # if (
