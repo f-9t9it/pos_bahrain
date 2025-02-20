@@ -75,7 +75,7 @@ def _get_data(data, prices, filters):
             IFNULL(ip.uom, '') IN ('', i.stock_uom)
             ORDER BY
             ip.creation DESC
-            LIMIT 1
+           
     """
 
     suppliers_by_item_code = get_query_by_item_code(
@@ -89,10 +89,10 @@ def _get_data(data, prices, filters):
     )
     buying_prices_by_item_code = get_query_by_item_code(
         price_query.format(price="buying")
-    )
+    )[0]
     selling_prices_by_item_code = get_query_by_item_code(
         price_query.format(price="selling")
-    )
+    )[0]
 
     def add_fields(row):
         item_code = row.get("item_code")
