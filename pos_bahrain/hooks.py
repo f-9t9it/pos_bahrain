@@ -433,7 +433,8 @@ scheduler_events = {
 }
 override_doctype_dashboards = {
 	"Stock Entry": "pos_bahrain.doc_events.stock_entry_dashboard.get_data",
-    "Repack Request": "pos_bahrain.doc_events.repack_request_dashboard.get_data"
+    	"Repack Request": "pos_bahrain.doc_events.repack_request_dashboard.get_data",
+	"Item":"pos_bahrain.doc_events.item_dashboard.get_data",
 }
 # scheduler_events = {
 # 	"all": [
