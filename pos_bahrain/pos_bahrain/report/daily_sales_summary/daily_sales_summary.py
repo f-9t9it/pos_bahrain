@@ -52,9 +52,17 @@ def _get_filters(filters):
         filters["warehouse"] = ('',)
     clauses = [
         "s.docstatus = 1",
-         "s.set_warehouse IN %(warehouse)s",
-        "s.posting_date BETWEEN %(from_date)s AND %(to_date)s",
-        "s.company = %(company)s"
+    """
+    (
+        s.set_warehouse IN %(warehouse)s 
+        OR EXISTS (
+            SELECT 1 FROM `tabSales Invoice Item` sii
+            WHERE sii.parent = s.name AND sii.warehouse IN %(warehouse)s
+        )
+    )
+    """,
+    "s.posting_date BETWEEN %(from_date)s AND %(to_date)s",
+    "s.company = %(company)s"
     ]
     return " AND ".join(clauses), filters
 
