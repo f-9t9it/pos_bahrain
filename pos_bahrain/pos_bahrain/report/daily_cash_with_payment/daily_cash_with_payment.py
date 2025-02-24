@@ -523,16 +523,16 @@ def _get_clauses_old(filters):
 		return " AND ".join(clauses)
 	frappe.throw(_("Invalid 'Query By' filter"))
 
-def _get_mop_old():
-    return ["Cash"]
-
 # def _get_mop_old():
-# 	mop = frappe.get_all('POS Bahrain Settings MOP', fields=['mode_of_payment'])
+#     return ["Cash"]
 
-# 	if not mop:
-# 		frappe.throw(_('Please set Report MOP under POS Bahrain Settings'))
+def _get_mop_old():
+	mop = frappe.get_all('POS Bahrain Settings MOP', fields=['mode_of_payment'])
 
-# 	return list(pluck('mode_of_payment', mop))
+	if not mop:
+		frappe.throw(_('Please set Report MOP under POS Bahrain Settings'))
+
+	return list(pluck('mode_of_payment', mop))
 
 
 def _sum_invoice_payments_old(invoice_payments, mop):
