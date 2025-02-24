@@ -48,22 +48,23 @@ def _get_columns(filters):
 
 
 def _get_filters(filters):
-    if not filters["warehouse"]:
-        filters["warehouse"] = ('',)
-    clauses = [
-        "s.docstatus = 1",
-    """
+    clauses = ["s.docstatus = 1"]
+    
+    if filters.get("warehouse"): 
+    clauses.append("""
     (
-        s.set_warehouse IN %(warehouse)s 
+        s.set_warehouse IN %(warehouse)s
         OR EXISTS (
             SELECT 1 FROM `tabSales Invoice Item` sii
             WHERE sii.parent = s.name AND sii.warehouse IN %(warehouse)s
         )
     )
-    """,
+    """)
+    
+    clauses.extend([
     "s.posting_date BETWEEN %(from_date)s AND %(to_date)s",
     "s.company = %(company)s"
-    ]
+    ])
     return " AND ".join(clauses), filters
 
 
