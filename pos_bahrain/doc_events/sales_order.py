@@ -13,7 +13,7 @@ from .sales_invoice import set_location
 def validate(doc, method):
 
     custom_update_current_stock(doc)
-	if doc.get('doctype') != "Sales Invoice":
+    if doc.get('doctype') != "Sales Invoice":
         custom_after_save(doc, method)
         make_packing_list(doc)
 
