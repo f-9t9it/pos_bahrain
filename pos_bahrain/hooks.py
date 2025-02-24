@@ -293,6 +293,7 @@ fixtures = [
                     "Sales Order Item-discount_percentage-depends_on",
                     "Payment Entry Reference-total_amount-in_list_view",
                     "Sales Invoice-customer_name-default",
+		    "Item Reorder-material_request_type-options"
                 ],
             ]
         ],
@@ -433,7 +434,8 @@ scheduler_events = {
 }
 override_doctype_dashboards = {
 	"Stock Entry": "pos_bahrain.doc_events.stock_entry_dashboard.get_data",
-    "Repack Request": "pos_bahrain.doc_events.repack_request_dashboard.get_data"
+    	"Repack Request": "pos_bahrain.doc_events.repack_request_dashboard.get_data",
+	"Item":"pos_bahrain.doc_events.item_dashboard.get_data",
 }
 # scheduler_events = {
 # 	"all": [
