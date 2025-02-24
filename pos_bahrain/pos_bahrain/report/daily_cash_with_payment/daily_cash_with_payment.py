@@ -12,9 +12,9 @@ def execute(filters=None):
     # pos_bahrain_setting = frappe.get_single("POS Bahrain Settings")
     # if pos_bahrain_setting.enable_multiple_cash_mop_in_daily_cash_with_payment_report == 1:
         
-	mop = _get_mop_old()
-	columns = _get_columns_old(mop, filters)
-	data = _get_data_old(_get_clauses_old(filters), filters, mop)
+    mop = _get_mop_old()
+    columns = _get_columns_old(mop, filters)
+    data = _get_data_old(_get_clauses_old(filters), filters, mop)
     # else:
     #     mop, cash_mop = _get_mop(filters)
 
