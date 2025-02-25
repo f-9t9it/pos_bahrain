@@ -154,12 +154,12 @@ def get_columns(filters):
 			'label': _('Meter'),
 			'fieldtype': 'Float'
 		})
-		columns.append({
-			'fieldname': 'long_meter_to_roll',
-			'label': _('Long Meter to Roll'),
-			'fieldtype':'Float',
-			
-		},)
+	columns.append({
+		'fieldname': 'long_meter_to_roll',
+		'label': _('Long Meter to Roll'),
+		'fieldtype':'Float',
+		
+	},)
 	
 	return columns
 
