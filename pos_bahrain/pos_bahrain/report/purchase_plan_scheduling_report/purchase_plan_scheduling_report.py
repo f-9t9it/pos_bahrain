@@ -252,7 +252,7 @@ def get_data(filters):
 			else:
 				meter = None
 
-			data.append([
+            data.append([
 				item.name, item.item_name, item.stock_uom, last_purchase_invoice_date, 
 				last_sales_invoice_date, total_sales, float(filters.percentage), expected_sales, 
 				min, available_qty, on_purchase, available_qty + on_purchase, total_months_in_report, 
