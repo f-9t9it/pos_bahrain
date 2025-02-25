@@ -523,6 +523,16 @@ def _get_clauses_old(filters):
 		return " AND ".join(clauses)
 	frappe.throw(_("Invalid 'Query By' filter"))
 
+	group_by_clause = ""
+ 
+	if filters.get("show_creator") and filters.get("summary_view"):
+		group_by_clause = "GROUP BY si.owner, DATE(si.posting_date)"
+	elif filters.get("show_creator"):
+		group_by_clause = "GROUP BY si.owner"
+	elif filters.get("summary_view"):
+		group_by_clause = "GROUP BY DATE(si.posting_date)"
+	return " AND ".join(clauses), group_by_clause
+
 # def _get_mop_old():
 #     return ["Cash"]
 
