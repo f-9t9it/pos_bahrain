@@ -67,6 +67,9 @@ frappe.query_reports["Purchase Plan Scheduling Report"] = {
 		if (column.fieldname == "expected_order_quantity" && data && data.expected_order_quantity < 0) {
 			value = "<span style='color:red'>" + value + "</span>";
 		}
+		if (column.fieldname == "long_meter_to_roll" && data && data.long_meter_to_roll < 0) {
+			value = "<span style='color:red'>" + value + "</span>";
+		}
 		
 
 		return value;
