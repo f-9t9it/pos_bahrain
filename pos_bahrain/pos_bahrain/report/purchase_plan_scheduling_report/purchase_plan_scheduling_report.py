@@ -148,7 +148,7 @@ def get_columns(filters):
 			'label': _('Meter'),
 			'fieldtype': 'Float'
 		})
-    columns.append({
+        columns.append({
             'fieldname': 'long_meter_to_roll',
             'label': _('Long Meter to Roll'),
             'fieldtype':'Float',
@@ -189,7 +189,7 @@ def get_data(filters):
 			purchase_total_sales = []
 			last_purchase_invoice_date = ''
 			last_sales_invoice_date = ''
-            long_meter_to_roll = 0.0
+                        long_meter_to_roll = 0.0
 			reorder_quantity = 0
 			reorder_quantity = get_reorder_quantity(reorder_quantity, item)
 			# stock_ledger_sales_filters.update({'docstatus':1, "item_code":item.item_code,  'voucher_type':'Sales Invoice', 'posting_date': ['between', [filters.start_date, filters.end_date]]})
@@ -245,14 +245,14 @@ def get_data(filters):
 			minimum_purchase_qty = get_minimum_purchase_qty(item.item_code, frappe.defaults.get_user_default("Company"))
 			expected_order_quantity = shortage_happened - min - min - minimum_purchase_qty
 			priority_month = (available_qty + on_purchase) / monthly_sales if monthly_sales > 0 else 0
-            if filters.get('long_meter'):
+                        if filters.get('long_meter'):
 				long_meter_to_roll = expected_order_quantity / filters.get('long_meter')
 			if filters.get('uom_conversion'):
 				meter = expected_order_quantity / filters.get('uom_conversion')
 			else:
 				meter = None
 
-            data.append([
+                        data.append([
 				item.name, item.item_name, item.stock_uom, last_purchase_invoice_date, 
 				last_sales_invoice_date, total_sales, float(filters.percentage), expected_sales, 
 				min, available_qty, on_purchase, available_qty + on_purchase, total_months_in_report, 
