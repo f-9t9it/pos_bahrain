@@ -488,7 +488,8 @@ def _apply_pricing_rule_on_transaction(doc, method):
 								doc.set(field, 0)
 						else:
 							# if coupon code based but no coupon code selected
-							doc.set(field, 0)
+							pass
+							# doc.set(field, 0)
 
 				doc.calculate_taxes_and_totals()
 			elif d.price_or_product_discount == 'Product':
