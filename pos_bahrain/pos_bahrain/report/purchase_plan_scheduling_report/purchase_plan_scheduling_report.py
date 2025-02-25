@@ -130,6 +130,12 @@ def get_columns(filters):
 			'fieldtype': 'Int'
 		},
 		{
+			'fieldname': 'reorder_quantity',
+			'label': _('Re-Order quantity'),
+			'fieldtype':'Int',
+			
+		},
+		{
 			'fieldname': 'expected_order_quantity',
 			'label': _('Expected Order Quantity'),
 			'fieldtype':'Int',
