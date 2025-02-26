@@ -124,11 +124,11 @@ def get_columns(filters):
 			'fieldtype':'Int',
 			
 		},
-		#{
-		#	'fieldname': 'minimum_purchase_qty',
-		#	'label': _('Minimum Purchase Qty'),
-		#	'fieldtype': 'Int'
-		#},
+		{
+			'fieldname': 'minimum_purchase_qty',
+			'label': _('Re-Order Level'),
+			'fieldtype': 'Int'
+		},
 		{
 			'fieldname': 'reorder_quantity',
 			'label': _('Re-Order quantity'),
@@ -249,7 +249,7 @@ def get_data(filters):
 			shortage_happened = (available_qty + on_purchase) -period_expected_sales 
 			min = monthly_sales * float(filters.minimum_months)
 			minimum_purchase_qty = get_minimum_purchase_qty(item.item_code, frappe.defaults.get_user_default("Company"))
-			expected_order_quantity = shortage_happened - min - min - reorder_quantity 
+			expected_order_quantity = shortage_happened - min - min - minimum_purchase_qty 
 			priority_month = (available_qty + on_purchase) / monthly_sales if monthly_sales > 0 else 0
 			if filters.get('long_meter'):
 				long_meter_to_roll = expected_order_quantity / filters.get('long_meter')
