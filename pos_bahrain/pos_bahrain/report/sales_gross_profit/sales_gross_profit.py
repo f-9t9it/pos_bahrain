@@ -142,7 +142,7 @@ def get_data(from_date, to_date):
 								AS discount FROM `tabSales Invoice Item` inv_item 
 								WHERE parent = si.name )+ si.discount_amount AS discount,
 								(SELECT (sum(inv_item.amount) - si.discount_amount) 
-								FROM tabSales Invoice Item inv_item WHERE parent = si.name) 
+								FROM `tabSales Invoice Item` inv_item WHERE parent = si.name) 
 								AS amount_after_discount,
 								si.discount_amount as discount1,
 								si.total_taxes_and_charges AS vat,

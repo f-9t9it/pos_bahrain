@@ -75,7 +75,7 @@ def _get_data(data, prices, filters):
             IFNULL(ip.uom, '') IN ('', i.stock_uom)
             ORDER BY
             ip.creation DESC
-            LIMIT 1
+           
     """
 
     suppliers_by_item_code = get_query_by_item_code(
