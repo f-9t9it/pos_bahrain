@@ -126,8 +126,14 @@ def get_columns(filters):
 		},
 		{
 			'fieldname': 'minimum_purchase_qty',
-			'label': _('Minimum Purchase Qty'),
+			'label': _('Re-Order Level'),
 			'fieldtype': 'Int'
+		},
+		{
+			'fieldname': 'reorder_quantity',
+			'label': _('Re-Order quantity'),
+			'fieldtype':'Int',
+			
 		},
 		{
 			'fieldname': 'expected_order_quantity',
@@ -136,10 +142,10 @@ def get_columns(filters):
 			
 		},
 		{
-            		'fieldname': 'priority_month',
-            		'label': _('Priority Month'),
-            		'fieldtype': 'Int',
-       		 }
+					'fieldname': 'priority_month',
+					'label': _('Priority Month'),
+					'fieldtype': 'Int',
+	   		 }
 
 	]
 	if filters and filters.get('uom_conversion'):
@@ -148,6 +154,12 @@ def get_columns(filters):
 			'label': _('Meter'),
 			'fieldtype': 'Float'
 		})
+	columns.append({
+		'fieldname': 'long_meter_to_roll',
+		'label': _('Long Meter to Roll'),
+		'fieldtype':'Float',
+		
+	},)
 	
 	return columns
 
@@ -183,6 +195,9 @@ def get_data(filters):
 			purchase_total_sales = []
 			last_purchase_invoice_date = ''
 			last_sales_invoice_date = ''
+			long_meter_to_roll = 0.0
+			reorder_quantity = 0
+			reorder_quantity = get_reorder_quantity(reorder_quantity, item)
 			# stock_ledger_sales_filters.update({'docstatus':1, "item_code":item.item_code,  'voucher_type':'Sales Invoice', 'posting_date': ['between', [filters.start_date, filters.end_date]]})
 			stock_ledger_sales_filters.update({'docstatus':1, "item_code":item.item_code,  'creation': ['between', [filters.start_date, filters.end_date]]})
 			stock_ledger_purchase_filters.update({'voucher_type':'Purchase Invoice', 'item_code':item.name, 'posting_date': ['between', [filters.start_date, filters.end_date]]})
@@ -234,17 +249,33 @@ def get_data(filters):
 			shortage_happened = (available_qty + on_purchase) -period_expected_sales 
 			min = monthly_sales * float(filters.minimum_months)
 			minimum_purchase_qty = get_minimum_purchase_qty(item.item_code, frappe.defaults.get_user_default("Company"))
-			expected_order_quantity = shortage_happened - min - min - minimum_purchase_qty
+			expected_order_quantity = shortage_happened - min - min - minimum_purchase_qty 
 			priority_month = (available_qty + on_purchase) / monthly_sales if monthly_sales > 0 else 0
-
+			if filters.get('long_meter'):
+				long_meter_to_roll = expected_order_quantity / filters.get('long_meter')
 			if filters.get('uom_conversion'):
 				meter = expected_order_quantity / filters.get('uom_conversion')
 			else:
 				meter = None
 
-			data.append([item.name , item.item_name, item.stock_uom, last_purchase_invoice_date, last_sales_invoice_date, total_sales, float(filters.percentage), expected_sales, min, available_qty, on_purchase, available_qty + on_purchase, total_months_in_report, monthly_sales ,annual_sales, float(filters.months_to_arrive), period_expected_sales, shortage_happened, minimum_purchase_qty , expected_order_quantity, priority_month , meter])
+			data.append([
+				item.name, item.item_name, item.stock_uom, last_purchase_invoice_date, 
+				last_sales_invoice_date, total_sales, float(filters.percentage), expected_sales, 
+				min, available_qty, on_purchase, available_qty + on_purchase, total_months_in_report, 
+				monthly_sales, annual_sales, float(filters.months_to_arrive), period_expected_sales, 
+				shortage_happened, minimum_purchase_qty, reorder_quantity, expected_order_quantity, 
+				priority_month
+				] + ([meter] if filters.get('uom_conversion') and meter else []) + [long_meter_to_roll])
+			
 	return data
-	
+
+def get_reorder_quantity(reorder_quantity, item):
+	item_reorder = frappe.db.get_all('Item Reorder', filters={'parent': item.item_code, "material_request_type":"Purchase"}, fields=['*'])
+	if item_reorder:
+		for val in item_reorder:
+			reorder_quantity += val.warehouse_reorder_qty
+	return reorder_quantity
+
 def get_minimum_purchase_qty(item_code, company_abbr):
 	company_abbr = frappe.get_value("Company", company_abbr, "abbr")
 	
@@ -281,18 +312,18 @@ def get_last_sales_stock_ledger_entry(filters=None):
 
 def get_last_purchase_stock_ledger_entry(filters=None):
 	query = frappe.db.sql("""
-        SELECT
-            sle.posting_date
-        FROM
-            `tabStock Ledger Entry` AS sle
+		SELECT
+			sle.posting_date
+		FROM
+			`tabStock Ledger Entry` AS sle
 		WHERE
-            sle.voucher_type = 'Purchase Invoice'
-            AND sle.item_code = %(item_code)s
-            
-        ORDER BY
-            sle.creation DESC
-	    LIMIT 1
-    """, values=filters,as_dict=1)
+			sle.voucher_type = 'Purchase Invoice'
+			AND sle.item_code = %(item_code)s
+			
+		ORDER BY
+			sle.creation DESC
+		LIMIT 1
+	""", values=filters,as_dict=1)
 	return query
 	
 

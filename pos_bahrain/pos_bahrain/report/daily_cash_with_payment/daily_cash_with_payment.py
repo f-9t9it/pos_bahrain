@@ -9,17 +9,17 @@ from functools import partial, reduce
 from toolz import groupby, pluck, compose, merge, keyfilter
 
 def execute(filters=None):
-    pos_bahrain_setting = frappe.get_single("POS Bahrain Settings")
-    if pos_bahrain_setting.enable_multiple_cash_mop_in_daily_cash_with_payment_report == 1:
+    # pos_bahrain_setting = frappe.get_single("POS Bahrain Settings")
+    # if pos_bahrain_setting.enable_multiple_cash_mop_in_daily_cash_with_payment_report == 1:
         
-        mop = _get_mop_old()
-        columns = _get_columns_old(mop, filters)
-        data = _get_data_old(_get_clauses_old(filters), filters, mop)
-    else:
-        mop, cash_mop = _get_mop(filters)
+    mop = _get_mop_old()
+    columns = _get_columns_old(mop, filters)
+    data = _get_data_old(_get_clauses_old(filters), filters, mop)
+    # else:
+    #     mop, cash_mop = _get_mop(filters)
 
-        columns = _get_columns(mop, filters)
-        data = _get_data(_get_clauses(filters), filters, mop, cash_mop)
+    #     columns = _get_columns(mop, filters)
+    #     data = _get_data(_get_clauses(filters), filters, mop, cash_mop)
 
     return columns, data
 
@@ -523,16 +523,26 @@ def _get_clauses_old(filters):
 		return " AND ".join(clauses)
 	frappe.throw(_("Invalid 'Query By' filter"))
 
-def _get_mop_old():
-    return ["Cash"]
+	group_by_clause = ""
+ 
+	if filters.get("show_creator") and filters.get("summary_view"):
+		group_by_clause = "GROUP BY si.owner, DATE(si.posting_date)"
+	elif filters.get("show_creator"):
+		group_by_clause = "GROUP BY si.owner"
+	elif filters.get("summary_view"):
+		group_by_clause = "GROUP BY DATE(si.posting_date)"
+	return " AND ".join(clauses), group_by_clause
 
 # def _get_mop_old():
-# 	mop = frappe.get_all('POS Bahrain Settings MOP', fields=['mode_of_payment'])
+#     return ["Cash"]
 
-# 	if not mop:
-# 		frappe.throw(_('Please set Report MOP under POS Bahrain Settings'))
+def _get_mop_old():
+	mop = frappe.get_all('POS Bahrain Settings MOP', fields=['mode_of_payment'])
 
-# 	return list(pluck('mode_of_payment', mop))
+	if not mop:
+		frappe.throw(_('Please set Report MOP under POS Bahrain Settings'))
+
+	return list(pluck('mode_of_payment', mop))
 
 
 def _sum_invoice_payments_old(invoice_payments, mop):

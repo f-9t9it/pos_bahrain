@@ -52,7 +52,12 @@ frappe.query_reports["Purchase Plan Scheduling Report"] = {
 			"fieldname": "uom_conversion",
     			"label": "UOM Conversion",
     			"fieldtype": "Float"
-					}
+					},
+			{
+			"fieldname": "long_meter",
+				"label": "Long Meter",
+				"fieldtype": "Int"
+				}
 	
 		
 	
@@ -60,6 +65,9 @@ frappe.query_reports["Purchase Plan Scheduling Report"] = {
 	"formatter": function (value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);
 		if (column.fieldname == "expected_order_quantity" && data && data.expected_order_quantity < 0) {
+			value = "<span style='color:red'>" + value + "</span>";
+		}
+		if (column.fieldname == "long_meter_to_roll" && data && data.long_meter_to_roll < 0) {
 			value = "<span style='color:red'>" + value + "</span>";
 		}
 		

@@ -7,9 +7,10 @@ def validate(doc, method):
         use_minimum_price_list = frappe.db.get_single_value(
             "POS Bahrain Settings", "use_minimum_price_list"
         )
-        _apply_pricing_rule_on_transaction(doc)
+        
         if use_minimum_price_list:
             _validate_minimum_price_list(doc)
+            _apply_pricing_rule_on_transaction(doc)
     except Exception as e:
         pass
 
