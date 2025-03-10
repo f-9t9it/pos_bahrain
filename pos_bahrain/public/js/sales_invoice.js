@@ -4,10 +4,12 @@ frappe.ui.form.on('Sales Invoice', {
     frm.set_df_property("return_si_no", "read_only",  false)
     frm.set_df_property("main_invoice", "read_only",  false)
     frm.set_df_property("main_invoice", "hidden",  false)
+    remove_credit_button_sales_return_settings(frm)
   
   
   },
   refresh: function (frm) {
+    remove_credit_button_sales_return_settings(frm)
     get_employee(frm);
     _create_custom_buttons(frm);
 	var bt = ['Payment',  'Payment Request', 'Invoice Discounting', 'Maintenance Schedule', 'Subscription']
@@ -414,3 +416,18 @@ frm.set_value('total_advance', total_advance);
            }
           }
            });
+
+
+function remove_credit_button_sales_return_settings(frm){
+  frappe.db.get_doc("POS Bahrain Settings").then(pos_settings => {
+    if (pos_settings.hide_sales_return_except == 1 && 
+      !frappe.user_roles.includes(pos_settings.hide_sales_return_role)) {
+      
+      setTimeout(() => {
+        $('[data-label="Return%20%2F%20Credit%20Note"]').hide();
+        $('[data-label="POS%20Return%20%2F%20Credit%20Note"]').hide();
+                }, 200);
+            }
+        });
+
+    }
