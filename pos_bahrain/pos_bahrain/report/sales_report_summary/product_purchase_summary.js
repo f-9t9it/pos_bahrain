@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["Sales Report Summary"] = {
+frappe.query_reports["Product Purchase Summary"] = {
 	"filters": [
 		{
 			"fieldname": "start_date",
