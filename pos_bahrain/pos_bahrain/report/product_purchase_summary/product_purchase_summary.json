@@ -11,11 +11,11 @@
  "modified": "2025-02-25 13:54:32.311108",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
- "name": "Sales Report Summary",
+ "name": "Product Purchase Summary",
  "owner": "Administrator",
  "prepared_report": 0,
  "ref_doctype": "Sales Invoice",
- "report_name": "Sales Report Summary",
+ "report_name": "Product Purchase Summary",
  "report_type": "Script Report",
  "roles": [
   {
@@ -25,28 +25,7 @@
    "role": "Accounts Manager"
   },
   {
-   "role": "Cashier & Salesman"
-  },
-  {
-   "role": "Counter Sales"
-  },
-  {
-   "role": "Senior Accountant"
-  },
-  {
-   "role": "Accountant Maker"
-  },
-  {
    "role": "System Manager"
-  },
-  {
-   "role": "Outsource Workshop"
-  },
-  {
-   "role": "Store Keeper"
-  },
-  {
-   "role": "Cashier"
   },
   {
    "role": "Sales Manager"
@@ -57,17 +36,6 @@
   {
    "role": "Sales User"
   },
-  {
-   "role": "Inventory Controller"
-  },
-  {
-   "role": "Sales Reports"
-  },
-  {
-   "role": "Salesman"
-  },
-  {
-   "role": "Workshop (workflow)"
-  }
+
  ]
 }
