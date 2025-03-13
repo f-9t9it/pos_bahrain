@@ -2,7 +2,7 @@ frappe.ui.form.on('Quotation', {
   refresh: function (frm) {
     get_employee(frm);
     _create_custom_buttons(frm);
-    // query_override(frm);
+    query_override(frm);
   },
   quotation_to: function(frm) {
     query_override(frm);
