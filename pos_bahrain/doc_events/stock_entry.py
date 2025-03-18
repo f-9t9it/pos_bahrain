@@ -8,6 +8,8 @@ from pos_bahrain.doc_events.purchase_receipt import set_or_create_batch
 
 
 def before_validate(doc, method):
+    if doc.pb_repack_request:
+        frappe.db.set_value("Repack Request", doc.pb_repack_request, "stock_entry", doc.name)
     if doc.purpose == "Material Receipt":
         set_or_create_batch(doc, method)
 

@@ -74,13 +74,15 @@ def make_stock_entry(source_name, target_doc=None):
             target.t_warehouse = obj.warehouse
 
     def set_missing_values(source, target):
+        repackdoc = frappe.get_doc("Repack Request",source.name)
+        if repackdoc.status == "Completed":
+            frappe.throw("<b>Repack Request</b> status is already Completed")
         target.purpose = source.material_request_type
         target.pb_repack_request = source.name
         target.run_method("calculate_rate_and_amount")
         target.set_job_card_data()
         # print(source.name)
         # print(target)
-        # repackdoc = frappe.get_doc("Repack Request",source.name)
         # print(repackdoc.name)
         # repackdoc.db_set("stock_entry",target.name)
 
