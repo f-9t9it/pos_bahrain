@@ -51,15 +51,15 @@ def _get_filters(filters):
     clauses = ["s.docstatus = 1"]
     
     if filters.get("warehouse"): 
-    clauses.append("""
-    (
-        s.set_warehouse IN %(warehouse)s
-        OR EXISTS (
-            SELECT 1 FROM `tabSales Invoice Item` sii
-            WHERE sii.parent = s.name AND sii.warehouse IN %(warehouse)s
+        clauses.append("""
+        (
+            s.set_warehouse IN %(warehouse)s
+            OR EXISTS (
+                SELECT 1 FROM `tabSales Invoice Item` sii
+                WHERE sii.parent = s.name AND sii.warehouse IN %(warehouse)s
+            )
         )
-    )
-    """)
+        """)
     
     clauses.extend([
     "s.posting_date BETWEEN %(from_date)s AND %(to_date)s",
