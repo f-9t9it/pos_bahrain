@@ -8,7 +8,7 @@ frappe.ui.form.on('Sales Invoice', {
 });
 
 function set_series(frm) {
-  if (frm.doc.pos_profile && frm.doc.is_pos) {
+  if (frm.is_new() && frm.doc.pos_profile && frm.doc.is_pos) {
     frappe.db.get_value('POS Profile', frm.doc.pos_profile, 'naming_series', (r) => {
       if (r && r.naming_series) {
         frm.set_value("naming_series", r.naming_series);
