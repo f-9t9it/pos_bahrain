@@ -42,6 +42,8 @@ app_include_js = [
 
 # include js in doctype views
 doctype_js = {
+	"POS Profile": "public/js/pos_profile.js",
+	# "POS Invoice": "public/js/pos_invoice.js",
     "Mode of Payment": "public/js/mode_of_payment.js",
     "Stock Entry": ["public/js/includes/scan_barcode.js", "public/js/stock_entry.js"],
     "Company": "public/js/company.js",
@@ -351,7 +353,7 @@ fixtures = [
 # ------------
 
 # before_install = "pos_bahrain.install.before_install"
-# after_install = "pos_bahrain.install.after_install"
+after_install = "pos_bahrain.install.after_install"
 
 # Desk Notifications
 # ------------------
