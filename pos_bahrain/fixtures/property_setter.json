@@ -182,13 +182,13 @@
   "doctype": "Property Setter",
   "doctype_or_field": "DocField",
   "field_name": "material_request_type",
-  "modified": "2025-02-20 16:53:21.742671",
+  "modified": "2025-03-24 13:55:31.462421",
   "name": "Item Reorder-material_request_type-options",
   "parent": null,
   "parentfield": null,
   "parenttype": null,
   "property": "options",
   "property_type": "Text",
-  "value": "Purchase\nTransfer\nMaterial Issue\nManufacture\nRepack\n"
+  "value": "Purchase\nTransfer\nMaterial Issue\nManufacture\nRepack\nProduction"
  }
 ]
