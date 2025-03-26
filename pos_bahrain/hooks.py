@@ -293,7 +293,8 @@ fixtures = [
                     "Sales Order Item-discount_percentage-depends_on",
                     "Payment Entry Reference-total_amount-in_list_view",
                     "Sales Invoice-customer_name-default",
-		    "Item Reorder-material_request_type-options"
+                    "Item Reorder-material_request_type-options",
+					"Material Request-material_request_type-options"
                 ],
             ]
         ],
@@ -430,7 +431,8 @@ on_session_creation = "pos_bahrain.doc_events.set_user_defaults"
 # ---------------
 
 scheduler_events = {
-    "daily": ["pos_bahrain.scheduler_events.daily.send_email_to_manager"]
+    "daily": ["pos_bahrain.scheduler_events.daily.send_email_to_manager",
+			  "pos_bahrain.scheduler_events.custom_reorder_item.reorder_item"]
 }
 override_doctype_dashboards = {
 	"Stock Entry": "pos_bahrain.doc_events.stock_entry_dashboard.get_data",

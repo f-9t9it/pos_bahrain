@@ -65,6 +65,22 @@
  },
  {
   "default_value": null,
+  "doc_type": "Material Request",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "material_request_type",
+  "modified": "2025-03-24 15:29:55.728269",
+  "name": "Material Request-material_request_type-options",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "property": "options",
+  "property_type": "Text",
+  "value": "Material Transfer\nRepack\nProduction\nPurchase\nMaterial Issue\nManufacture\nCustomer Provided"
+ },
+ {
+  "default_value": null,
   "doc_type": "Batch",
   "docstatus": 0,
   "doctype": "Property Setter",
