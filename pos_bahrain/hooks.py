@@ -516,7 +516,10 @@ def delete_auto_created_batches_override(self):
 
 StockController.delete_auto_created_batches = delete_auto_created_batches_override
 
-from erpnext.controllers.accounts_controller import AccountsController, validate_return, validate_regional, validate_einvoice_fields
+from erpnext.controllers.accounts_controller import AccountsController, validate_return,  validate_einvoice_fields
+from erpnext import allow_regional
+def validate_regional(doc):
+    pass
 from frappe.utils import cint
 def validate(self):
 		if not self.get('is_return'):
@@ -560,7 +563,7 @@ def validate(self):
 			else:
 				self.validate_deferred_start_and_end_date()
 
-		validate_regional(self)
+		allow_regional(validate_regional(self))
 		
 		validate_einvoice_fields(self)
 
