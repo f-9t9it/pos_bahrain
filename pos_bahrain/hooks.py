@@ -563,7 +563,7 @@ def validate(self):
 			else:
 				self.validate_deferred_start_and_end_date()
 
-		allow_regional(validate_regional(self))
+		validate_regional(self)
 		
 		validate_einvoice_fields(self)
 
