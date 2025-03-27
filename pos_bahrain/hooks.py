@@ -520,7 +520,7 @@ from erpnext.controllers.accounts_controller import AccountsController, validate
 
 from frappe.utils import cint
 def validate(self):
-        import erpnext
+		import erpnext
 		@erpnext.allow_regional
 		def validate_regional(doc):
 			pass
