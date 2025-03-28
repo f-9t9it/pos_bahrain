@@ -1,4 +1,24 @@
 frappe.ui.form.on('Sales Invoice', {
+  before_save: function(frm) { set_series(frm); },
+  onload: function(frm) { set_series(frm); },
+  pos_profile: function(frm) { set_series(frm); },
+  is_pos: function(frm) { 
+    setTimeout(() => { set_series(frm); }, 1000); 
+  }
+});
+
+function set_series(frm) {
+  if (frm.is_new() && frm.doc.pos_profile && frm.doc.is_pos) {
+    frappe.db.get_value('POS Profile', frm.doc.pos_profile, 'naming_series', (r) => {
+      if (r && r.naming_series) {
+        frm.set_value("naming_series", r.naming_series);
+        frm.refresh_field("naming_series"); 
+      }
+    });
+  }
+}
+
+frappe.ui.form.on('Sales Invoice', {
   refresh: function (frm) {
     get_employee(frm);
     _create_custom_buttons(frm);
