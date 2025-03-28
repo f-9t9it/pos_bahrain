@@ -4,6 +4,8 @@
 
 from __future__ import unicode_literals
 
+import frappe 
+
 from pos_bahrain.doc_events.purchase_receipt import set_or_create_batch
 from pos_bahrain.doc_events.sales_invoice import set_cost_center
 
@@ -14,3 +16,7 @@ def before_validate(doc, method):
 
 def before_save(doc, method):
     set_cost_center(doc)
+    
+def check_invoice_no(doc, method):
+    if frappe.db.exists("Purchase Invoice", {"bill_no":doc.bill_no, "supplier":doc.supplier, "docstatus":['!=', 2]}):
+        frappe.throw(f"Same supplier may have same invoice number")

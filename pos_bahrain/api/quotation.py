@@ -118,24 +118,33 @@ def _make_customer(source_name, ignore_permissions=False):
 
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
-def link_query_override(doctype, txt, searchfield, start, page_len, filters, as_dict=False):
-	return frappe.db.sql("""
-			SELECT
-				`tabCustomer`.name, `tabCustomer`.mobile_no, `tabCustomer`.email_id
-			FROM
-				`tabCustomer`
-			WHERE 
-				( `tabCustomer`.`name` LIKE %(txt)s OR
-				`tabCustomer`.`email_id` LIKE %(txt)s OR
-				`tabCustomer`.`customer_name` LIKE %(txt)s OR
-				`tabCustomer`.`mobile_no` LIKE %(txt)s OR 
-				`tabCustomer`.`pb_email_address` LIKE %(txt)s OR 
-				`tabCustomer`.`pb_mobile_number` LIKE %(txt)s )
-			ORDER BY
-				`tabCustomer`.`%(key)s`
-			""" % {
-				"key": searchfield,
-				"start": start,
-				"page_len": page_len,
-			"txt": "%(txt)s"
-		}, {"txt": ("%%%s%%" % txt)}, as_dict=as_dict)
+def link_query_override(doctype, txt, searchfield, start, page_len, filters=None, as_dict=False):
+    if not filters:
+        filters = {}
+
+    return frappe.db.sql(
+        """
+        SELECT
+            name, mobile_no, email_id
+        FROM
+            `tabCustomer`
+        WHERE 
+            (
+                name LIKE %(txt)s OR
+                email_id LIKE %(txt)s OR
+                customer_name LIKE %(txt)s OR
+                mobile_no LIKE %(txt)s OR 
+                pb_email_address LIKE %(txt)s OR 
+                pb_mobile_number LIKE %(txt)s
+            )
+        ORDER BY
+            {key}
+        LIMIT %(start)s, %(page_len)s
+        """.format(key=frappe.db.escape(searchfield)),  
+        {
+            "txt": f"%{txt}%",
+            "start": start,
+            "page_len": page_len
+        },
+        as_dict=as_dict
+    )
