@@ -21,6 +21,18 @@ frappe.ui.form.on('POS Bahrain Settings', {
                       }
                       
           });
-        }   
+        },
+        refresh:function(frm){
+          frm.add_custom_button(__("Custom fields from BackEnd"), function(){
+            frm.call({
+              method: "pos_bahrain.install.after_install",
+              callback: function (r) {
+                if (!r.exc) {
+                  frappe.msgprint("Bench Executed Successfully!!");
+                }
+              }
+            });
+          }, __("Create"));
+        }      
 	
 })
