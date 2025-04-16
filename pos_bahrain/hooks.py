@@ -409,7 +409,7 @@ doc_events = {
     },
     "Item Price": {"before_save": "pos_bahrain.doc_events.item_price.before_save"},
     "Bin": {"on_update": "pos_bahrain.doc_events.bin.on_update"},
-    "Bank Reconciliation": {
+    "Bank Clearance": {
         "get_payment_entries": "pos_bahrain.doc_events.bank_reconciliation.get_payment_entries",
         "update_clearance_date": "pos_bahrain.doc_events.bank_reconciliation.update_clearance_date",
     },
