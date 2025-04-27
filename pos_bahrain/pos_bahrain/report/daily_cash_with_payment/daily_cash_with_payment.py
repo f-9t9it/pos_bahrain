@@ -87,7 +87,24 @@ def _get_columns(mop, filters):
 
     return columns
 
+from datetime import datetime
+def validate_date_filters(filters):
+
+	from_date = filters.get('from_date')
+	to_date = filters.get('to_date')
+
+	if from_date and to_date:
+		from_date = datetime.strptime(from_date, "%Y-%m-%d")
+		to_date = datetime.strptime(to_date, "%Y-%m-%d")
+		
+		if (to_date - from_date).days  > 3:
+			return frappe.throw("Date Range Should Be within 3 days")
+	else:
+		return frappe.throw("Dates not provided")
+
 def _get_data(clauses, filters, mop, cash_mop):
+    if filters.get('restrict_from_date') == 0 or filters.get('restrict_from_date') == None :
+		return validate_date_filters(filters)
     result = frappe.db.sql(
         """
             SELECT
