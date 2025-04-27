@@ -9,7 +9,6 @@ frappe.query_reports["Daily Cash with Payment"] = {
 			label: __('From Date'),
 			fieldtype: 'Date',
 			reqd: 1,
-			read_only:1,
 			default: frappe.datetime.get_today(),
 		},
 		{
@@ -18,11 +17,7 @@ frappe.query_reports["Daily Cash with Payment"] = {
 			fieldtype: 'Date',
 			reqd: 1,
 			default: frappe.datetime.get_today(),
-			on_change: function () 
-			{
-			let filter_date = frappe.query_report.get_filter("from_date");
-			filter_date.set_value(frappe.query_report.get_filter("to_date").get_value());
-			}
+			
 		},
 		{
 			fieldname: 'query_doctype',
@@ -60,6 +55,13 @@ frappe.query_reports["Daily Cash with Payment"] = {
 			fieldname: 'show_creator',
 			label: __('Show Creator'),
 			fieldtype: 'Check'
+		},
+		{
+			fieldname: 'restrict_from_date',
+			label: __('	Allow From Date More Than 3 Days'),
+			fieldtype: 'Check',
+			hidden: !frappe.user.has_role('Daily Cash Report Manager'),
+			
 		},
 		{
 			fieldname: 'edit_from_date',

@@ -22,9 +22,20 @@ from pos_bahrain.utils import pick
 
 
 def execute(filters=None):
+    warehouses = frappe.get_all(
+        "Warehouse",
+        filters={"is_group": 0, "disabled": 0, "company": filters.get("company")},
+        
+    )
+
+    warehouses = [x.name for x in warehouses]
+
+    warehouse_columns = ", ".join(
+        [f"SUM(CASE WHEN sles.warehouse = '{warehouse}' THEN sles.actual_qty ELSE 0 END) * -1 AS `{warehouse}`" for warehouse in warehouses]
+    )
     clauses, values = _get_filters(filters)
     columns = _get_columns(values)
-    data = _get_data(clauses, values, columns,filters)
+    data = _get_data(clauses, values, columns,filters, warehouse_columns)
 
     make_column = partial(pick, ["label", "fieldname", "fieldtype", "options", "width"])
     return [make_column(x) for x in columns], data
@@ -149,20 +160,44 @@ def _get_columns(filters):
     )
 
 
-def _get_data(clauses, values, columns,filters):
-    additional_warehouse = filters.get("additional_warehouse")
-    items = []
+def _get_data(clauses, values, columns,filters, warehouse_columns):
+    values['interval'] = filters.get('interval')
     items = frappe.db.sql(
-        """
-            SELECT
+         """
+                    SELECT
                 i.item_code AS item_code,
-                (SELECT GROUP_CONCAT(barcode SEPARATOR ', ') FROM `tabItem Barcode`WHERE parent = i.name) AS barcode ,
+                (SELECT GROUP_CONCAT(barcode SEPARATOR ', ') FROM `tabItem Barcode` WHERE parent = i.name) AS barcode,
                 i.brand AS brand,
                 i.item_name AS item_name,
                 i.item_group AS item_group,
                 id.default_supplier AS supplier,
                 MAX(p.price_list_rate) AS price,
-                b.actual_qty AS stock
+                b.actual_qty AS stock,
+                so.total_sales AS total_sales,
+                CASE 
+                    WHEN %(interval)s IS NULL THEN 
+                        (so.total_sales / DATEDIFF(%(end_date)s, %(start_date)s))
+                    WHEN %(interval)s = 'Weekly' THEN 
+                        (so.total_sales / GREATEST(1, DATEDIFF(%(end_date)s, %(start_date)s) / 7))
+                    WHEN %(interval)s = 'Monthly' THEN 
+                        (so.total_sales / GREATEST(1, DATEDIFF(%(end_date)s, %(start_date)s) / 30))
+                    WHEN %(interval)s = 'Yearly' THEN 
+                        (so.total_sales / GREATEST(1, DATEDIFF(%(end_date)s, %(start_date)s) / 365))
+                    ELSE 0
+                END AS average_sales_quantity,
+                CASE 
+                    WHEN %(interval)s IS NULL THEN 
+                        (   SUM(CASE WHEN sles.warehouse IS NOT NULL  THEN sles.actual_qty ELSE 0 END) * -1  / DATEDIFF(%(end_date)s, %(start_date)s))
+                    WHEN %(interval)s = 'Weekly' THEN 
+                        (   SUM(CASE WHEN sles.warehouse IS NOT NULL  THEN sles.actual_qty ELSE 0 END) * -1  / GREATEST(1, DATEDIFF(%(end_date)s, %(start_date)s) / 7))
+                    WHEN %(interval)s = 'Monthly' THEN 
+                        (   SUM(CASE WHEN sles.warehouse IS NOT NULL  THEN sles.actual_qty ELSE 0 END) * -1  / GREATEST(1, DATEDIFF(%(end_date)s, %(start_date)s) / 30))
+                    WHEN %(interval)s = 'Yearly' THEN 
+                        (   SUM(CASE WHEN sles.warehouse IS NOT NULL  THEN sles.actual_qty ELSE 0 END) * -1  / GREATEST(1, DATEDIFF(%(end_date)s, %(start_date)s) / 365))
+                    ELSE 0
+                END AS average_sales_quantity,
+                SUM(CASE WHEN sles.warehouse IS NOT NULL  THEN sles.actual_qty ELSE 0 END) * -1 AS total_consumption,
+                {warehouse_columns}
             FROM `tabItem` AS i
             LEFT JOIN `tabItem Price` AS p
                 ON p.item_code = i.item_code AND p.price_list = %(price_list)s
@@ -176,240 +211,28 @@ def _get_data(clauses, values, columns,filters):
                 ON b.item_code = i.item_code
             LEFT JOIN `tabItem Default` AS id
                 ON id.parent = i.name AND id.company = %(company)s
+            LEFT JOIN (
+                SELECT 
+                    item_code, 
+                    SUM(qty) AS total_sales 
+                FROM `tabSales Order Item` 
+                WHERE creation BETWEEN %(start_date)s AND %(end_date)s AND docstatus = 1
+                GROUP BY item_code
+            ) AS so
+                ON so.item_code = i.item_code
+            LEFT JOIN `tabStock Ledger Entry` AS sles
+                ON sles.item_code = i.item_code AND sles.posting_date BETWEEN %(start_date)s AND %(end_date)s AND sles.docstatus <2 AND  sles.voucher_type = 'Sales Invoice' AND
+                sles.company = %(company)s AND
+                {warehouse_clauses} 
             WHERE i.disabled = 0 AND {clauses}
             GROUP BY
-                i.item_code, i.brand, i.item_name, i.item_group, id.default_supplier, b.actual_qty
+                i.item_code, i.brand, i.item_name, i.item_group, id.default_supplier, b.actual_qty, so.total_sales
         """.format(
-            **clauses
+            **clauses,
+            warehouse_columns = warehouse_columns,
         ),
         values=values,
         as_dict=1,
-    )
+    ) 
+    return items
 
-    # if additional_warehouse:
-    #     for item in items:
-    #         stock_balance = get_stock_balance(item['item_code'], additional_warehouse)
-    #         item['additional_warehouse_stock_qty'] = stock_balance
-
-    def get_number_of_days(start_date, end_date):
-        start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
-        end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
-
-        return (end_date_obj - start_date_obj).days
-    statuses_to_exclude = ["Cancelled", "Closed"]
-    def get_sales_order_parent(parent):
-        values = frappe.db.get_list("Sales Order",filters={
-                                                "name":parent,
-                                                "status": ["not in", statuses_to_exclude]
-                                            })
-        return values
-    
-    for item in items:
-        total_sales = 0
-        if additional_warehouse:
-            stock_balance = get_stock_balance(item['item_code'], additional_warehouse)
-            item['additional_warehouse_stock_qty'] = stock_balance
-        if filters.get("include_sales_order_in_average_sales"):
-            item_qty = 0
-            so = frappe.get_all("Sales Order Item", filters={"item_code":item.item_code, "creation": ["between", [filters["start_date"], filters["end_date"]]]}, fields=["*"])
-            for x in so:
-                if get_sales_order_parent(x.parent) != []:
-                    item_qty += x.qty
-            total_sales = item_qty
-        number_of_days = 0
-        week_average = 0
-        number_of_days = get_number_of_days(filters["start_date"], filters["end_date"])
-        average_sales_quantity =0
-        if filters.get("interval") == None:
-            average_sales_quantity = total_sales / number_of_days if number_of_days > 0 else 0
-
-        elif filters.get("interval") == "Weekly":
-            week_average = number_of_days / 7
-            if week_average < 1:
-                week_average = 1
-            
-            average_sales_quantity = total_sales / week_average
-
-        elif filters.get("interval") == "Monthly":
-            month_average = number_of_days / 30
-            if month_average < 1:
-                month_average = 1
-            average_sales_quantity = total_sales / month_average
-        else:
-            average_sales_quantity = 0
-        item["average_sales_quantity"] = average_sales_quantity
-
-    sles = frappe.db.sql(
-        """
-            SELECT item_code, posting_date, actual_qty, warehouse
-            FROM `tabStock Ledger Entry`
-            WHERE docstatus < 2 AND
-                voucher_type = 'Sales Invoice' AND
-                company = %(company)s AND
-                {warehouse_clauses} AND
-                posting_date BETWEEN %(start_date)s AND %(end_date)s
-        """.format(
-            **clauses
-        ),
-        values=values,
-        as_dict=1,
-    )
-    keys = compose(list, partial(pluck, "fieldname"))(columns)
-    get_warehouses = compose(list, partial(filter, lambda x: x.get("is_warehouse")))
-    get_periods = compose(
-        list, partial(filter, lambda x: x.get("start_date") and x.get("end_date"))
-    )
-
-    set_warehouse_qty = _set_warehouse_qtys(sles, get_warehouses(columns))
-    set_consumption = _set_consumption(sles, get_periods(columns),filters)
-
-    make_row = compose(partial(pick, keys), set_warehouse_qty, set_consumption)
-    return [make_row(x) for x in items]
-
-
-def _set_consumption(sles, periods,filters):
-    def groupby_filter(sl):
-        def fn(p):
-            return p.get("start_date") <= sl.get("posting_date") <= p.get("end_date")
-
-        return fn
-
-    segregate = _make_segregator(sles, groupby_filter, periods)
-
-    total_fn = compose(
-        operator.neg,
-        sum,
-        partial(pluck, "actual_qty"),
-        lambda item_code: filter(lambda x: x.get("item_code") == item_code, sles),
-    )
-
-    def fn(item):
-        item_code = item.get("item_code")
-        ##########    AVERAGE SALES CALCULATION - BY USMAN KHALID     ##########################
-        ########################################################################################
-        number_of_days = 0
-        week_average = 0
-        def get_number_of_days(start_date, end_date):
-            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
-            end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
-            return (end_date_obj - start_date_obj).days
-    
-        number_of_days = get_number_of_days(filters["start_date"], filters["end_date"])
-        average_sales_quantity =0
-        divide = 0
-        if filters.get("interval") == None:
-            average_sales_quantity = total_fn(item_code) / number_of_days if number_of_days > 0 else 0
-
-        elif filters.get("interval") == "Weekly":
-            divide = _difference_weeks(filters["start_date"], filters["end_date"])
-            week_average = number_of_days / 7
-            if week_average < 1:
-                week_average = 1
-            average_sales_quantity = total_fn(item_code) / divide
-        elif filters.get("interval") == "Monthly":
-            divide = _difference_months(filters["start_date"], filters["end_date"])
-            month_average = number_of_days / 30
-            if month_average < 1:
-                month_average = 1
-            average_sales_quantity = total_fn(item_code) / divide
-        elif filters.get("interval") == "Yearly":
-            divide = _difference_years(filters["start_date"], filters["end_date"])
-            year_average = number_of_days / 365
-            if year_average < 1:
-                year_average = 1
-            average_sales_quantity = total_fn(item_code) / divide
-        else:
-            average_sales_quantity = 0
-        item["average_sales_quantity"] = average_sales_quantity
-        ########################################################################################
-        return merge(
-            item, segregate(item_code), {"total_consumption": total_fn(item_code)},
-        )
-
-    return fn
-
-def _difference_weeks(start_date,end_date):
-    d1 = datetime.strptime(start_date, "%Y-%m-%d")
-    d2 = datetime.strptime(end_date, "%Y-%m-%d")
-    days = (d2 - d1)
-    weeks = (days.days) // 7
-    if weeks < 1:
-        weeks = 1
-    return weeks
-
-def _difference_months(start_date,end_date):
-    d1 = datetime.strptime(start_date, "%Y-%m-%d")
-    d2 = datetime.strptime(end_date, "%Y-%m-%d")
-    days = (d2 - d1)
-    months = (days.days) // 30
-    if months < 1:
-        months = 1
-    return months   
-
-def _difference_years(start_date,end_date):
-    d1 = datetime.strptime(start_date, "%Y-%m-%d")
-    d2 = datetime.strptime(end_date, "%Y-%m-%d")
-    days = (d2 - d1)
-    years = (days.days) // 365
-    if years < 1:
-        years = 1
-    return years
-
-
-def _set_warehouse_qtys(sles, warehouses):
-    def groupby_filter(sl):
-        def fn(w):
-            return w.get("key") == sl.get("warehouse")
-
-        return fn
-
-    segregate = _make_segregator(sles, groupby_filter, warehouses)
-
-    def fn(item):
-        item_code = item.get("item_code")
-        return merge(item, segregate(item_code))
-
-    return fn
-
-
-def _make_segregator(sles, groupby_filter, partitions):
-    groupby_fn = compose(
-        partial(get, "key", default=None),
-        excepts(StopIteration, first, lambda __: {}),
-        partial(flip, filter, partitions),
-        groupby_filter,
-    )
-
-    sles_grouped = groupby(groupby_fn, sles)
-
-    def seg_filter(x):
-        return lambda sl: sl.get("item_code") == x
-
-    summer = compose(operator.neg, sum, partial(pluck, "actual_qty"))
-
-    def seg_reducer(item_code):
-        def fn(a, p):
-            key = get("key", p, None)
-            seger = get("seger", p, lambda __: None)
-            return merge(a, {key: seger(item_code)})
-
-        return fn
-
-    segregator_fns = [
-        merge(
-            x,
-            {
-                "seger": compose(
-                    summer,
-                    partial(flip, filter, get(x.get("key"), sles_grouped, [])),
-                    seg_filter,
-                )
-            },
-        )
-        for x in partitions
-    ]
-
-    def fn(item_code):
-        return reduce(seg_reducer(item_code), segregator_fns, {})
-
-    return fn
