@@ -28,7 +28,7 @@ frappe.query_reports['Item Consumption Report'] = {
       fieldname: 'interval',
       label: __('Interval'),
       fieldtype: 'Select',
-      options: '\nWeekly\nMonthly\nYearly',
+     options: '\nDaily\nWeekly\nMonthly\nYearly',
     },
     {
       fieldname: 'warehouse',
