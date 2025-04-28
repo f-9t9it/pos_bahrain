@@ -174,8 +174,10 @@ def _get_data(clauses, values, columns,filters, warehouse_columns):
                 MAX(p.price_list_rate) AS price,
                 b.actual_qty AS stock,
                 so.total_sales AS total_sales,
-                CASE 
-                    WHEN %(interval)s IS NULL THEN 
+                 CASE 
+                    WHEN %(interval)s is NULL THEN
+                        0
+                    WHEN %(interval)s = 'Daily' THEN 
                         (so.total_sales / DATEDIFF(%(end_date)s, %(start_date)s))
                     WHEN %(interval)s = 'Weekly' THEN 
                         (so.total_sales / GREATEST(1, DATEDIFF(%(end_date)s, %(start_date)s) / 7))
@@ -186,7 +188,9 @@ def _get_data(clauses, values, columns,filters, warehouse_columns):
                     ELSE 0
                 END AS average_sales_quantity,
                 CASE 
-                    WHEN %(interval)s IS NULL THEN 
+                     WHEN %(interval)s is NULL THEN
+                        0
+                    WHEN %(interval)s = 'Daily' THEN  
                         (   SUM(CASE WHEN sles.warehouse IS NOT NULL  THEN sles.actual_qty ELSE 0 END) * -1  / DATEDIFF(%(end_date)s, %(start_date)s))
                     WHEN %(interval)s = 'Weekly' THEN 
                         (   SUM(CASE WHEN sles.warehouse IS NOT NULL  THEN sles.actual_qty ELSE 0 END) * -1  / GREATEST(1, DATEDIFF(%(end_date)s, %(start_date)s) / 7))
