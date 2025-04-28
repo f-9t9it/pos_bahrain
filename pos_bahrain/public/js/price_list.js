@@ -28,13 +28,13 @@ function _set_price_list_rate(frm, cdt, cdn) {
       console.log(selling_rates)
       var discount_amount = 0
       if (selling_rates) {
-        if(selling_rates.default_price_list_rate != 0){
-          discount_amount = selling_rates.default_price_list_rate - selling_rates.price_list_rate;
-        }
-        else if(selling_rates.default_price_list_rate === 0){
-          discount_amount = 0;
-        }
-        frappe.model.set_value(cdt, cdn, 'discount_amount', discount_amount);
+        // if(selling_rates.default_price_list_rate != 0){
+        //   discount_amount = selling_rates.default_price_list_rate - selling_rates.price_list_rate;
+        // }
+        // else if(selling_rates.default_price_list_rate === 0){
+        //   discount_amount = 0;
+        // }
+        // frappe.model.set_value(cdt, cdn, 'discount_amount', discount_amount);
         frappe.model.set_value(cdt, cdn, 'pb_price_list_rate', selling_rates.price_list_rate);
       }
     });
