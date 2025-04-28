@@ -127,7 +127,7 @@ function _scan_barcode(frm, barcode_field, child_table) {
     frappe
       .call({
         method:
-          'erpnext.selling.page.point_of_sale.point_of_sale.search_serial_or_batch_or_barcode_number',
+          'erpnext.selling.page.point_of_sale.point_of_sale.search_for_serial_or_batch_or_barcode_number',
         args: { search_value: frm.doc[barcode_field] },
       })
       .then((r) => {
