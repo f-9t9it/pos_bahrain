@@ -392,7 +392,7 @@ def get_actual_qty(item_code, warehouse, batch=None):
 @frappe.whitelist()
 def search_serial_or_batch_or_barcode_number(search_value):
     from erpnext.selling.page.point_of_sale.point_of_sale import (
-        search_serial_or_batch_or_barcode_number,
+        search_for_serial_or_batch_or_barcode_number,
     )
 
     item_code = frappe.db.get_value(
@@ -401,7 +401,7 @@ def search_serial_or_batch_or_barcode_number(search_value):
     if item_code:
         return item_code
 
-    result = search_serial_or_batch_or_barcode_number(search_value)
+    result = search_for_serial_or_batch_or_barcode_number(search_value)
     if result and result.get("batch_no"):
         return merge(
             result,
