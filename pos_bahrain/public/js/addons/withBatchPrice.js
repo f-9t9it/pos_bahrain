@@ -24,7 +24,10 @@ export default function withBatchPrice(Pos) {
           item.discount_percentage = discount_percentage;
         } else {
           item.rate = item.price_list_rate;
-          item.discount_percentage = 0;
+          if (!item.discount_percentage && item.discount_percentage !== 0) {
+                item.discount_percentage = 0;
+            }
+
         }
         this.update_paid_amount_status(false);
       }
