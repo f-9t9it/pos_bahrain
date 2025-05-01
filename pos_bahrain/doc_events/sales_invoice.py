@@ -12,7 +12,14 @@ from pos_bahrain.api.sales_invoice import get_customer_account_balance
 from functools import partial
 from toolz import first, compose, pluck, unique
 
-
+@frappe.whitelist()
+def get_pricing_rule_discount(item):
+    values = {}
+    items = frappe.db.get_all("Pricing Rule Item Code", fields=['parent'])
+    if items !=[]:
+        percentage = frappe.db.get_value("Pricing Rule", items[0]['parent'], 'warehouse')
+        values['warehouse'] = percentage
+    return values
 @frappe.whitelist()
 def set_discount_on_return(doc):
     # frappe.msgprint(doc)

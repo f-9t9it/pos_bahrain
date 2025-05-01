@@ -2,7 +2,7 @@
 frappe.provide('pos_bahrain.reports');
 
 // Define the filters
-pos_bahrain.reports.vat_on_sales_per_gcc = [
+export default pos_bahrain.reports.vat_on_sales_per_gcc = [
   {
     fieldname: 'from_date',
     label: __('From Date'),

@@ -1,6 +1,6 @@
 frappe.provide('pos_bahrain.reports');
 
-pos_bahrain.reports.vat_return =  [
+export default pos_bahrain.reports.vat_return =  [
       {
         fieldname: 'from_date',
         label: __('From Date'),
