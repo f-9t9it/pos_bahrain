@@ -30,8 +30,7 @@ def execute(filters=None):
 
     warehouses = [x.name for x in warehouses]
 
-    if filters.warehouse:
-        warehouses = [filters.warehouse]
+    
 
     warehouse_columns = ", ".join(
         [f"SUM(CASE WHEN sles.warehouse = '{warehouse}' THEN sles.actual_qty ELSE 0 END) * -1 AS `{warehouse}`" for warehouse in warehouses]
