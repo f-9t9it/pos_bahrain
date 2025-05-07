@@ -16,12 +16,15 @@ function _apply_pb_discount_percentage(doctype) {
 function _apply_pb_discount_percentage_on_item_code(doctype) {
   frappe.ui.form.on(doctype, {
     item_code: function (frm, cdt, cdn) {
-      frappe.model.set_value(
-        cdt,
-        cdn,
-        'discount_percentage',
-        frm.doc.pb_discount_percentage
-      );
+      if (locals[cdt][cdn].discount_percentage == 0) {
+        frappe.model.set_value(
+          doctype,
+          name,
+          'discount_percentage',
+          frm.doc.pb_discount_percentage
+        );
+       
+      }
     },
   });
 }
