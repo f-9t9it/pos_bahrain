@@ -145,9 +145,32 @@ function match_set_discount(frm, data){
 
 frappe.ui.form.on('Sales Invoice Item', {
   item_code: function (frm, cdt, cdn) {
-    get_total_stock_qty(frm, cdt, cdn)
+    get_total_stock_qty(frm, cdt, cdn);
+    get_pricing_rule_percent(frm, cdt, cdn);
   },
 });
+
+function get_pricing_rule_percent(frm, cdt, cdn)
+{
+  var d = locals[cdt][cdn];
+  var item_code = d.item_code;
+  frappe.call(
+    {
+      method: "pos_bahrain.doc_events.sales_invoice.get_pricing_rule_discount",
+      args:{'item':item_code},
+      callback: function (r){
+        console.log(r.message)
+        if (r.message != {})
+        {
+          console.log(r.message)
+          d.warehouse = r.message.warehouse
+          frm.refresh_field('items');
+        }
+        
+      }
+    }
+  )
+}
 
 function check_duplicate(frm) {
   if (frm.doc.is_pos && frm.doc.offline_pos_name && frm.doc.is_return) {
