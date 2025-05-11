@@ -596,3 +596,5 @@ _taxes_and_totals.calculate_write_off_amount = calculate_write_off_amount
 # _taxes_and_totals.update_paid_amount_for_return = update_paid_amount_for_return_ov
 SalesInvoice.validate_pos_paid_amount = validate_pos_paid_amount_ov
 _pos.get_customers_address = _get_customers_address
+
+
