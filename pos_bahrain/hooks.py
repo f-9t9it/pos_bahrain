@@ -597,8 +597,4 @@ _taxes_and_totals.calculate_write_off_amount = calculate_write_off_amount
 SalesInvoice.validate_pos_paid_amount = validate_pos_paid_amount_ov
 _pos.get_customers_address = _get_customers_address
 
-from frappe.core.doctype.prepared_report.prepared_report import PreparedReport
 
-from pos_bahrain.core_overrides.prepared_report import CustomPreparedReport
-
-PreparedReport.enqueue_report = CustomPreparedReport.enqueue_report
