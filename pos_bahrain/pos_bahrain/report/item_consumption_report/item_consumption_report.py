@@ -40,7 +40,8 @@ def execute(filters=None):
     data = _get_data(clauses, values, columns,filters, warehouse_columns)
 
     make_column = partial(pick, ["label", "fieldname", "fieldtype", "options", "width"])
-    return [make_column(x) for x in columns], data
+    columns = [make_column(x) for x in columns]
+    return columns, data
 
 
 def _get_filters(filters):
