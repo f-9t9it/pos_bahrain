@@ -104,7 +104,7 @@ def validate_date_filters(filters):
 
 def _get_data(clauses, filters, mop, cash_mop):
     if filters.get('restrict_from_date') == 0 or filters.get('restrict_from_date') == None :
-        return validate_date_filters(filters)
+        validate_date_filters(filters)
     result = frappe.db.sql(
         """
             SELECT
