@@ -251,7 +251,7 @@ def _get_data(clauses, values, columns,filters, warehouse_columns):
         """.format(
             **clauses,
             warehouse_columns = warehouse_columns,
-            interval_columns=(",\n" + interval_columns) if interval_columns else "",
+            interval_columns=( interval_columns + ",\n") if interval_columns else "",
         ),
         values=values,
         as_dict=1,
