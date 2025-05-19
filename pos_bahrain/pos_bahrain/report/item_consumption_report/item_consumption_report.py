@@ -164,6 +164,20 @@ def _get_columns(filters):
 
 def _get_data(clauses, values, columns,filters, warehouse_columns):
     values['interval'] = filters.get('interval')
+    interval_columns = ""
+    if filters.get("interval") and filters.get("interval") != "Daily":
+        intervals = generate_intervals(
+            filters.get("interval"),
+            filters.get("start_date"),
+            filters.get("end_date")
+        )
+        
+        interval_columns = ",\n".join([
+            f"""SUM(CASE 
+                    WHEN sles.posting_date BETWEEN '{interval['start_date']}' AND '{interval['end_date']}'
+                    THEN sles.actual_qty ELSE 0 END) * -1 AS `{interval['key']}`"""
+            for interval in intervals
+        ])
     items = frappe.db.sql(
          """
                     SELECT
@@ -176,6 +190,7 @@ def _get_data(clauses, values, columns,filters, warehouse_columns):
                 MAX(p.price_list_rate) AS price,
                 b.actual_qty AS stock,
                 so.total_sales AS total_sales,
+                {interval_columns}
                  CASE 
                     WHEN %(interval)s is NULL THEN
                         0
@@ -236,6 +251,7 @@ def _get_data(clauses, values, columns,filters, warehouse_columns):
         """.format(
             **clauses,
             warehouse_columns = warehouse_columns,
+            interval_columns=( interval_columns + ",\n") if interval_columns else "",
         ),
         values=values,
         as_dict=1,
