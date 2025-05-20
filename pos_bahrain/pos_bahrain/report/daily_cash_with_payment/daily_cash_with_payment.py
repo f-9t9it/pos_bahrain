@@ -102,6 +102,7 @@ def validate_date_filters(filters):
 	else:
 		return frappe.throw("Dates not provided")
 
+
 def _get_data(clauses, filters, mop, cash_mop):
     if filters.get('restrict_from_date') == 0 or filters.get('restrict_from_date') == None :
         validate_date_filters(filters)
