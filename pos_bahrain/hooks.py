@@ -517,4 +517,4 @@ SalesInvoice.validate_pos_paid_amount = validate_pos_paid_amount_ov
 from frappe.automation.doctype.auto_repeat.auto_repeat import AutoRepeat
 from pos_bahrain.core_overrides.auto_repeat import AutoRepeat as _AutoRepeat
 
-AutoRepeat.make_new_document = _AutoRepeat.make_new_document
+AutoRepeat = _AutoRepeat
