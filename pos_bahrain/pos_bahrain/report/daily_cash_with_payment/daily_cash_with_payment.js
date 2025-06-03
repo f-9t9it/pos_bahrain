@@ -28,6 +28,31 @@ frappe.query_reports["Daily Cash with Payment"] = {
 			reqd: 1,
 			only_select: 1,
 			default: 'POS Profile',
+			on_change: function() {
+				if (frappe.query_report.get_filter("query_doctype").get_value() === "Warehouse") {
+					frappe.db.get_list('User Permission', {
+						filters: {
+							user: frappe.session.user,
+							applicable_for: 'Sales Invoice',
+							allow:"Warehouse"
+						},
+						fields: ['for_value']
+					}).then(user_permissions => {
+						const allowed_warehouses = user_permissions.map(perm => perm.for_value);
+						if (allowed_warehouses.length > 0)
+						{
+							frappe.query_report.get_filter('query_doc').df.get_query = () => {
+							return {
+								filters: {
+									name: ['in', allowed_warehouses]
+								}
+							};
+						};
+						}
+						
+					});
+				}
+			}
 		},
 		{
 			fieldname: 'query_doc',
