@@ -85,7 +85,8 @@ doctype_js = {
     "Print Format": "public/js/print_format.js",
 	"Stock Reconciliation": "public/js/stock_reconciliation.js",
 }
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {"Sales Invoice" : "public/js/listview/sales_invoice_list.js"}
+
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
