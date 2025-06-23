@@ -512,3 +512,20 @@ _AccountsController.update_against_document_in_jv = update_against_document_in_j
 _taxes_and_totals.calculate_write_off_amount = calculate_write_off_amount
 # _taxes_and_totals.update_paid_amount_for_return = update_paid_amount_for_return_ov
 SalesInvoice.validate_pos_paid_amount = validate_pos_paid_amount_ov
+
+
+#auto repeat logic
+from erpnext.accounts.doctype.sales_invoice.sales_invoice import SalesInvoice
+from erpnext.accounts.doctype.purchase_invoice.purchase_invoice import PurchaseInvoice
+
+def custom_sales_on_recurring(self, reference_doc, auto_repeat_doc):
+    for fieldname in ("c_form_applicable", "c_form_no", "write_off_amount"):
+        self.set(fieldname, reference_doc.get(fieldname))
+
+    self.due_date = self.posting_date
+
+def custom_purchase_on_recurring(self, reference_doc, auto_repeat_doc):
+    self.due_date = self.posting_date
+	
+SalesInvoice.on_recurring = custom_sales_on_recurring
+PurchaseInvoice.on_recurring = custom_purchase_on_recurring
