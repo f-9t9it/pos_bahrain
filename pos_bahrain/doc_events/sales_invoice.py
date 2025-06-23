@@ -108,6 +108,40 @@ def on_submit(doc, method):
 
 def before_cancel(doc, method):
     gl_entries_cancel(doc)
+    get_dns = compose(
+        list,
+        unique,
+        partial(pluck, "parent"),
+        frappe.db.sql,
+    )
+    dns = get_dns(
+        """
+            SELECT dni.parent AS parent
+            FROM `tabDelivery Note Item` AS dni
+            LEFT JOIN `tabDelivery Note` AS dn ON dn.name = dni.parent
+            WHERE
+                dn.docstatus = 1 AND
+                dn.is_return = 1 AND
+                dni.against_sales_invoice = %(against_sales_invoice)s
+        """,
+        values={"against_sales_invoice": doc.return_against},
+        as_dict=1,
+    )
+    if not dns:
+        return
+    
+    for dn in dns:
+        dn_doc = frappe.get_doc("Delivery Note", dn)
+        for i, item in enumerate(dn_doc.items):
+            if item.item_code != doc.items[i].item_code or item.qty != doc.items[i].qty:
+                frappe.throw(
+                    _(
+                        "Mismatched <code>item_code</code> / <code>qty</code> "
+                        "found in <em>items</em> table."
+                    )
+                )
+        dn_doc.cancel()
+  
     # update_credit_note_cancel(doc)
     parent = _get_parent_by_account(doc.name)
     if not parent:
