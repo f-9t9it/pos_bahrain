@@ -277,6 +277,7 @@ doc_events = {
         ],
     },
     "Contact" : {"validate": "pos_bahrain.doc_events.contact.update_customer_phone"}, 
+    "Item":{"before_insert":"pos_bahrain.doc_events.item.custom_autoname_before_insert"},
     "Item Price": {"before_save": "pos_bahrain.doc_events.item_price.before_save"},
     "Bin": {"on_update": "pos_bahrain.doc_events.bin.on_update"},
     "Bank Reconciliation": {
