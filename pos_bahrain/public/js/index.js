@@ -46,4 +46,6 @@ frappe.ui.form.on(
   scripts.payment_entry.payment_entry_reference
 );
 
+
+
 pos_bahrain = { scripts, reports, addons };

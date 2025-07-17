@@ -191,12 +191,14 @@ export default {
     }
     toggle_incoming_datetime(frm);
     render_dashboard_data(frm);
+    showReceiveButton(frm);
   },
   onload_post_render: function(frm) {
     // workflow related ui changes need to be here
     if (frm.doc.workflow_state === 'In Transit') {
       set_route_to_list(frm);
     }
+    showReceiveButton(frm);
   },
   company: set_queries,
   scan_barcode: function(frm) {
@@ -207,3 +209,20 @@ export default {
     scan_barcode(frm);
   },
 };
+
+
+function showReceiveButton(frm) {
+  if(frm.doc.workflow_state === 'In Transit') {
+  frappe.call({
+  method: "optic_store.optic_store.doctype.stock_transfer.stock_transfer.showReceive",
+  args: {
+    branch: frm.doc.target_branch
+  },
+  callback: function(systemRoleRes) {
+    console.log(systemRoleRes);
+    if (systemRoleRes.message) {
+    }
+  }
+});
+  }
+}

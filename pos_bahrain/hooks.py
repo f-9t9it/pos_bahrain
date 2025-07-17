@@ -98,12 +98,37 @@ doctype_tree_js = {"Warehouse" : "public/js/warehouse_tree.js"}
 
 fixtures = [
     {
+        "doctype":"Workflow",
+        "filters":[
+            [
+                "name", "in", ["Stock Transfer Workflow"]
+            ]
+        ]
+    },
+    {
+        "doctype":"Workflow State",
+        "filters":[
+            [
+                "name", "in", ["Draft", "Received", "In Transit", "Cancelled"]
+            ]
+        ]
+    },
+    {
+        "doctype":"Workflow Action Master",
+        "filters":[
+            [
+                "name", "in", ["Dispatch", "Receive", "Cancel"]
+            ]
+        ]
+    },
+    {
         "doctype": "Custom Field",
         "filters": [
             [
                 "name",
                 "in",
                 [
+                    "Branch-custom_branch_users",
                     "Sales Invoice-pos_total_qty",
                     "Mode of Payment-currency_section",
                     "Mode of Payment-in_alt_currency",

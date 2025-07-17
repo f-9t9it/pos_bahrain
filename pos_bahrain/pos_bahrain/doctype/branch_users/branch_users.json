@@ -1,0 +1,32 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-17 10:56:38.223254",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "branch_user"
+ ],
+ "fields": [
+  {
+   "fieldname": "branch_user",
+   "fieldtype": "Link",
+   "label": "Branch User",
+   "options": "User"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-17 11:31:44.964735",
+ "modified_by": "Administrator",
+ "module": "Pos Bahrain",
+ "name": "Branch Users",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
