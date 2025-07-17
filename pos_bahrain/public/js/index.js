@@ -46,4 +46,7 @@ frappe.ui.form.on(
   scripts.payment_entry.payment_entry_reference
 );
 
+frappe.ui.form.on('Stock Transfer Item', scripts.stock_transfer_item);
+frappe.ui.form.on('Stock Transfer', scripts.stock_transfer);
+
 pos_bahrain = { scripts, reports, addons };
