@@ -39,25 +39,28 @@ function setup_queries(frm) {
     });
   }
   
- function set_calculated_fields(frm, cdt, cdn) {
-    let total_amount=0;
-    let net_amount=0;
-    let tax_amount =0;
-    frm.doc.items.map(value =>{
-        total_amount = value.net_amount + value.tax_amount;
-        net_amount += value.net_amount || 0;
-        tax_amount += value.tax_amount|| 0;
-        frappe.model.set_value(
-            cdt,
-            cdn,
-            'total_amount',
-            total_amount
-          );
-    })
-      frm.set_value("net_amount", net_amount);
-      frm.set_value("tax_amount", tax_amount);
-      frm.set_value("total_amount", net_amount+ tax_amount);
-      frm.refresh()
+   function set_calculated_fields(frm, cdt, cdn) {
+    let net_amount = 0;
+    let tax_amount = 0;
+    let total_amount = 0;
+  
+    frm.doc.items.forEach((row) => {
+  
+        const row_total = (row.net_amount || 0) + (row.tax_amount || 0);
+        frappe.model.set_value(row.doctype, row.name, 'total_amount', row_total);
+  
+      
+        net_amount += row.net_amount || 0;
+        tax_amount += row.tax_amount || 0;
+        total_amount += row_total;
+    });
+  
+    
+    frm.set_value("net_amount", net_amount);
+    frm.set_value("tax_amount", tax_amount);
+    frm.set_value("total_amount", total_amount);
+  
+    frm.refresh();
   }
   
   function set_template_type(payment_type, cdt, cdn) {
@@ -80,8 +83,9 @@ function setup_queries(frm) {
       cdn,
       'tax_amount',
       (net_amount * rate) / 100
-    );
+    ).then(() => {
      frm.refresh();
+    });
   }
   
   function show_general_ledger(frm) {
