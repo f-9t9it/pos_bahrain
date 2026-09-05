@@ -22,7 +22,7 @@ def get_sales_invoice_details_on_posting_date(from_date, to_date):
             ["posting_date", "<=", to_date],
             ["docstatus", "=", "1"]
         ],  
-        fields=["name", "customer", "customer_name", "posting_date", "grand_total", "discount_amount", "total_taxes_and_charges",  "is_return", "set_warehouse", "set_target_warehouse", "remarks"]
+        fields=["name", "customer", "customer_name", "posting_date", "grand_total", "discount_amount", "total_taxes_and_charges",  "is_return", "set_warehouse", "set_target_warehouse", "remarks","return_against"]
     )
     for invoice in sales_invoice:
         sales_team = frappe.db.get_all(
