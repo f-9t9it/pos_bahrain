@@ -99,7 +99,7 @@ def get_data(filters):
                  FROM `tabTarget Child`
                  GROUP BY parent, country) AS y ON e.name = y.parent
             LEFT JOIN
-                `tabSales Order` s ON s.employee = e.name AND y.country = s.country
+                `tabSales Order` s ON s.pb_sales_employee= e.name AND y.country = s.country
             WHERE  
                 s.docstatus = 1  AND s.transaction_date BETWEEN %s AND %s
         """
