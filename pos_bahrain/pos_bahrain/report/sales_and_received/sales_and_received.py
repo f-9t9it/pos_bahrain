@@ -226,7 +226,7 @@ def get_payment_data(filters):
     payment_result = frappe.db.sql(payment_query, filters, as_dict=True)
 
     if not payment_result:
-        frappe.log_error("No payment entries found for the given filters.", exc_type="Warning")
+        frappe.log_error(message="No payment entries found for the given filters.", title="Sales and Received Report")
         return []
 
     missing_currencies = set()

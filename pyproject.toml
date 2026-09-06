@@ -9,7 +9,8 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
     "toolz~=0.9.0",
-    "numpy~=1.26.0"
+    "numpy~=1.26.0",
+    "pandas~=2.3.2"
 ]
 
 [build-system]
