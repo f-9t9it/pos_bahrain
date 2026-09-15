@@ -482,9 +482,10 @@ override_whitelisted_methods = {
 }
 
 
-jenv = {
+jinja = {
     "methods": [
-        "get_workflow_user_received:pos_bahrain.api.stock_transfer.get_workflow_user_received",
+        "pos_bahrain.api.stock_transfer.get_workflow_user_received",
+		"pos_bahrain.api.barcode.generate_barcode_svg",
     ]
 }
 
