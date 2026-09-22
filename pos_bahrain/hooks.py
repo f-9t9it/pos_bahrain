@@ -68,14 +68,17 @@ doctype_js = {
         "public/js/includes/scan_barcode.js",
         "public/js/branch.js",
         "public/js/purchase_invoice.js",
+		"public/js/cost_center.js"
     ],
     "Purchase Order": [
         "public/js/set_retail_price.js",
         "public/js/purchase_order.js",
+		"public/js/cost_center.js"
     ],
     "Purchase Receipt": [
         "public/js/includes/scan_barcode.js",
         "public/js/purchase_receipt.js",
+		"public/js/cost_center.js"
     ],
     "Payment Entry": [
          "public/js/payment_entry.js"
