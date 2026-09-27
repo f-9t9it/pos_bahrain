@@ -47,7 +47,7 @@ frappe.ui.form.on('POS Closing Voucher', {
     localStorage.setItem('sales_invoice_doc', '[]');
   },
   user: function (frm) {
-    frm.trigger('set_report_details');
+    //frm.trigger('set_report_details');
   },
   pos_profile: async function (frm) {
     const { pos_profile } = frm.doc;
@@ -59,7 +59,7 @@ frappe.ui.form.on('POS Closing Voucher', {
       );
       frm.set_value('company', company);
     }
-    frm.trigger('set_report_details');
+    //frm.trigger('set_report_details');
   },
   // period_from: function (frm) {
   //   frm.trigger('set_report_details');
