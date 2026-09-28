@@ -289,7 +289,9 @@ fixtures = [
 					"Stock Entry-custom_difference_account_",
 					"Stock Entry-custom_difference_acount",
                     "Account-custom_account_name_arabic",
-                    "Delivery Note-custom_branch"
+                    "Delivery Note-custom_branch",
+                    "Purchase Order-custom_additional_warehouse",
+                    "Purchase Order Item-custom_additional_qty"
                 ],
             ],
         ],
