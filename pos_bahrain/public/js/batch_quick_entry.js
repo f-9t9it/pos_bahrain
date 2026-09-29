@@ -8,14 +8,16 @@ frappe.ui.form.BatchQuickEntryForm = class BatchQuickEntryForm extends frappe.ui
     super.render_dialog();
 
     if (cur_frm) {
-      const { doctype, item_code } = cur_frm.selected_doc || {};
-
+      const { doctype} = cur_frm.selected_doc || {};
       if ([
           'Stock Entry Detail',
           'Purchase Receipt Item',
           'Purchase Invoice Item'
         ].includes(doctype)
       ) {
+        var current_doc = $('.data-row.editable-row').parent().attr("data-name");
+        var doc = locals[doctype][current_doc];
+        var item_code = doc.item_code;
         this.dialog.set_value('item', item_code);
 
         const { message: item = {} } = await frappe.db.get_value(
