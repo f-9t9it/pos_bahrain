@@ -5,7 +5,7 @@ frappe.ui.form.BatchQuickEntryForm = frappe.ui.form.QuickEntryForm.extend({
   render_dialog: async function() {
     this._super();
     if (cur_frm) {
-      const { doctype, item_code } = cur_frm.selected_doc || {};
+      const { doctype} = cur_frm.selected_doc || {};
       if (
         [
           'Stock Entry Detail',
@@ -13,6 +13,9 @@ frappe.ui.form.BatchQuickEntryForm = frappe.ui.form.QuickEntryForm.extend({
           'Purchase Invoice Item',
         ].includes(doctype)
       ) {
+        var current_doc = $('.data-row.editable-row').parent().attr("data-name");
+        var doc = locals[doctype][current_doc];
+        var item_code = doc.item_code;
         this.dialog.fields_dict['item'].$input.on('change', () => {
           this.dialog.set_value('item', this.dialog.get_value('item'));
           this.refresh_dialog_fields();
