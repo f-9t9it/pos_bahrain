@@ -121,7 +121,7 @@ def _make_customer(source_name, ignore_permissions=False):
 def link_query_override(doctype, txt, searchfield, start, page_len, filters, as_dict=False):
 	return frappe.db.sql("""
 			SELECT
-				`tabCustomer`.name, `tabCustomer`.mobile_no, `tabCustomer`.email_id
+				`tabCustomer`.name, `tabCustomer`.customer_name, `tabCustomer`.mobile_no, `tabCustomer`.email_id
 			FROM
 				`tabCustomer`
 			WHERE 
