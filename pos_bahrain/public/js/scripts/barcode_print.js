@@ -104,7 +104,7 @@ pos_bahrain.scripts.barcode_print = {
     frm.page.show_menu();
     const is_print_preview =
       frm.page.current_view_name === 'print' || frm.hidden;
-    const action_label = is_print_preview ? 'Edit' : 'Print';
+    const action_label = is_print_preview ? 'Edit' : 'Save and Print';
     frm.page.set_primary_action(action_label, async function() {
       let has_errored;
       const m = await frm.save(undefined, undefined, undefined, () => {
