@@ -3,6 +3,14 @@
 /* eslint-disable */
 frappe.query_reports["Branch Stock And Value"] = {
 	  "filters": [
+		  		{
+                        "fieldname": "company",
+                        "label": __("Company"),
+                        "fieldtype": "Link",
+                        "options": "Company",
+                        "default": frappe.defaults.get_user_default("Company"),
+                        "reqd": 1
+                },
                 {
                         "fieldname": "company",
                         "label": __("Company"),
