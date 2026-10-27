@@ -3,6 +3,9 @@ frappe.ui.form.on('Purchase Invoice Item', {
         console.log("test")
         get_total_stock_qty(frm, cdt, cdn)
     },
+    pb_supplier_part_no:function (frm, cdt, cdn) {
+    set_item_from_supplier_pn(frm, cdt, cdn)
+    }
 });
 
 function get_total_stock_qty(frm, cdt, cdn) {
@@ -69,3 +72,14 @@ frappe.ui.form.on('Purchase Invoice', {
  
 
 });
+
+
+async function set_item_from_supplier_pn(frm, cdt, cdn) {
+  const { supplier } = frm.doc;
+  const { pb_supplier_part_no: supplier_part_no } = frappe.get_doc(cdt, cdn);
+  const { message: item } = await frappe.call({
+    method: 'pos_bahrain.api.item.fetch_item_from_supplier_part_no',
+    args: { supplier, supplier_part_no },
+  });
+  frappe.model.set_value(cdt, cdn, 'item_code', item && item.name);
+}
