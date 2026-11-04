@@ -9,7 +9,8 @@ def get_children(doctype, parent, company, is_root=False):
 
 	parent_fieldname = "parent_" + frappe.scrub(doctype)
 	fields = ["name as value",  "is_group as expandable"]
-	if pos_bahrain_settings.enable_multilingual == 1:
+	user_lang = frappe.translate.get_user_lang(frappe.session.user)
+	if pos_bahrain_settings.enable_multilingual == 1 and user_lang == "ar":
 		fields.append("account_name_arabic as value2")
 	filters = [["docstatus", "<", 2]]
 
