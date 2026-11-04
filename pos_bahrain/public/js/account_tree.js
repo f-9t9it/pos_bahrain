@@ -248,6 +248,19 @@ frappe.treeview_settings["Account"] = {
 		}
 	},
 	post_render: function (treeview) {
+		frappe.db.get_single_value(
+		"POS Bahrain Settings",
+		"enable_multilingual"
+		).then((enabled) => {
+			if (enabled) {
+				this.fields.push(
+				{
+				fieldtype: "Data",
+				fieldname: "account_name_arabic",
+				label: __("Account Name Arabic"),
+				})
+			}
+		});
 		frappe.treeview_settings["Account"].treeview["tree"] = treeview.tree;
 		if (treeview.can_create) {
 			treeview.page.set_primary_action(
