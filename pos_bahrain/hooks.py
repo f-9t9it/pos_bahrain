@@ -297,7 +297,8 @@ fixtures = [
                     "Account-custom_account_name_arabic",
                     "Delivery Note-custom_branch",
                     "Purchase Order-custom_additional_warehouse",
-                    "Purchase Order Item-custom_additional_qty"
+                    "Purchase Order Item-custom_additional_qty",
+                    "Item Default-custom_rate"
                 ],
             ],
         ],
@@ -446,6 +447,10 @@ doc_events = {
         "get_payment_entries": "pos_bahrain.doc_events.bank_reconciliation.get_payment_entries",
         "update_clearance_date": "pos_bahrain.doc_events.bank_reconciliation.update_clearance_date",
     },
+    "Item":
+    {
+		"before_save": "pos_bahrain.doc_events.item.before_save"
+    }
 }
 
 boot_session = "pos_bahrain.doc_events.boot.boot_session"
