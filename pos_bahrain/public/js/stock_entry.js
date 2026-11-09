@@ -12,10 +12,10 @@ function updateTotalQty(frm)
 
 function setDifferenceAccount(frm, cdt, cdn) {
   setTimeout(() => {
-  const row = locals[cdt][cdn];
+  const row = frappe.get_doc(cdt, cdn);
   row.expense_account = frm.doc.custom_difference_acount;
   frm.refresh_field("items");
-}, 500);
+}, 1000);
 }
 
 frappe.ui.form.off('Stock Entry Detail', 'item_code');
@@ -43,6 +43,14 @@ frappe.ui.form.on('Stock Entry Detail', {
 frappe.ui.form.on('Stock Entry', {
   refresh: function (frm) {
     _set_repack_warehouses_read_only(frm);
+     frm.set_query('custom_difference_acount', function() {
+      return {
+        filters: {
+          company: frm.doc.company,
+          is_group: 0
+        }
+      };
+    });
   },
   before_save: function(frm)
   {
