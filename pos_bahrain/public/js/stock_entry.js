@@ -12,12 +12,10 @@ function updateTotalQty(frm)
 
 function setDifferenceAccount(frm, cdt, cdn) {
   setTimeout(() => {
-  const row = frappe.get_doc(cdt, cdn);
-
+  const row = locals[cdt][cdn];
   row.expense_account = frm.doc.custom_difference_acount;
-
   frm.refresh_field("items");
-}, 100);
+}, 500);
 }
 
 frappe.ui.form.off('Stock Entry Detail', 'item_code');
