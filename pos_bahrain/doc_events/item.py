@@ -1,7 +1,7 @@
 import frappe
 
 
-def before_save(doc, method):
+def on_update(doc, method):
     for item in doc.item_defaults:
         if item.custom_rate and item.default_price_list:
             exist_price = frappe.db.exists("Item Price", {"item_code": doc.name, "uom": doc.stock_uom,"price_list": item.default_price_list})
