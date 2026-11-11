@@ -449,7 +449,7 @@ doc_events = {
     },
     "Item":
     {
-		"before_save": "pos_bahrain.doc_events.item.before_save"
+		"on_update": "pos_bahrain.doc_events.item.on_update"
     }
 }
 
