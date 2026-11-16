@@ -66,7 +66,8 @@ def _get_data(clauses, values, keys):
                 SUM(si.base_grand_total) AS grand_total,
                 SUM(si.base_total_taxes_and_charges) AS tax_total,
                 SUM(si.base_net_total) AS net_total,
-                SUM(sr.base_grand_total) AS returns_grand_total
+                SUM(sr.base_grand_total) AS returns_grand_total,
+                SUM(si.change_amount) AS change_amount
             FROM `tabSales Invoice` as s
             LEFT JOIN (
                 SELECT * FROM `tabSales Invoice` WHERE is_return = 0
