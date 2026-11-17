@@ -23,6 +23,7 @@
   "enable_multilingual",
   "price_list_section",
   "apply_offer_pricelist",
+  "auto_create_prices_from_item_defaults",
   "column_break_3",
   "discount_on_retail",
   "retail_price_list",
@@ -542,11 +543,17 @@
    "fieldname": "enable_multilingual",
    "fieldtype": "Check",
    "label": "Enable Multilingual"
+  },
+  {
+   "default": "0",
+   "fieldname": "auto_create_prices_from_item_defaults",
+   "fieldtype": "Check",
+   "label": "Auto-create prices from item defaults"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-08-23 16:04:56.669698",
+ "modified": "2026-11-17 14:49:52.409448",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
  "name": "POS Bahrain Settings",
