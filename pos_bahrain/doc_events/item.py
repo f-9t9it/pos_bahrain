@@ -6,7 +6,7 @@ def on_update(doc, method):
     auto_create_prices_from_item_defaults = frappe.db.get_single_value("POS Bahrain Settings", "auto_create_prices_from_item_defaults")
     if auto_create_prices_from_item_defaults == 1:
         for item in doc.item_defaults:
-            if item.custom_rate > 0 and item.default_price_list:
+            if (item.custom_rate or 0) > 0 and item.default_price_list:
                 exist_price = frappe.db.exists("Item Price", {"item_code": doc.name, "uom": doc.stock_uom,"price_list": item.default_price_list})
                 if not exist_price:
                     item_price = frappe.get_doc({
