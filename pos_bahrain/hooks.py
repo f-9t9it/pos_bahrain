@@ -449,8 +449,7 @@ doc_events = {
     },
     "Item":
     {
-		"on_update": "pos_bahrain.doc_events.item.on_update",
-		"before_insert": "pos_bahrain.doc_events.item.before_insert"
+		"on_update": "pos_bahrain.doc_events.item.on_update"
     }
 }
 
