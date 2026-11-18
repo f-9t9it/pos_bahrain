@@ -78,6 +78,9 @@ function setup_queries(frm) {
   }
   
   function set_tax_amount(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+    if(row.tax_type === "On Net Total")
+    {
     const { net_amount = 0, rate = 0 } = frappe.get_doc(cdt, cdn);
     return frappe.model.set_value(
       cdt,
@@ -87,6 +90,7 @@ function setup_queries(frm) {
     ).then(() => {
      frm.refresh();
     });
+  }
   }
   
   function show_general_ledger(frm) {
@@ -150,6 +154,11 @@ function setup_queries(frm) {
 
 frappe.ui.form.on('GL Payment', {
         setup: setup_queries,
+        validate: function (frm) {
+        for (const row of frm.doc.items || []) {
+          set_tax_amount(frm, row.doctype, row.name);
+          }
+        },
     refresh: show_general_ledger,
     payment_type: function (frm) {
       function get_party_type(payment_type) {
