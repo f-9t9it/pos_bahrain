@@ -98,13 +98,16 @@ def _get_filters(doctype, filters):
     glp_clauses = concatv(
         inv_clauses, ["d.payment_type IN %(payment_types)s", "a.account_type = 'Tax'"]
     )
+    atc_clauses = concatv(
+        inv_clauses, ["d.payment_type IN %(payment_types)s", "a.account_type = 'Tax'"]
+    )
     values = merge(
         pick(["vat_type"], filters),
         {
             "from_date": filters.from_date,
             "to_date": filters.to_date,
             "tax_accounts": vat_exempt_accounts,
-            "payment_types": ["Incoming"]
+            "payment_types": ["Incoming", "Receive"]
             if doctype == "Sales Invoice"
             else ["Outgoing", "Internal Transfer"],
         },
@@ -122,6 +125,7 @@ def _get_filters(doctype, filters):
             ),
             "invoice_clauses": " AND ".join(inv_clauses),
             "glp_clauses": " AND ".join(glp_clauses),
+            "atc_clauses": " AND ".join(atc_clauses),
         },
         values,
     )
@@ -188,6 +192,30 @@ def _get_data(clauses, values, keys):
         values=values,
         as_dict=1,
     )
+
+    payment_entries = frappe.db.sql(
+            """
+                SELECT
+                    d.name AS name,
+                    dt.cost_center AS cost_center,
+                    d.posting_date,
+                    d.party_name AS {party_name},
+                    (dt.base_total - dt.base_tax_amount) AS net_amount,
+                    dt.base_tax_amount AS tax_amount,
+                    dt.rate AS tax_rate,
+                    d.paid_from AS account,
+                    dt.account_head AS account_head,
+                    dt.description AS remarks
+                FROM `tabAdvance Taxes and Charges` AS dt
+                LEFT JOIN `tabPayment Entry` AS d ON d.name = dt.parent
+                LEFT JOIN `tabAccount` AS a ON a.name = dt.account_head
+                WHERE {atc_clauses}
+            """.format(
+                **clauses
+            ),
+            values=values,
+            as_dict=1,
+        )
 
     def make_doc(x):
         if x.doctype:
@@ -287,7 +315,7 @@ def _get_data(clauses, values, keys):
         partial(filter, filter_type),
         concat,
     )
-    return make_list([make_row(x) for x in invoices + gl_payments])
+    return make_list([make_row(x) for x in invoices + gl_payments + payment_entries])
 
 
 def _get_child_table_rows(query, docs):
