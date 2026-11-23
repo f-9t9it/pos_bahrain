@@ -109,7 +109,7 @@ def _get_filters(doctype, filters):
             "tax_accounts": vat_exempt_accounts,
             "payment_types": ["Incoming", "Receive"]
             if doctype == "Sales Invoice"
-            else ["Outgoing", "Internal Transfer"],
+            else ["Outgoing", "Internal Transfer", "Pay"],
         },
         pick(["company", "cost_center", "warehouse"], filters),
     )
