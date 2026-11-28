@@ -52,13 +52,14 @@ doctype_js = {
 	"Item":"public/js/item.js",
 	"POS Profile": "public/js/pos_profile.js",
     "Mode of Payment": "public/js/mode_of_payment.js",
-    "Stock Entry": ["public/js/includes/scan_barcode.js", "public/js/stock_entry.js"],
+    "Stock Entry": ["public/js/includes/scan_barcode.js", "public/js/stock_entry.js", "public/js/naming_series_settings.js"],
     "Company": "public/js/company.js",
     "Quotation": [
         "public/js/price_list.js",
         "public/js/quotation.js",
         "public/js/includes/discount_percentage.js",
-         "public/js/form_queries.js"
+         "public/js/form_queries.js",
+         "public/js/naming_series_settings.js"
     ],
     "Sales Invoice": [
         "public/js/alternate_discount.js",
@@ -67,7 +68,8 @@ doctype_js = {
         "public/js/branch.js",
         "public/js/sales_invoice.js",
         "public/js/includes/discount_percentage.js",
-        "public/js/form_queries.js"
+        "public/js/form_queries.js",
+        "public/js/naming_series_settings.js"
         # "public/js/includes/salesinvoicecontroller.js",
     ],
 	# "POS Invoice":[
@@ -79,7 +81,8 @@ doctype_js = {
         "public/js/branch.js",
         "public/js/includes/discount_percentage.js",
         "public/js/sales_order.js",
-        "public/js/form_queries.js"
+        "public/js/form_queries.js",
+        "public/js/naming_series_settings.js"
     ],
     "Purchase Invoice": [
         "public/js/set_retail_price.js",
@@ -87,26 +90,29 @@ doctype_js = {
         "public/js/branch.js",
         "public/js/purchase_invoice.js",
 		"public/js/cost_center.js",
-		 "public/js/form_queries.js"
+		 "public/js/form_queries.js",
+		 "public/js/naming_series_settings.js"
 		
     ],
     "Purchase Order": [
         "public/js/set_retail_price.js",
         "public/js/purchase_order.js",
 		"public/js/cost_center.js",
-		 "public/js/form_queries.js"
+		 "public/js/form_queries.js",
+		 "public/js/naming_series_settings.js"
     ],
     "Purchase Receipt": [
         "public/js/includes/scan_barcode.js",
         "public/js/purchase_receipt.js",
 		"public/js/cost_center.js",
-		 "public/js/form_queries.js"
+		 "public/js/form_queries.js",
+		 "public/js/naming_series_settings.js"
     ],
     "Payment Entry": [
          "public/js/payment_entry.js"
     ],
-    "Material Request": "public/js/material_request.js",
-    "Delivery Note": ["public/js/delivery_note.js", "public/js/form_queries.js"],
+    "Material Request": ["public/js/material_request.js", "public/js/naming_series_settings.js"],
+    "Delivery Note": ["public/js/delivery_note.js", "public/js/form_queries.js", "public/js/naming_series_settings.js"],
     "Print Format": "public/js/print_format.js",
 	"Stock Reconciliation": "public/js/stock_reconciliation.js",
 	"Batch":"public/js/batch.js",
