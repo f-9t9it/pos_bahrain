@@ -84,7 +84,10 @@
   "serial_batch_item_settings_section",
   "hide_pick_serial_and_batch_button",
   "incemtive_slab_section",
-  "incentive_slab"
+  "incentive_slab",
+  "naming_series_settings_section",
+  "enable_naming_series_settings",
+  "pb_naming_series_settings"
  ],
  "fields": [
   {
@@ -549,11 +552,27 @@
    "fieldname": "auto_create_prices_from_item_defaults",
    "fieldtype": "Check",
    "label": "Auto-create prices from item defaults"
+  },
+  {
+   "fieldname": "naming_series_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Naming Series Settings"
+  },
+  {
+   "fieldname": "pb_naming_series_settings",
+   "fieldtype": "Table",
+   "options": "PB Naming Series Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_naming_series_settings",
+   "fieldtype": "Check",
+   "label": "Enable"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-11-17 14:49:52.409448",
+ "modified": "2026-11-28 16:04:39.930279",
  "modified_by": "Administrator",
  "module": "Pos Bahrain",
  "name": "POS Bahrain Settings",
